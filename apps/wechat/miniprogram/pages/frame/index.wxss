@@ -1,0 +1,20 @@
+@import "../../styles/penaup-pages.wxss";
+
+.create-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14rpx; }
+.m-card { position: relative; min-height: 214rpx; padding: 24rpx; overflow: hidden; }
+.m-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 8rpx; background: #c95849; }
+.m-card.c-teal::before { background: #6f936e; }
+.m-card.c-purple::before { background: #4d75b6; }
+.m-card.c-blue::before { background: #4779bc; }
+.m-card.c-yellow::before { background: #d4ad31; }
+.m-card.c-pink::before { background: #b65347; }
+.m-ic { display: flex; align-items: center; justify-content: center; width: 66rpx; height: 66rpx; }
+.m-ic image { width: 38rpx; height: 38rpx; opacity: .75; }
+.m-name { margin-top: 22rpx; font-size: 29rpx; font-weight: 600; }
+.m-sub { margin-top: 6rpx; font-size: 21rpx; }
+.cc-emo { position: absolute; right: 14rpx; bottom: 10rpx; font-size: 58rpx; }
+.m-badge::after { content: '今日推荐'; position: absolute; top: 16rpx; right: -38rpx; padding: 4rpx 40rpx; color: #1a1b18; background: #d4ad31; transform: rotate(45deg); font: 18rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
+.adv-row { display: flex; align-items: center; gap: 18rpx; margin-top: 18rpx; }
+.adv-row .m-name { margin-top: 0; }
+.adv-row .m-sub { margin-top: 5rpx; }
+.adv-a { margin-left: auto; font-size: 44rpx; font-weight: 300; }

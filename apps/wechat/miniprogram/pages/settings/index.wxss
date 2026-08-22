@@ -1,0 +1,52 @@
+@import "../../styles/penaup-pages.wxss";
+
+.page-header { display: flex; justify-content: flex-end; min-height: 52rpx; margin-bottom: 8rpx; }
+.battery-bar { display: flex; align-items: center; gap: 10rpx; color: #4d75b6; }
+.battery-icon { display: flex; align-items: center; gap: 3rpx; }
+.battery-body { width: 54rpx; height: 22rpx; padding: 3rpx; border: 2rpx solid currentColor; }
+.battery-fill-view { height: 100%; background: #d4ad31; }
+.battery-cap { width: 4rpx; height: 9rpx; background: currentColor; }
+.battery-text { font: 21rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+.set-group { margin-bottom: 18rpx; padding: 0 22rpx; border: 2rpx solid #d8d8cf; border-radius: 8rpx; background: #fbfaf6; }
+.set-row { display: flex; align-items: center; gap: 16rpx; min-height: 96rpx; border-bottom: 2rpx solid #d8d8cf; }
+.set-row:last-child { border-bottom: 0; }
+.set-ic { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 56rpx; height: 56rpx; border-radius: 50%; }
+.set-ic image { width: 30rpx; height: 30rpx; }
+.sc-red { background: #c95849; }.sc-teal { background: #6f936e; }.sc-purple { background: #4d75b6; }.sc-blue { background: #4779bc; }.sc-yellow { background: #d4ad31; }.sc-pink { background: #b65347; }
+.set-t { flex: 1; font-size: 25rpx; font-weight: 600; }
+.set-d { display: block; margin-top: 5rpx; color: #74766d; font-size: 19rpx; font-weight: 400; }
+.set-a { flex-shrink: 0; color: #4d75b6; font-size: 38rpx; font-weight: 300; }
+.set-panel { padding: 18rpx 0 20rpx 72rpx; border-bottom: 2rpx solid #d8d8cf; }
+.set-panel:last-child { border-bottom: 0; }
+.mode-selector { display: flex; gap: 8rpx; }
+.mode-button { flex: 1; padding: 14rpx 6rpx; color: #74766d; border: 2rpx solid #bbbcb3; border-radius: 5rpx; font-size: 20rpx; text-align: center; }
+.mode-button.active { color: #f7f7f2; background: #1a1b18; border-color: #1a1b18; }
+.mode-button.hidden { display: none; }
+.switch-row, .network-input-group, .wake-slider-row, .action-controls, .wifi-status-row { display: flex; align-items: center; gap: 12rpx; min-height: 70rpx; border-bottom: 2rpx solid #d8d8cf; }
+.switch-row { justify-content: space-between; }
+.network-label { width: 112rpx; flex-shrink: 0; color: #74766d; font-size: 20rpx; }
+.network-input { flex: 1; min-width: 0; height: 58rpx; padding: 0 12rpx; border: 2rpx solid #bbbcb3; font-size: 22rpx; }
+.set-panel .button-row { margin: 14rpx 0 0; }
+.set-panel .btn-secondary { min-height: 66rpx; padding: 12rpx; font-size: 21rpx; }
+.wifi-status-dot { width: 14rpx; height: 14rpx; border-radius: 50%; background: #b7b8b0; }
+.wifi-status-dot.connected { background: #6f936e; animation: penaup-pulse 1.8s ease-in-out infinite; }
+.wifi-status-text { color: #74766d; font-size: 21rpx; }
+.download-text { color: #4d75b6; }
+.divider { height: 2rpx; margin: 12rpx 0; background: #d8d8cf; }
+.wake-slider-row { gap: 10rpx; }
+.wake-slider-row slider { flex: 1; }
+.wake-min, .wake-max { color: #74766d; font-size: 18rpx; }
+.file-size-text { flex: 1; color: #74766d; font: 18rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
+.wide-btn { width: 100%; margin-top: 16rpx; }
+.debug-log { max-height: 300rpx; overflow-y: auto; padding: 12rpx; color: #74766d; background: #efefe8; font: 18rpx/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.debug-entry { padding: 5rpx 0; border-bottom: 1rpx solid #d8d8cf; }
+.debug-entry.error { color: #b65347; }.debug-entry.info { color: #4d75b6; }
+.action-controls { flex-wrap: wrap; padding-bottom: 12rpx; }
+.action-controls .btn-secondary { flex: 1; min-width: 180rpx; }
+.about-text { padding: 18rpx 0 24rpx 72rpx; color: #74766d; font-size: 21rpx; line-height: 1.7; }
+
+@media (max-width: 620px) {
+  .set-panel { padding-left: 0; }
+  .mode-button { font-size: 18rpx; }
+}

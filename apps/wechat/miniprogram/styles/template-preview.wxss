@@ -1,0 +1,4 @@
+/* Copyright (c) 2026 poboll · template pages share the Penaup paper system */
+@import "penaup-pages.wxss";
+
+page { background: #f4f3ed; }

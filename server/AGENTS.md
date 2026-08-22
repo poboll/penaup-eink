@@ -1,94 +1,62 @@
-# AGENTS.md
+# server/AGENTS.md
 
-film-hub（server/）AI 开发指南。本目录为 FrameFilm 的局域网后端 + 管理前端。
+花生片 Penaup 服务端维护指南。
 
-## 项目身份
+## 身份与边界
 
-开源彩色电子纸冰箱贴的服务端：模板编排、服务端渲染、轮播时间轴、OTA 推送。
+- 新入口：Node.js 24 + Fastify + SQLite WAL + 本地媒体 + SSE + 可选 MQTT，源码位于 `server/src/`；
+- 旧入口：`legacy/fastapi/`，只读迁移参考和回滚材料，不作为新部署入口；
+- 管理台静态资源：`server/admin/dist/`；
+- 统一 film 与 transfer 契约：`packages/film-core/`；
+- 新增代码/文档可标注 `Copyright (c) 2026 poboll`，混合历史文件不得覆盖原作者和第三方来源，见 `docs/legal/provenance.md`。
 
-- 后端 Python + FastAPI（Pillow 渲染），前端纯静态 HTML + 原生 JS（无框架/Vite）
-- 兼容双屏幕：basic 400×600（film 120032B）/ pro 528×792（film 209120B）
-- Git 中文 commit: `type(scope): 描述`（全仓库适用）
+## 目录
 
-## 目录结构
-
-```
+```text
 server/
-├── backend/                    # FastAPI 后端
-│   ├── app/
-│   │   ├── main.py             # 入口：seed_admin / seed_builtin_templates
-│   │   ├── config.py           # 路径、默认管理员、心跳参数
-│   │   ├── db.py               # SQLite + SQLAlchemy
-│   │   ├── models/ schemas/    # ORM 模型 / Pydantic
-│   │   ├── api/                # auth/device/album/template/stream/ai/settings_api/device_proto
-│   │   └── services/           # 核心业务（见下）
-│   └── .venv/                  # 虚拟环境（python.exe 直接运行）
-└── web/dist/                   # 管理前端（后端 StaticFiles 直接提供，改完刷新即生效）
-    ├── js/api.js               # JWT 请求封装（API.* / FH.authImg）
-    ├── js/common.js            # guard/toast/confirm/refreshStatus
-    └── *.html                  # login/dashboard/devices/templates/streams/albums/ai/settings
+├── src/
+│   ├── app.js              Fastify 组装、静态资源、安全头、设备兼容接口
+│   ├── db.js               SQLite WAL schema、迁移、ownership 查询
+│   ├── events.js           进程内事件总线
+│   ├── mqtt.js             可选 MQTT 5 状态/指令桥
+│   ├── modules/            auth/devices/media/albums/templates/streams/ai/transfer
+│   └── transports/http.js  用户 API 与兼容 HTTP 路由
+├── admin/dist/             Runtime 管理台
+├── migrations/             FastAPI SQLite dry-run/导入器
+├── test/                   node:test、鉴权、归属、film、安全测试
+└── data/                   本地运行数据，不提交 Git
 ```
 
-## 核心服务层（services/）
+## API 规则
 
-| 文件 | 职责 |
-|---|---|
-| `builtin_templates.py` | **内置模板定义**（声明式：schemes+params+layers）+ `BUILTIN_TEMPLATES` 注册表 |
-| `data_sources.py` | 数据源：`resolve(kind)` 分发到 calendar/memo/quote/fridge/countdown/fortune/weather/album 各 *_data 函数 |
-| `renderer.py` | 渲染引擎：按 layers 逐图层绘制（rect/line/circle/text/checklist/image/table/calendar_grid） |
-| `film_convert.py` | RGB → film 二进制 + 预览 PNG（抖动/调色板，双屏参数化） |
-| `scheduler.py` | 轮播流调度：build_timeline / current_item / resolve_film_for_device |
+- 用户资源所有查询必须带 `user_id` ownership 条件；
+- 设备 token 校验必须先于 `latest.film` 或按文件名查询，设备只能读取公共媒体或自身 owner 的媒体；
+- 浏览器 Cookie 写请求（包括 refresh/logout）必须通过 `X-CSRF-Token`，Bearer 请求供小程序/iOS 使用；
+- 邮箱 challenge 默认 10 分钟、单次使用、哈希存储，生产必须配置真实 email provider，不能开启 dev code；
+- `.film` 必须交给 `packages/film-core` 校验，不重复实现尺寸/颜色协议；
+- MQTT 不传照片，不自动注册设备，payload 必须携带首次 HTTP 心跳建立的 token；
+- SSE 连接必须根据 `userId` 或设备 owner 过滤事件，断开时清理订阅和心跳计时器。
 
-## 模板架构（重点）
+## 修改约束
 
-**设计态** = `schemes`(配色方案) + `params`(参数定义数组) + `layers`(布局图层)
-**应用态** = `definition.data.params`（用户配置随模板保存，轮播引用自动生效）
+1. 不使用字符串拼接 SQL；limit 等结构化值先转为受限整数；
+2. 不把原图、token、验证码或 MQTT 密码写入日志和事件；
+3. 新媒体上传同时校验 MIME、魔数、大小、用户配额、相册归属和路径；
+4. 设置使用 `(user_id, key)` 范围隔离，不能恢复成全局 key 主键；
+5. transfer 的 `device_state_uncertain` 不能改写成 `succeeded`；
+6. 旧库先 `--dry-run`，核对表计数、SHA-256、film 尺寸和模板 JSON 后再导入，不删除源库。
 
-- 图层坐标以 400×600（竖版）为参考系，渲染时按目标分辨率缩放
-- 颜色可写 `{"scheme": "key"}` 引用当前方案；数据绑定 `{"source": kind, "key": field}`
-- 前端表单由 `params` 声明自动生成，无需改前端
-- 内置模板注册/升级：`main.py::seed_builtin_templates()`，`_core_definition` 比较结构（剔除 data），`_merge_old_data` 保留旧应用参数与相册绑定
-
-### 新增内置模板流程
-1. `builtin_templates.py` 定义 dict + 追加 `BUILTIN_TEMPLATES`（唯一必需步骤）
-2. 新数据源 → `data_sources.py` 写 `xxx_data()` + `resolve()` 加 elif 分支
-3. 新绘制能力 → `renderer.py` `render_template` 加 `elif ltype == "xxx"`
-4. 新表单控件 → `templates.html` 表单渲染 + `collectParams` 两处各加分支
-5. 重启后端，seed 自动建库/升级，用 GET preview 验证
-
-## 关键约定
-
-- **预览接口要鉴权**：`/api/v1/admin/templates/{id}/preview` 不能直接 `<img src>`，必须 `FH.authImg(url)`
-- `/files/*` 静态文件（缩略图/原图）无需鉴权，可直链
-- 保存模板应用参数后必须调 `GET preview?refresh=true` 强制重渲染，否则卡片图是旧参数
-- 前端 HTML 由后端中间件 no-cache（`main.py`），改页面直接刷新即生效
-- 渲染算法唯一来源是后端（服务端渲染 + 转换，前端只展示）
-- BLE 命令常量、film 颜色编码需与 C 固件 / 小程序 / Web 三端一致（见仓库根 AGENTS.md）
-
-## 常见陷阱（不要做）
-
-1. **不要只在 service 层直调 ESP-IDF driver** —— 那是固件的事，server 只负责渲染与分发
-2. **不要改 BLE 命令值**；新增命令从 `0x3E` 起，同步 `blecmd_protocol.md`
-3. **不要假设字符串编码** —— BLE 传输一律 ASCII + `\0`
-4. **模板结构变更必须走 seed 升级**（保留用户配置），不要删库重灌；改名/删除内置模板要清理 DB 残留记录
-5. **字体**：`simsunb.ttf`（宋体粗体）已损坏会渲染成方块，`serif_bold` 用 `simsun.ttc` 兜底
-6. **PowerShell 不能内联多行 `python -c`**（& 与换行解析问题）、中文 JSON body 会乱码 —— 验证用临时脚本文件
-7. **PIL `Image.rotate` 是逆时针** —— layout.rotate 语义为顺时针，渲染时取负
-8. **`convert_image` 返回 `(palette_bytes, png_bytes)` 元组**，不是 Image
-
-## 运行 / 验证命令
+## 运行与验证
 
 ```bash
-# 启动后端（8000 端口，--reload 热重载）
-cd server/backend && .venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-
-# API 验证（默认管理员 admin / filmhub）
-# 登录 POST /api/v1/admin/auth/login 拿 access_token → 请求头 Authorization: Bearer <token>
+cd server
+npm install
+npm run check
+npm test
+npm audit --omit=dev
+npm start
 ```
 
-## 文档索引
+默认只监听 `127.0.0.1:8787`。网络监听必须设置 `PENAUP_ADMIN_TOKEN`，公网部署再接 Caddy TLS、明确 CORS、限流、邮件 provider、MQTT ACL 和每日 SQLite/媒体备份。
 
-- `docs/filmhub/requirements.md` — film-hub 需求与技术方案
-- `docs/film/film.md` — film 文件格式
-- `docs/blecmd/blecmd_protocol.md` — BLE 协议规范
-- 仓库根 `AGENTS.md` — 全仓库架构约束（GPIO、跨端一致性、命名约定）
+部署模板见 `deploy/`；API 与 iOS 状态契约见 `docs/api/`；架构取舍见 `docs/architecture/` 和 `docs/adr/`。

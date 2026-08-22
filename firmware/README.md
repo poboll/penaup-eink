@@ -1,30 +1,25 @@
-# 固件目录
+# Penaup 固件
 
-本目录包含帧影（FrameFilm）电子胶片冰箱贴的设备固件代码。
+花生片 Penaup 固件使用 ESP-IDF v5.5.2，统一源码通过机型宏编译 STD、Pro、Max 三种硬件。
 
-## 目录结构
+## 编译前检查
 
-- `src/` - 固件源代码
-- `include/` - 头文件
-- `lib/` - 第三方库
-- `tools/` - 固件烧录和调试工具
-- `docs/` - 固件相关文档
+1. 复制对应的 `sdkconfig_std`、`sdkconfig_pro` 或 `sdkconfig_max` 为 `sdkconfig`；
+2. 在 `components/film_sys/inc/sys_cfg.h` 只启用一个 `FRAMEFILM_*` 宏；
+3. 确认屏幕驱动、输入和 SD/电池/LED 引脚与机型一致；
+4. 构建后检查设备广播名和 BLE 兼容行为。
 
-## 硬件平台
+```bash
+cd firmware/penaup
+cp sdkconfig_pro sdkconfig
+idf.py build
+idf.py flash monitor
+```
 
-- 主控芯片：ESP32
-- 显示屏：彩色电子纸
-- 通信模块：蓝牙 BLE
+## 分层
 
-## 开发说明
+- `film_sys`：系统启动、配置和日志；
+- `film_hal`：EPD、SD、电池、电源、LED、编码器和按键；
+- `film_service`：BLE、film 文件、播放、参数、OTA、Wi-Fi。
 
-本固件负责：
-- 彩色电子纸显示驱动
-- 蓝牙连接与数据传输
-- 照片解码与胶片滤镜处理
-- 低功耗管理
-- 电池电量监测
-
-## 构建说明
-
-使用 PlatformIO 进行固件开发和烧录。
+`FrameFilm` 宏和旧 BLE 名称属于兼容层，不要因为改品牌就擅自修改 BLE 命令值、NVS key 或 film 颜色编码。硬件功能声称必须有对应的实测或数据手册证据。

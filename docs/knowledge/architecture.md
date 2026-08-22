@@ -1,123 +1,50 @@
-# FrameFilm 架构设计
+# Penaup 架构设计
 
-> 固件三层架构 + 双版本差异 + 组件依赖关系
+> Copyright (c) 2026 poboll · 当前部署架构。`FrameFilm / film-hub` 仅作为旧硬件、旧协议和迁移资料中的兼容名。
 
-## 固件分层架构
+花生片 Penaup 采用“端侧优先、单体运行时、可选事件桥”的结构。照片在手机或桌面 Web 端转换为 `.film`，BLE 直连是最短路径；只有支持 Wi-Fi 的设备才需要访问 Runtime。
 
-```
-┌─────────────────────────────────────────────────┐
-│  app_main()  ── 应用入口                         │
-├─────────────────────────────────────────────────┤
-│  film_service  ── 服务层 (最上层)                 │
-│  ├─ service_ble      BLE 通信服务               │
-│  ├─ service_ble_gatts GATT 服务注册              │
-│  ├─ service_file     SD 卡文件管理               │
-│  ├─ service_film     照片播放逻辑               │
-│  ├─ service_param    NVS 参数持久化              │
-│  ├─ service_ota      OTA 固件升级               │
-│  ├─ service_monitor  系统监控/休眠管理            │
-│  ├─ service_wifi     WiFi STA (Pro 版)          │
-│  └─ service_port     系统移植层                  │
-├─────────────────────────────────────────────────┤
-│  film_hal  ── 硬件抽象层 (中间层)                 │
-│  ├─ hal_epd          电子纸驱动 (WFT/SE0368)     │
-│  ├─ hal_sd           SDMMC 存储                  │
-│  ├─ hal_led          WS2812 RGB LED             │
-│  ├─ hal_bat          电池 ADC 检测               │
-│  ├─ hal_pwr          外设电源控制 (GPIO21)        │
-│  ├─ hal_encoder      旋转编码器 (仅基础版)         │
-│  └─ hal_button       三按键 (仅 Pro 版)           │
-├─────────────────────────────────────────────────┤
-│  film_sys  ── 系统层 (最底层)                     │
-│  ├─ sys_init         系统初始化入口               │
-│  ├─ sys_log          统一日志                    │
-│  ├─ sys_cfg          系统配置                    │
-│  └─ sys_err          错误码定义                  │
-└─────────────────────────────────────────────────┘
+## 跨端数据流
+
+```text
+小程序 / Web 工具 -- 本地六色转换 + BLE --> Penaup 设备
+                                      |
+                         Wi-Fi 心跳 + latest.film
+                                      v
+                         Node.js 24 + Fastify
+                           | SQLite WAL / 本地媒体
+                           +-- 可选 MQTT 状态桥
+                           +-- SSE /admin 管理端
 ```
 
-## 启动流程
+Runtime 不保存原始照片，不承担 BLE 分包，也不要求 Redis、PostgreSQL 或必须在线的 MQTT broker。MQTT 只承载 Wi-Fi 设备状态和指令，不替代 HTTP 心跳。
 
-```
-app_main()
-  ├─ film_sys_init()
-  │   └─ NVS 初始化, 日志系统
-  ├─ film_hal_init()
-  │   ├─ hal_pwr_init()         # 开启外设电源
-  │   ├─ hal_bat_init()         # ADC 电池检测
-  │   ├─ hal_led_init()         # RGB LED 白色 10%
-  │   ├─ hal_sd_init()          # 挂载 SD 卡
-  │   ├─ hal_encoder_init()     # (基础版) 编码器
-  │   │   或 hal_button_init()  # (Pro 版) 三按键
-  │   └─ hal_epd_init()         # 电子纸初始化
-  └─ film_service_init()
-      ├─ service_ble_init()     # BLE GATT 服务
-      ├─ service_file_init()    # 文件系统
-      ├─ service_film_init()    # 播放逻辑
-      ├─ service_param_init()   # NVS 参数加载
-      ├─ service_ota_init()     # OTA
-      ├─ service_monitor_init() # 监控任务
-      └─ service_wifi_init()    # (Pro 版) WiFi
+## 运行时边界
+
+| 层 | 当前职责 | 不应承担 |
+|---|---|---|
+| 端侧 | 裁剪、六色映射、抖动、BLE 分包、EPD 刷新 | 把原始照片上传到服务端 |
+| `server/src` | 设备注册/心跳、token、媒体索引、命令队列、SSE | 模板大平台、用户账号体系、照片云存储 |
+| SQLite + 文件 | 设备/事件/媒体元数据与 `.film` 文件 | MQTT 消息持久化 |
+| MQTT bridge | Wi-Fi 状态和命令转发 | 图片传输与唯一状态来源 |
+| `legacy/fastapi` | 旧 FastAPI 迁移参考 | 新部署入口 |
+
+## 固件三层
+
+```text
+film_service → film_hal → film_sys → ESP-IDF
+  服务层        硬件层       系统层
 ```
 
-## 基础版 vs Pro 版关键差异
+服务层只编排 BLE、文件、播放、OTA、监控和 Wi-Fi；GPIO、SPI、SD、LED、电池、EPD 和按键全部经 `film_hal`；系统层负责初始化、配置、日志与错误。新代码不得反向依赖上层，也不得在 service 层直接调用 ESP-IDF driver。
 
-| 组件 | 基础版 | Pro 版 | 差异位置 |
-|------|--------|--------|----------|
-| EPD 驱动 | WFT 系列, SPI 四线 | SE0368-C, SPI 三线半双工 | `hal_epd.h/c` |
-| 分辨率 | 600×400 | 792×528 | `hal_epd.h` 宏 |
-| 刷新命令 | `DRF(0x12)` | `REF(0x17)+A5` + 温度补偿 | `hal_epd.c` |
-| 温度传感器 | 无 | 内置 TSE/TSD/WFT/WFD | `hal_epd.c` |
-| 输入设备 | 旋转编码器 | 三按键 | `hal_encoder` vs `hal_button` |
-| WiFi | 无 | STA + HTTP 下载 | `service_wifi.c` |
-| 播放模式 | 0:手动, 1:本地轮播 | 0:手动, 1:本地轮播, 2:WiFi轮播 | `service_film.c` |
-| Flash | 4MB | 16MB | `sdkconfig` |
-| PSRAM | Quad SPI | Octal SPI | `sdkconfig` |
+## 三机型编译边界
 
-## GPIO 引脚分配 (两版相同)
+统一源码位于 `firmware/penaup/`，由 `sys_cfg.h` 与对应 `sdkconfig` 选择 `FRAMEFILM_STD`、`FRAMEFILM_PRO` 或 `FRAMEFILM_MAX`。EPD、输入、SD、电源和 LED 相关分支必须逐机型核对；协议命令值、NVS key 和 film 颜色编码不因品牌改名而变化。
 
-| GPIO | 功能 (基础版) | 功能 (Pro 版) | 外设 |
-|------|-------------|-------------|------|
-| 48 | SPI2 SCK | SPI2 SCK | EPD |
-| 47 | SPI2 MOSI | SPI2 SDIN (半双工) | EPD |
-| 14 | CS | CS | EPD |
-| 13 | DC | DC | EPD |
-| 12 | RST | RST | EPD |
-| 11 | BUSY | BUSY | EPD |
-| 40-42,38-39,2 | SDMMC | SDMMC | SD 卡 |
-| **6** | **编码器 A** | **按键下** | 输入 |
-| **4** | **编码器 B** | **按键上** | 输入 |
-| **5** | **编码器按键/唤醒** | **确认键/唤醒** | 输入 |
-| 17 | WS2812 DIN | WS2812 DIN | RGB LED |
-| 8 | ADC 使能 | ADC 使能 | 电池分压 |
-| 1 | ADC_CH0 | ADC_CH0 | 电池电压 |
-| 21 | 外设电源 | 外设电源 | 电源控制 |
+## 迁移原则
 
-## 参数存储 (NVS)
-
-`service_param.h` 定义持久化参数结构 `ServiceParam_Def_t`:
-
-```c
-typedef struct {
-    uint8_t factory_flag;                  // 出厂标志
-    ServiceFilm_Def_t film;                // 播放参数
-    ServiceSleep_Def_t sleep;              // 休眠参数
-    ServiceNetwork_Def_t network;          // 网络参数 (Pro版)
-} ServiceParam_Def_t;
-
-// 网络子结构 (Pro版)
-typedef struct {
-    uint8_t wifi_enable;                   // WiFi 开关
-    char wifi_ssid[64];                    // SSID
-    char wifi_password[64];                // 密码
-    char film_api_url[128];                // API URL
-} ServiceNetwork_Def_t;
-```
-
-## 依赖组件 (idf_component.yml)
-
-| 组件 | 版本 | 用途 |
-|------|------|------|
-| esp-idf-lib/encoder | 3.0.2 | 旋转编码器 (基础版) |
-| espressif/led_strip | 3.0.1 | WS2812 LED |
-| espressif/button | - | 按键驱动 (Pro 版) |
+1. 先以 BLE 和本地文件链路交付最小可用体验，再启用 Wi-Fi / MQTT。
+2. 所有新增状态都能从 HTTP 心跳恢复；MQTT 断线不能让设备失联。
+3. 所有媒体路径必须经过净化和设备 token 鉴权；固定 `latest.film` 只解析为索引中的最新 `.film`。
+4. 用户界面统一使用“花生片 Penaup”，历史兼容名只保留在协议、目录、扫描过滤器和迁移说明中。

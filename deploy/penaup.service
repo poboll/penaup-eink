@@ -1,0 +1,23 @@
+[Unit]
+Description=Penaup Eink Runtime
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=penaup
+Group=penaup
+WorkingDirectory=/opt/penaup-eink/server
+EnvironmentFile=/etc/penaup/penaup.env
+ExecStart=/usr/bin/node src/server.js
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/penaup/data
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

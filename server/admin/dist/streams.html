@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>轮播流 · Penaup Runtime</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* 轮播流列表 */
+  .stream-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .sc { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; cursor: pointer; transition: all .15s; position: relative; }
+  .sc:hover { border-color: var(--ink); }
+  .sc.on { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .sc .sn { font-weight: 700; font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
+  .sc .sn .row { display: flex; align-items: center; gap: 8px; }
+  .sc .sm { font-size: 12px; color: var(--gray); margin-top: 6px; }
+  .sc .sf { margin-top: 12px; display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--gray); }
+  .sc .sf .mini-track { flex: 1; height: 10px; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; display: flex; }
+  .sc .sf .mini-track i { display: block; height: 100%; border-right: 1px solid #fff; background: var(--ink); }
+  .sc .x { position: absolute; top: 8px; right: 8px; display: none; color: var(--gray); }
+  .sc:hover .x { display: block; }
+  .sc .x:hover { color: var(--red); }
+  .sc.add { display: grid; place-items: center; border-style: dashed; border-color: var(--line-d); background: transparent; color: var(--gray); min-height: 118px; }
+  .sc.add:hover { color: var(--ink); border-color: var(--ink); }
+  /* 卡片：播放设备绑定行 */
+  .sc .sbind { margin-top: 10px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--gray); }
+  .sc .sbind b { color: var(--ink); font-weight: 600; }
+
+  /* 指定播放设备弹窗列表 */
+  .bind-row { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 7px; margin-bottom: 6px; cursor: pointer; background: #fff; transition: border-color .15s; }
+  .bind-row:hover { border-color: var(--ink); }
+  .bind-row .bind-nm { font-weight: 600; font-size: 13px; }
+  .bind-row .bind-id { font-size: 11px; color: var(--gray); font-family: var(--mono); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bind-row .bind-st { font-size: 11px; color: var(--gray); flex-shrink: 0; }
+  .bind-row .bind-st.on { color: var(--green); }
+
+  /* 模式切换 */
+  .mode-switch { display: flex; gap: 0; border: 1px solid var(--ink); border-radius: 8px; overflow: hidden; }
+  .mode-switch span { padding: 8px 16px; font-size: 12px; cursor: pointer; background: #fff; }
+  .mode-switch span.on { background: var(--ink); color: #fff; }
+  .mode-switch span:first-child { border-right: 1px solid var(--ink); }
+  .mode-desc { font-size: 12px; color: var(--gray); line-height: 1.7; margin-top: 8px; }
+  .mode-desc b { color: var(--ink); }
+
+  /* ===== 模板卡片托盘 ===== */
+  .tray-card { margin-bottom: 20px; }
+  .tray-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-size: 13px; gap: 12px; flex-wrap: wrap; }
+  .tray-head .hint { font-size: 11px; color: var(--gray); }
+  .tray { display: flex; gap: 14px; overflow-x: auto; padding: 6px 2px 12px; }
+  .tpl-card { flex-shrink: 0; width: 70px; text-align: center; cursor: grab; user-select: none; transition: transform .15s; }
+  .tpl-card:hover { transform: translateY(-3px); }
+  .tpl-card:active { cursor: grabbing; }
+  .tpl-card.dragging { opacity: .35; }
+  .tpl-card .tc-frame {
+    width: 58px; height: 76px; margin: 0 auto; background: #fff; border: 1px solid var(--line-d);
+    border-radius: 6px; display: grid; place-items: center; color: var(--ink); overflow: hidden;
+    box-shadow: 0 2px 0 rgba(26,26,26,.06); transition: box-shadow .15s;
+  }
+  .tpl-card .tc-frame img { width: 100%; height: 100%; object-fit: cover; }
+  .tpl-card .tc-frame .no-thumb { font-size: 9px; color: var(--gray); padding: 4px; text-align: center; }
+  .tpl-card.dragging .tc-frame { box-shadow: 0 12px 22px rgba(26,26,26,.18); transform: rotate(3deg); }
+  .tpl-card .tc-name { margin-top: 7px; font-size: 11px; color: var(--ink); letter-spacing: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70px; }
+
+  /* ===== 播放分组条（列表即时间轴） ===== */
+  .group-bar { display: flex; align-items: center; gap: 8px; margin: 20px 0 10px; font-size: 12px; color: var(--gray); }
+  .group-bar::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  .group-bar b { color: var(--ink); font-size: 13px; }
+  .group-bar .n { background: var(--line); color: var(--ink); border-radius: 10px; padding: 1px 8px; font-size: 10px; }
+  .group-bar:first-of-type { margin-top: 0; }
+
+  /* ===== 播放列表（可拖拽排序 + 拖入模板卡片） ===== */
+  .items { display: flex; flex-direction: column; gap: 10px; }
+  .item { display: flex; align-items: center; gap: 14px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; transition: border-color .15s, box-shadow .15s, transform .15s, opacity .15s; }
+  .item.on { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .item.dragging { opacity: .4; }
+  .item .drag { cursor: grab; color: var(--gray); font-size: 16px; }
+  .item .th { width: 34px; height: 51px; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: #fff; flex-shrink: 0; display: grid; place-items: center; font-size: 11px; }
+  .item .th img { width: 100%; height: 100%; object-fit: cover; }
+  .item .th .no-thumb { font-size: 14px; font-weight: 700; color: #d8d3ca; letter-spacing: 1px; }
+  .item .info { flex: 1; min-width: 0; }
+  .item .info .nm { font-size: 13px; font-weight: 600; }
+  .item .info .tp { font-size: 11px; color: var(--gray); margin-top: 2px; }
+  .item .time { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .item .time .seg { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; background: #fff; cursor: pointer; font-size: 12px; }
+  .item .time .seg.rel { border-color: var(--ink); }
+  .item .time .seg.abs { background: repeating-linear-gradient(-45deg,#fff,#fff 6px,#f4f4f2 6px,#f4f4f2 12px); }
+  .item .time input[type=time] { width: 96px; border: 1px solid var(--line-d); border-radius: 5px; padding: 4px 6px; font-size: 12px; outline: none; text-align: center; font-family: var(--mono); }
+  .item .time select { border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; font-size: 12px; background: #fff; outline: none; cursor: pointer; }
+  .item .time select:focus { border-color: var(--ink); }
+  .item .en-switch { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--gray); }
+  .item .del { color: var(--gray); cursor: pointer; font-size: 14px; }
+  .item .del:hover { color: var(--red); }
+
+  /* 空状态（也是一个投放区） */
+  #empty { display: grid; place-items: center; padding: 40px 20px; color: var(--gray); font-size: 13px; border: 2px dashed var(--line-d); border-radius: 10px; background: #fff; text-align: center; }
+  #empty .e-ico { font-size: 30px; margin-bottom: 8px; opacity: .8; }
+  #empty b { color: var(--ink); }
+  #empty small { display: block; margin-top: 6px; font-size: 11px; color: var(--gray); }
+
+  /* 拖拽投放提示（精致：柔和光晕 + 胶囊提示 + 插入位置指示线） */
+  #items, #empty { position: relative; }
+  .drop-hint {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    pointer-events: none; opacity: 0; transition: opacity .18s ease; z-index: 5;
+    background: radial-gradient(ellipse 60% 60% at 50% 45%, rgba(47,111,216,.05), transparent 70%);
+  }
+  .drop-hint.on { opacity: 1; }
+  .drop-hint .pill {
+    background: rgba(255,255,255,.92); border: 1px solid rgba(47,111,216,.30);
+    color: var(--blue); font-size: 12px; padding: 7px 16px; border-radius: 999px;
+    box-shadow: 0 6px 20px rgba(47,111,216,.14); letter-spacing: 1px;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .drop-hint .pill::before { content: '+'; font-size: 15px; color: var(--blue); }
+  .drop-line {
+    position: absolute; left: 6px; right: 6px; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, transparent, var(--blue), transparent);
+    opacity: 0; pointer-events: none; z-index: 4; transition: top .06s ease-out;
+  }
+  #items.armed .drop-hint { opacity: 1; }
+  #items.hover .drop-hint { opacity: 0; }
+  #items.hover .drop-line { opacity: .9; }
+  #empty.armed .drop-hint { opacity: 1; }
+  #empty.hover .drop-hint { opacity: .5; }
+
+  .add-item { margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; color: var(--gray); font-size: 13px; cursor: pointer; border: 1px dashed var(--line-d); padding: 10px 18px; border-radius: 8px; }
+  .add-item:hover { color: var(--ink); border-color: var(--ink); }
+  .no-stream { text-align: center; color: var(--gray); padding: 30px; border: 2px dashed var(--line-d); border-radius: 10px; background: #fff; }
+  .busy { opacity: .5; pointer-events: none; }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="topnav">
+    <div class="inner">
+      <div class="brand">
+        <span class="sw"><i style="background:#000"></i><i style="background:#E00000"></i><i style="background:#FCD000"></i><i style="background:#29CC14"></i></span>
+        <b>花生片 Penaup</b>
+      </div>
+      <nav class="nav">
+        <a href="dashboard.html"><span class="ico ico-dash"></span>仪表盘</a>
+        <a href="devices.html"><span class="ico ico-dev"></span>设备管理</a>
+        <a href="templates.html"><span class="ico ico-tpl"></span>模板库</a>
+        <a class="on" href="streams.html"><span class="ico ico-stream"></span>轮播流</a>
+        <a href="albums.html"><span class="ico ico-album"></span>相册</a>
+        <a href="ai.html"><span class="ico ico-ai"></span>AI 创作</a>
+        <a href="settings.html"><span class="ico ico-set"></span>设置</a>
+      </nav>
+      <div class="top-right">
+        <a class="gh" href="https://github.com/poboll" target="_blank" rel="noopener" title="GitHub 仓库"><svg viewBox="0 0 16 16" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
+        <span class="status"><span class="dot dot-pulse"></span>连接中…</span>
+        <div class="avatar">管</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>轮播流</h1>
+        <div class="sub">把模板卡片拖进播放列表，拼一条属于你的轮播流 · 相对循环按间隔循环 · 定点按时间播放</div>
+      </div>
+      <div class="right">
+        <button class="btn" id="saveOrderBtn" onclick="saveOrder()" disabled><span class="ico ico-check ico-sm"></span> 保存顺序</button>
+        <button class="btn btn-primary" onclick="openCreate()">+ 新建轮播流</button>
+      </div>
+    </div>
+
+    <div class="section-title"><h2>轮播流列表</h2><span class="more" id="streamMeta">—</span></div>
+    <div class="stream-cards" id="streamCards"></div>
+
+    <div id="editorWrap">
+      <div class="section-title"><h2>编 排</h2>
+        <span class="more">轮播方式：</span>
+        <span class="mode-switch" id="modeSwitch">
+          <span data-mode="server_push" onclick="setMode('server_push')">服务端主动推送</span>
+          <span data-mode="device_pull" onclick="setMode('device_pull')">设备主动获取</span>
+        </span>
+      </div>
+      <div class="mode-desc" style="margin-bottom:14px" id="modeDesc"></div>
+
+      <!-- 模板卡片托盘：拖入下方即创建条目 -->
+      <div class="card card-pad tray-card">
+        <div class="tray-head">
+          <b><span class="ico ico-tpl ico-sm" style="vertical-align:-2px"></span> 模板卡片</b>
+          <span class="hint">按住卡片拖到下方播放列表，松手即加入 · 也可拖动现有条目调整顺序 · 相对循环条目在上，定点条目按时间排在下</span>
+        </div>
+        <div class="tray" id="tray"></div>
+      </div>
+
+      <!-- 播放列表（即时间轴：相对循环在上 · 定点播放在下，均可拖拽排序） -->
+      <div class="items" id="items">
+        <div class="drop-hint"><span class="pill">松开加入播放列表</span></div>
+        <div class="drop-line"></div>
+      </div>
+      <div class="empty" id="empty" style="display:none">
+        <div class="drop-hint"><span class="pill">松开加入播放列表</span></div>
+        <div>
+          <div class="e-ico"><span class="ico ico-plus ico-xl" style="color:var(--gray)"></span></div>
+          <div>把<b>模板卡片</b>拖到这里，拼一条轮播流</div>
+          <small>或者点击下方按钮随机添加一条</small>
+        </div>
+      </div>
+      <div class="add-item" id="addRandom" onclick="addRandom()"><span class="ico ico-plus ico-sm"></span> 从模板库随机添加一条</div>
+    </div>
+
+    <div class="foot-note">
+      <span>编辑立即保存 · 排序完成后点击「保存顺序」提交</span>
+      <span>相对循环条目在上 · 定点条目按时间在下</span>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="inner">
+      <div class="f-about">
+        <div class="f-brand"><span class="sw"><i style="background:#1a1b18"></i><i style="background:#c95849"></i><i style="background:#d4ad31"></i><i style="background:#6f936e"></i><i style="background:#4d75b6"></i></span><b>花生片 Penaup</b></div>
+        <p>花生片 Penaup 的局域网运行时：设备心跳、film 媒体、状态事件与轻量指令桥。</p>
+      </div>
+      <div class="f-col">
+        <h4>链接</h4>
+        <a href="https://github.com/poboll" target="_blank" rel="noopener">GitHub 仓库</a>
+        <a href="/docs" target="_blank">后端 API 文档</a>
+      </div>
+      <div class="f-col">
+        <h4>技术栈</h4>
+        <span>ESP32-S3 + 彩色电子纸</span>
+        <span>Node.js 24 + Fastify + SQLite</span>
+        <span>微信小程序 / Web 工具</span>
+      </div>
+    </div>
+    <div class="f-bottom">© 2026 poboll · Poboll Non-Commercial License · 禁止商业使用</div>
+  </footer>
+</div>
+
+<!-- ===== 新建轮播流模态框 ===== -->
+<div class="modal-mask" id="modal-create">
+  <div class="modal">
+    <div class="m-head"><b>新建轮播流</b><span class="x" onclick="closeModal('create')"><span class="ico ico-close"></span></span></div>
+    <div class="m-body">
+      <div class="field"><label>轮播流名称</label><input class="input" id="stName" placeholder="例如：客厅轮播 / 厨房屏"></div>
+      <div class="field">
+        <label>轮播方式</label>
+        <div class="mode-switch" id="createMode" style="width:100%;justify-content:center">
+          <span data-mode="server_push" class="on" onclick="pickCreateMode(this,'server_push')">服务端主动推送</span>
+          <span data-mode="device_pull" onclick="pickCreateMode(this,'device_pull')">设备主动获取</span>
+        </div>
+        <div class="mode-desc" id="createModeDesc" style="margin-top:10px"><b>服务端主动推送</b>：后端定时渲染，设备心跳时立即下载。适合 24h 常开设备。</div>
+      </div>
+      <div class="field" style="margin-top:14px">
+        <label class="row-switch" style="border:none;padding:0">
+          <span>创建后立即启用</span>
+          <label class="switch"><input type="checkbox" id="stEnabled" checked><span class="sl"></span></label>
+        </label>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button class="btn" onclick="closeModal('create')">取消</button>
+      <button class="btn btn-primary" onclick="doCreate()">创建 <span class="ico ico-arrow-r ico-sm"></span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 指定播放设备模态框 ===== -->
+<div class="modal-mask" id="modal-bind">
+  <div class="modal">
+    <div class="m-head"><b id="bindTitle">指定播放设备</b><span class="x" onclick="closeModal('bind')"><span class="ico ico-close"></span></span></div>
+    <div class="m-body">
+      <div class="desc" style="margin-bottom:10px;font-size:12px;color:var(--gray);line-height:1.7">
+        勾选播放该轮播流的设备，未勾选的设备不受影响。若某设备之前绑定此流、本次取消勾选，将回退到全局第一个启用流。</div>
+      <div id="bindList"></div>
+    </div>
+    <div class="m-foot">
+      <button class="btn" onclick="closeModal('bind')">取消</button>
+      <button class="btn btn-primary" onclick="doBind()">保存 <span class="ico ico-arrow-r ico-sm"></span></button>
+    </div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/common.js"></script>
+<script>
+  FH.guard();
+  FH.setupNavRefresh();
+  FH.refreshStatus();
+
+  const MODE_CN = { server_push: '服务端主动推送', device_pull: '设备主动获取' };
+  const MODE_DESC = {
+    server_push: '<b><span class="ico ico-push ico-sm" style="vertical-align:-2px"></span> 服务端主动推送</b>：后端定时渲染 → 设备心跳响应携带 download_film 指令 → 设备立即下载。适合 24h 常开设备。',
+    device_pull: '<b><span class="ico ico-download ico-sm" style="vertical-align:-2px"></span> 设备主动获取</b>：设备定时休眠唤醒 → 主动拉取 → 每次拉取后自动推进下一条。适合省电场景。',
+  };
+
+  let streams = [];
+  let templates = [];
+  let devices = [];     // 设备列表（播放设备绑定用）
+  let bindStreamId = null; // 指定设备弹窗对应的流 id
+  let cur = null;       // 当前选中的轮播流
+  let curItems = [];    // 当前条目
+  let dirtyOrder = false;
+
+  function openModal(name) { document.getElementById('modal-' + name).classList.add('show'); }
+  function closeModal(name) { document.getElementById('modal-' + name).classList.remove('show'); }
+  function openCreate() {
+    document.getElementById('stName').value = '';
+    document.getElementById('stEnabled').checked = true;
+    document.querySelectorAll('#createMode span').forEach((x, i) => x.classList.toggle('on', i === 0));
+    document.getElementById('createModeDesc').innerHTML = MODE_DESC.server_push;
+    openModal('create');
+  }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  }
+
+  /* ===== 轮播流列表 ===== */
+  function renderStreams() {
+    const box = document.getElementById('streamCards');
+    box.innerHTML = streams.map(s => {
+      const n = s.items.length;
+      const bound = devices.filter(d => d.play_stream_id === s.id).length;
+      const tag = s.enabled
+        ? '<span class="tag green"><span class="dot dot-pulse" style="background:var(--green)"></span> 运行中</span>'
+        : '<span class="tag">‖ 已暂停</span>';
+      return '<div class="sc' + (cur && cur.id === s.id ? ' on' : '') + '" onclick="selectStream(' + s.id + ')">' +
+        '<span class="x" title="删除轮播流" onclick="event.stopPropagation();delStream(' + s.id + ')"><span class="ico ico-trash ico-sm"></span></span>' +
+        '<div class="sn"><span class="row">' + esc(s.name) + ' ' + tag + '</span></div>' +
+        '<div class="sm">' + MODE_CN[s.mode] + ' · ' + n + ' 条条目</div>' +
+        '<div class="sf"><span>' + n + ' 条</span><span class="mini-track">' + miniTrack(s.items) + '</span></div>' +
+        '<div class="sbind"><span>播放设备 <b>' + bound + '</b> 台</span>' +
+          '<button class="btn btn-sm" onclick="event.stopPropagation();openBind(' + s.id + ')"><span class="ico ico-dev ico-sm"></span> 指定设备</button></div>' +
+        '</div>';
+    }).join('') +
+      '<div class="sc add" onclick="openCreate()"><div><div style="font-size:26px">+</div><div style="font-size:12px;margin-top:4px">新建轮播流</div></div></div>';
+    document.getElementById('streamMeta').textContent =
+      '共 ' + streams.length + ' 条 · 运行中 ' + streams.filter(s => s.enabled).length;
+  }
+
+  function miniTrack(items) {
+    if (!items.length) return '<i style="width:100%;opacity:.12"></i>';
+    return items.map(() => '<i style="width:' + (100 / items.length) + '%"></i>').join('');
+  }
+
+  function pickCreateMode(el, m) {
+    document.querySelectorAll('#createMode span').forEach(x => x.classList.remove('on'));
+    el.classList.add('on');
+    document.getElementById('createModeDesc').innerHTML = MODE_DESC[m];
+  }
+
+  async function doCreate() {
+    const name = document.getElementById('stName').value.trim();
+    if (!name) { FH.toast('请填写轮播流名称', 'err'); return; }
+    const mode = (document.querySelector('#createMode span.on') || {}).dataset.mode || 'device_pull';
+    const enabled = document.getElementById('stEnabled').checked;
+    try {
+      const s = await API.post('/streams', { name, mode, enabled });
+      closeModal('create');
+      document.getElementById('stName').value = '';
+      FH.toast('轮播流已创建', 'ok');
+      await loadStreams();
+      selectStream(s.id);
+    } catch (e) { FH.toast(e.message, 'err'); }
+  }
+
+  async function delStream(id) {
+    const s = streams.find(x => x.id === id);
+    if (!s) return;
+    const ok = await FH.confirmBox('确定删除轮播流「' + s.name + '」？其全部条目将一并删除。');
+    if (!ok) return;
+    try {
+      await API.del('/streams/' + id);
+      FH.toast('轮播流已删除', 'ok');
+      if (cur && cur.id === id) cur = null;
+      await loadStreams();
+      renderEditor();
+    } catch (e) { FH.toast(e.message, 'err'); }
+  }
+
+  /* ===== 指定播放设备 ===== */
+  function openBind(id) {
+    bindStreamId = id;
+    const s = streams.find(x => x.id === id);
+    document.getElementById('bindTitle').textContent = '指定播放设备 · ' + (s ? s.name : '');
+    const list = document.getElementById('bindList');
+    if (!devices.length) {
+      list.innerHTML = '<div style="padding:24px 0;text-align:center;color:var(--gray);font-size:12px">暂无设备，设备首次心跳后自动注册。</div>';
+      openModal('bind');
+      return;
+    }
+    list.innerHTML = devices.map(d =>
+      '<label class="bind-row"><input type="checkbox" class="bind-cb" data-id="' + d.id + '"' +
+        (d.play_stream_id === id ? ' checked' : '') + '>' +
+        '<span class="bind-nm">' + esc(d.name || '未命名设备') + '</span>' +
+        '<span class="bind-id">' + esc(d.device_id || '') + '</span>' +
+        '<span class="bind-st' + (d.online ? ' on' : '') + '">' + (d.online ? '● 在线' : '○ 离线') + '</span>' +
+      '</label>'
+    ).join('');
+    openModal('bind');
+  }
+
+  async function doBind() {
+    const ids = Array.from(document.querySelectorAll('#bindList .bind-cb:checked'))
+      .map(c => parseInt(c.dataset.id, 10));
+    try {
+      const res = await API.post('/streams/' + bindStreamId + '/devices', { device_ids: ids });
+      closeModal('bind');
+      devices = await API.get('/devices'); // 刷新绑定状态
+      renderStreams();
+      FH.toast(res.msg || '已保存', 'ok');
+    } catch (e) { FH.toast(e.message, 'err'); }
+  }
+
+  async function setMode(mode) {
+    if (!cur || cur.mode === mode) return;
+    try {
+      await API.put('/streams/' + cur.id, { mode });
+      cur.mode = mode;
+      renderMode();
+      FH.toast('已切换为 ' + MODE_CN[mode], 'ok');
+    } catch (e) { FH.toast(e.message, 'err'); }
+  }
+
+  function renderMode() {
+    document.querySelectorAll('#modeSwitch span').forEach(x =>
+      x.classList.toggle('on', x.dataset.mode === (cur ? cur.mode : '')));
+    document.getElementById('modeDesc').innerHTML = cur ? MODE_DESC[cur.mode] : '';
+  }
+
+  /* ===== 模板托盘 ===== */
+  function renderTray() {
+    const tray = document.getElementById('tray');
+    if (!templates.length) {
+      tray.innerHTML = '<span style="font-size:12px;color:var(--gray)">暂无模板，请先到模板库创建。</span>';
+      return;
+    }
+    tray.innerHTML = templates.map(t => {
+      const thumb = t.thumb_url
+        ? '<img src="' + t.thumb_url + '" alt="" onerror="this.outerHTML=\'<div class=no-thumb>无预览</div>\'">'
+        : '<div class="no-thumb">' + esc(t.name) + '</div>';
+      return '<div class="tpl-card" draggable="true" data-id="' + t.id + '" title="' + esc(t.name) + '">' +
+        '<div class="tc-frame">' + thumb + '</div>' +
+        '<div class="tc-name">' + esc(t.name) + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  /* ===== 编辑器：播放列表（即时间轴） ===== */
+  async function renderEditor() {
+    const itemsEl = document.getElementById('items');
+    const emptyEl = document.getElementById('empty');
+    const saveBtn = document.getElementById('saveOrderBtn');
+
+    if (!cur) {
+      itemsEl.style.display = 'none';
+      emptyEl.style.display = 'none';
+      saveBtn.disabled = true;
+      renderMode();
+      return;
+    }
+
+    renderMode();
+    saveBtn.disabled = !dirtyOrder;
+
+    // 播放列表：相对循环条目在上（保持添加顺序），定点条目在下（按时间排序）
+    curItems = (await API.get('/streams/' + cur.id)).items.slice();
+    if (!curItems.length) {
+      itemsEl.style.display = 'none';
+      emptyEl.style.display = 'grid';
+      return;
+    }
+    const relItems = curItems.filter(it => it.schedule_type !== 'absolute');
+    const absItems = curItems.filter(it => it.schedule_type === 'absolute')
+      .sort((a, b) => String(a.start_at || '').localeCompare(String(b.start_at || '')));
+
+    itemsEl.style.display = 'flex';
+    emptyEl.style.display = 'none';
+    let html = '';
+    if (relItems.length) {
+      html += '<div class="group-bar"><b>相对循环</b><span class="n">' + relItems.length + '</span><span>按列表顺序循环 · 间隔可逐条设置</span></div>';
+      html += relItems.map((it, i) => itemHTML(it, i, 'rel')).join('');
+    }
+    if (absItems.length) {
+      html += '<div class="group-bar"><b>定点播放</b><span class="n">' + absItems.length + '</span><span>按当日时间顺序播放</span></div>';
+      html += absItems.map((it, i) => itemHTML(it, i, 'abs')).join('');
+    }
+    // innerHTML 会清空提示元素，重新挂载（指示线跟随列表重排）
+    itemsEl.innerHTML = html +
+      '<div class="drop-hint"><span class="pill">松开加入播放列表</span></div>' +
+      '<div class="drop-line"></div>';
+    ensureThumbs();
+  }
+
+  /* 相对间隔快捷档位（秒） */
+  const REL_PRESETS = [
+    [30, '30 秒'], [60, '1 分钟'], [120, '2 分钟'], [300, '5 分钟'],
+    [600, '10 分钟'], [1800, '30 分钟'], [3600, '1 小时'], [7200, '2 小时'],
+  ];
+
+  function relPresetOpts(sec) {
+    const s = sec || 30;
+    let opts = REL_PRESETS.map(p => '<option value="' + p[0] + '"' + (p[0] === s ? ' selected' : '') + '>' + p[1] + '</option>').join('');
+    if (!REL_PRESETS.some(p => p[0] === s)) {
+      opts = '<option value="' + s + '" selected>' + fmtDur(s) + '</option>' + opts;
+    }
+    return opts;
+  }
+
+  function fmtDur(sec) {
+    sec = sec || 0;
+    if (sec % 3600 === 0) return (sec / 3600) + ' 小时';
+    if (sec % 60 === 0) return (sec / 60) + ' 分钟';
+    return sec + ' 秒';
+  }
+
+  /* ===== 条目缩略图：优先公开缓存，缺失时用鉴权请求渲染一次（生成后端缩略图） ===== */
+  const _thumbObj = {};      // template_id -> objectURL（本页会话内复用）
+  const _thumbLoading = {};  // template_id -> 是否加载中
+
+  function thumbTxt(tplId) {
+    const t = templates.find(x => x.id === tplId);
+    const nm = (t && t.name) || '模板';
+    return '<span class="ph-txt">' + esc(nm.charAt(0)) + '</span>';
+  }
+  function thumbPh(tplId) {
+    return '<span class="no-thumb">' + thumbTxt(tplId) + '</span>';
+  }
+  function thumbHtml(it) {
+    const t = templates.find(x => x.id === it.template_id);
+    const url = (t && t.thumb_url) || '';
+    if (url) {
+      return '<img src="' + url + '" alt="" loading="lazy" onerror="this.outerHTML=thumbPh(' + it.template_id + ')">';
+    }
+    if (_thumbObj[it.template_id]) {
+      return '<img src="' + _thumbObj[it.template_id] + '" alt="">';
+    }
+    return '<span class="no-thumb" data-thumb="' + it.template_id + '">' + thumbTxt(it.template_id) + '</span>';
+  }
+  function ensureThumbs() {
+    const ids = [...new Set([...document.querySelectorAll('.no-thumb[data-thumb]')].map(el => parseInt(el.dataset.thumb, 10)))];
+    ids.forEach(id => {
+      if (_thumbObj[id] || _thumbLoading[id]) return;
+      _thumbLoading[id] = true;
+      FH.authImg('/api/v1/admin/templates/' + id + '/preview?device_type=basic')
+        .then(url => {
+          _thumbObj[id] = url;
+          document.querySelectorAll('.no-thumb[data-thumb="' + id + '"]').forEach(el => {
+            const img = document.createElement('img');
+            img.src = url; img.alt = ''; img.loading = 'lazy';
+            el.replaceWith(img);
+          });
+        })
+        .catch(() => { /* 保持首字占位 */ })
+        .finally(() => { _thumbLoading[id] = false; });
+    });
+  }
+
+  function itemHTML(it, i, group) {
+    const rel = group === 'rel';
+    const timeCtrl = rel
+      ? '<span class="seg rel" onclick="toggleType(' + it.id + ')">相对 · 循环</span><select data-item="' + it.id + '" onchange="updDuration(this)">' + relPresetOpts(it.duration_sec) + '</select>'
+      : '<span class="seg abs" onclick="toggleType(' + it.id + ')">定点</span><input type="time" value="' + fmtHHMM(it.start_at) + '" data-item="' + it.id + '" onchange="updStartAt(this)">';
+    return '<div class="item" draggable="true" data-id="' + it.id + '" style="animation-delay:' + (i * 0.04) + 's">' +
+      '<span class="drag">≡</span>' +
+      '<div class="th">' + thumbHtml(it) + '</div>' +
+      '<div class="info"><div class="nm">' + esc(it.template_name) + '</div><div class="tp">' + (rel ? '循环播放' : '每天 ' + fmtHHMM(it.start_at) + ' 定点') + ' · ' + (it.enabled ? '启用' : '已停用') + '</div></div>' +
+      '<div class="time">' + timeCtrl + '</div>' +
+      '<label class="en-switch"><input type="checkbox" ' + (it.enabled ? 'checked' : '') + ' onchange="updEnabled(' + it.id + ', this.checked)">启用</label>' +
+      '<span class="del" onclick="delItem(' + it.id + ')"><span class="ico ico-close ico-sm"></span></span>' +
+      '</div>';
+  }
+
+  function fmtHHMM(v) {
+    if (!v) return '08:00';
+    const d = new Date(v);
+    const p = n => (n < 10 ? '0' + n : n);
+    return p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+
+  /* ===== 条目操作 ===== */
+  async function addItemByTpl(tplId) {
+    if (!cur) { FH.toast('请先创建或选择一条轮播流', 'err'); return; }
+    const tpl = templates.find(t => t.id === tplId);
+    try {
+      const it = await API.post('/streams/' + cur.id + '/items', {
+        template_id: tplId,
+        schedule_type: 'relative',
+        duration_sec: 30,
+      });
+      FH.toast('已加入：' + (tpl ? tpl.name : '模板'), 'ok');
+      dirtyOrder = true;
+      await renderEditor();
+      // 高亮新条目
+      const node = document.querySelector('.item[data-id="' + it.id + '"]');
+      if (node) { node.classList.add('on', 'wobble-in'); setTimeout(() => node.classList.remove('wobble-in'), 600); }
+    } catch (e) { FH.toast(e.message, 'err'); }
+  }
+
+  async function toggleType(itemId) {
+    const it = curItems.find(x => x.id === itemId);
+    if (!it) return;
+    const next = it.schedule_type === 'absolute' ? 'relative' : 'absolute';
+    const patch = next === 'absolute'
+      ? { schedule_type: 'absolute', start_at: '2000-01-01T08:00:00' }
+      : { schedule_type: 'relative', duration_sec: 30 };
+    try {
+      await API.put('/streams/' + cur.id + '/items/' + itemId, patch);
+      await renderEditor();
+    } catch (e) { FH.toast(e.message, 'err'); }
+  }
+
+  async function updDuration(select) {
+    const itemId = parseInt(select.dataset.item, 10);
+    const v = Math.max(1, Math.min(86400, parseInt(select.value, 10) || 30));
+    try {
+      await API.put('/streams/' + cur.id + '/items/' + itemId, { duration_sec: v });
+    } catch (e) { FH.toast(e.message, 'err'); }
+  }
+
+  async function updStartAt(input) {
+    const itemId = parseInt(input.dataset.item, 10);
+    const m = (input.value || '').match(/^(\d{1,2}):(\d{2})$/);
+    if (!m) { FH.toast('时间格式应为 HH:MM', 'err'); input.value = fmtHHMM(curItems.find(x => x.id === itemId).start_at); return; }
+    const h = Math.min(23, parseInt(m[1], 10));
+    const mi = Math.min(59, parseInt(m[2], 10));
+    const start = '2000-01-01T' + ('0' + h).slice(-2) + ':' + ('0' + mi).slice(-2) + ':00';
+    try {
+      await API.put('/streams/' + cur.id + '/items/' + itemId, { start_at: start });
+      await renderEditor();
+    } catch (e) { FH.toast(e.message, 'err'); }
+  }
+
+  async function updEnabled(itemId, enabled) {
+    try {
+      await API.put('/streams/' + cur.id + '/items/' + itemId, { enabled });
+    } catch (e) { FH.toast(e.message, 'err'); }
+  }
+
+  async function delItem(itemId) {
+    try {
+      await API.del('/streams/' + cur.id + '/items/' + itemId);
+      dirtyOrder = true;
+      await renderEditor();
+    } catch (e) { FH.toast(e.message, 'err'); }
+  }
+
+  async function saveOrder() {
+    if (!cur || !dirtyOrder) return;
+    const ids = [...document.querySelectorAll('#items .item')].map(n => parseInt(n.dataset.id, 10));
+    try {
+      await API.post('/streams/' + cur.id + '/items/sort', { item_ids: ids });
+      dirtyOrder = false;
+      document.getElementById('saveOrderBtn').disabled = true;
+      FH.toast('顺序已保存', 'ok');
+      await renderEditor();
+    } catch (e) { FH.toast(e.message, 'err'); }
+  }
+
+  async function addRandom() {
+    if (!cur) { FH.toast('请先创建或选择一条轮播流', 'err'); return; }
+    if (!templates.length) { FH.toast('模板库为空', 'err'); return; }
+    const t = templates[Math.floor(Math.random() * templates.length)];
+    await addItemByTpl(t.id);
+  }
+
+  /* ===== 拖拽 ===== */
+  const itemsEl = document.getElementById('items');
+  const emptyEl = document.getElementById('empty');
+  const trayEl = document.getElementById('tray');
+  let dragTplId = null;
+  let dragItem = null;
+
+  function insertIndexAt(clientY) {
+    const items = [...itemsEl.querySelectorAll('.item')];
+    for (let i = 0; i < items.length; i++) {
+      const r = items[i].getBoundingClientRect();
+      if (clientY < r.top + r.height / 2) return i;
+    }
+    return items.length;
+  }
+
+  /* 拖动时把插入指示线定位到对应条目空隙 */
+  function moveDropLine(clientY) {
+    const line = itemsEl.querySelector('.drop-line');
+    if (!line) return;
+    const items = [...itemsEl.querySelectorAll('.item')];
+    const box = itemsEl.getBoundingClientRect();
+    let top;
+    if (!items.length) {
+      top = 16;
+    } else {
+      const idx = insertIndexAt(clientY);
+      if (idx >= items.length) {
+        const last = items[items.length - 1].getBoundingClientRect();
+        top = last.bottom - box.top;
+      } else {
+        const ref = items[idx].getBoundingClientRect();
+        top = ref.top - box.top;
+      }
+    }
+    line.style.top = top + 'px';
+  }
+
+  /* 模板卡片 -> 拖拽源 */
+  trayEl.addEventListener('dragstart', e => {
+    const card = e.target.closest('.tpl-card');
+    if (!card) return;
+    dragTplId = parseInt(card.dataset.id, 10);
+    e.dataTransfer.effectAllowed = 'copy';
+    e.dataTransfer.setData('text/plain', String(dragTplId));
+    card.classList.add('dragging');
+    [itemsEl, emptyEl].forEach(el => el.classList.add('armed'));
+  });
+  trayEl.addEventListener('dragend', e => {
+    const card = e.target.closest('.tpl-card');
+    if (card) card.classList.remove('dragging');
+    [itemsEl, emptyEl].forEach(el => el.classList.remove('armed', 'hover'));
+    dragTplId = null;
+  });
+
+  /* 播放列表：投放模板 + 拖拽排序 */
+  itemsEl.addEventListener('dragover', e => {
+    e.preventDefault();
+    itemsEl.classList.add('hover');
+    itemsEl.classList.remove('armed'); // 进入列表后隐藏胶囊提示，改为插入线
+    e.dataTransfer.dropEffect = dragTplId ? 'copy' : 'move';
+    moveDropLine(e.clientY);
+  });
+  itemsEl.addEventListener('dragleave', () => {
+    itemsEl.classList.remove('hover');
+    itemsEl.classList.add('armed'); // 离开列表恢复胶囊提示
+  });
+  itemsEl.addEventListener('drop', e => {
+    e.preventDefault();
+    itemsEl.classList.remove('hover', 'armed');
+    if (dragTplId) {
+      addItemByTpl(dragTplId);
+    } else if (dragItem) {
+      const idx = insertIndexAt(e.clientY);
+      const items = [...itemsEl.querySelectorAll('.item')];
+      const ref = items[idx] && items[idx] !== dragItem ? items[idx] : dragItem.nextSibling;
+      itemsEl.insertBefore(dragItem, ref);
+      dragItem = null;
+      dirtyOrder = true;
+      document.getElementById('saveOrderBtn').disabled = false;
+    }
+  });
+
+  emptyEl.addEventListener('dragover', e => { e.preventDefault(); emptyEl.classList.add('hover'); });
+  emptyEl.addEventListener('dragleave', () => emptyEl.classList.remove('hover'));
+  emptyEl.addEventListener('drop', e => {
+    e.preventDefault();
+    emptyEl.classList.remove('hover', 'armed');
+    if (dragTplId) addItemByTpl(dragTplId);
+  });
+
+  /* 列表内条目拖拽 */
+  itemsEl.addEventListener('dragstart', e => {
+    const it = e.target.closest('.item');
+    if (!it) return;
+    dragItem = it;
+    it.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  itemsEl.addEventListener('dragend', () => {
+    if (dragItem) dragItem.classList.remove('dragging');
+    dragItem = null;
+    [itemsEl, emptyEl].forEach(el => el.classList.remove('armed', 'hover'));
+  });
+
+  /* ===== 加载 ===== */
+  async function selectStream(id) {
+    cur = streams.find(s => s.id === id) || null;
+    dirtyOrder = false;
+    renderStreams();
+    await renderEditor();
+  }
+
+  async function loadStreams() {
+    streams = await API.get('/streams');
+    if (!cur && streams.length) cur = streams[0];
+    renderStreams();
+  }
+
+  async function init() {
+    try {
+      await Promise.all([
+        loadStreams(),
+        API.get('/templates').then(t => { templates = t; renderTray(); }),
+        API.get('/devices').then(d => { devices = d; }),
+      ]);
+      renderStreams(); // devices 就绪后重绘（卡片显示播放设备数）
+      await renderEditor();
+    } catch (e) {
+      FH.toast(e.message, 'err');
+    }
+  }
+  init();
+  setInterval(() => { if (cur) renderEditor(); }, 60000); // 每分钟刷新（定点条目到点状态/排序）
+</script>
+</body>
+</html>

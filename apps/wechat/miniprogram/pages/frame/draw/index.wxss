@@ -1,0 +1,19 @@
+@import "../../../styles/penaup-pages.wxss";
+
+.canvas-container { margin-top: 0; }
+.toolbar { width: 100%; max-width: 668rpx; margin: 0 auto 16rpx; }
+.tool-row { display: flex; gap: 10rpx; margin-bottom: 12rpx; }
+.tool-btn { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 66rpx; color: #74766d; background: #fbfaf6; border: 2rpx solid #bbbcb3; border-radius: 5rpx; }
+.tool-btn.active { color: #f7f7f2; background: #1a1b18; border-color: #1a1b18; }
+.tool-icon { font-size: 28rpx; }
+.size-row { display: flex; align-items: center; gap: 12rpx; min-height: 68rpx; padding: 0 14rpx; background: #fbfaf6; border: 2rpx solid #d8d8cf; }
+.size-label { color: #74766d; font-size: 22rpx; }
+.size-slider { flex: 1; }
+.size-value { width: 48rpx; color: #4d75b6; font: 20rpx ui-monospace, SFMono-Regular, Menlo, monospace; text-align: right; }
+.color-bar { display: flex; align-items: center; gap: 18rpx; width: 100%; max-width: 668rpx; margin: 0 auto 18rpx; padding: 14rpx 18rpx; overflow-x: auto; background: #fbfaf6; border: 2rpx solid #d8d8cf; }
+.color-item { flex-shrink: 0; width: 44rpx; height: 44rpx; border: 2rpx solid transparent; border-radius: 50%; }
+.color-item.active { box-shadow: 0 0 0 4rpx #4d75b6; }
+.color-custom { display: flex; align-items: center; justify-content: center; color: #74766d; background: #e9e9e1 !important; border-color: #bbbcb3; }
+.custom-plus { font-size: 28rpx; }
+.button-row .btn-primary:first-child { background: #1a1b18; border-color: #1a1b18; }
+.button-row .btn-send { background: #4d75b6; border-color: #4d75b6; }

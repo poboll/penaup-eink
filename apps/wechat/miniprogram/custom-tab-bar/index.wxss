@@ -1,0 +1,42 @@
+/* Copyright (c) 2026 poboll */
+.tab-bar {
+  position: fixed;
+  left: 24rpx;
+  right: 24rpx;
+  bottom: 24rpx;
+  z-index: 99;
+  height: 116rpx;
+  display: flex;
+  align-items: stretch;
+  padding: 10rpx;
+  background: rgba(251, 250, 246, .96);
+  border: 2rpx solid #d8d8cf;
+  border-radius: 12rpx;
+  box-shadow: 0 16rpx 36rpx rgba(26, 27, 24, .14);
+  backdrop-filter: blur(14px);
+}
+.tab-item {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  color: #85867e;
+  transition: color .2s ease, transform .2s ease;
+}
+.tab-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 28rpx;
+  height: 4rpx;
+  background: transparent;
+}
+.tab-item.active { color: #1a1b18; }
+.tab-item.active::before { background: #4d75b6; }
+.tab-item:active { transform: translateY(2rpx); }
+.tab-icon { width: 38rpx; height: 38rpx; opacity: .58; }
+.tab-item.active .tab-icon { opacity: 1; }
+.tab-text { font-size: 21rpx; letter-spacing: 1rpx; }

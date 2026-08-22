@@ -1,23 +1,25 @@
 # AGENTS.md
 
-FrameFilm 项目 AI 开发指南。
+花生片 Penaup 项目 AI 开发指南。
 
 ## 项目身份
 
-开源彩色电子纸冰箱贴。ESP32-S3 + EPD + BLE/WiFi，手机传照片显示。
+彩色电子纸拍立得。ESP32-S3 + EPD + BLE/WiFi，手机拍照后把画面显影到电子纸上。
 
 - ESP-IDF v5.5.2 (C) · 微信小程序 (ES5) · Web 工具 (ES6)
-- GPL-3.0 · Git 中文 commit: `type(scope): 描述`
+- Poboll Non-Commercial License · 新代码版权归 `poboll` · Git 中文 commit: `type(scope): 描述`
+
+产品展示名统一使用 `花生片 Penaup`。`FrameFilm` 仅作为旧设备名、旧目录和协议兼容检索词保留；未经权利核对，不要把历史外包代码或第三方资产改写成 `poboll` 独占原创。
 
 ## 三机型（单固件）
 
-统一固件 `firmware/frame_film/`，通过 `sys_cfg.h` 机型宏 + 对应 `sdkconfig` 区分机型（三选一）：
+统一固件 `firmware/penaup/`，通过 `sys_cfg.h` 机型宏 + 对应 `sdkconfig` 区分机型（三选一）。`FRAMEFILM_*` 宏、旧 BLE 广播名和旧协议值是兼容层，新的产品文案不得继续使用旧品牌：
 
 | | 基础版 STD | Pro 版 | Max 版 |
 |---|---|---|---|
 | 机型宏 | `FRAMEFILM_STD` | `FRAMEFILM_PRO` | `FRAMEFILM_MAX` |
 | sdkconfig | `sdkconfig_std` | `sdkconfig_pro` | `sdkconfig_max` |
-| 屏幕 | E6 3.6" 600×400 (WFT) | E6 3.68" 792×528 (SE0368-C) | E6 7.09" 1600×1200 双面板 (GDEB0709E01) |
+| 屏幕 | E6 3.6" 600×400 (WFT) | E6 3.68" 792×528 (SE0368-C) | E6 7.09" 外形 1600×1200；固件 `.film` 1200×1600 双面板 (GDEB0709E01) |
 | EPD 驱动 | `hal_epd_360.c` | `hal_epd_368.c` | `hal_epd_709.c` |
 | 输入 | 旋转编码器 (GPIO6/4/5) | 三按键 (GPIO4/6/5) | 三按键 (GPIO12/14/13) |
 | Flash/PSRAM | 16MB / Octal SPI | 4MB / Quad SPI | 16MB / Octal SPI |
@@ -52,14 +54,14 @@ film_service → film_hal → film_sys → ESP-IDF
 
 | 内容 | C 固件 | 小程序 | Web |
 |------|--------|--------|-----|
-| BLE 命令常量 | `service_ble.h` | `ble-utils.js` | `frame.js` |
-| film 颜色编码 | `hal_epd.h` | `film-utils.js` | `convert.js` |
+| BLE 命令常量 | `service_ble.h` | `ble-utils.js` | `bluetooth.js` |
+| film 颜色编码 | `hal_epd.h` | `film-utils.js` + `film-core.js` | `packages/film-core` + `convert.js` |
 
 ### 关键常量
 
 - `BLE_CHUNK_SIZE = 192`（数据包大小）
 - `BLE_CMD_HEAD = 0x55`（帧头）
-- film 文件大小 = **32B 头 + (宽×高/2) 像素**（标准版 600×400 为 120032 字节）
+- film 文件大小 = **32B 头 + (宽×高/2) 像素**（STD 120032B / Pro 209120B / Max 960032B）
 - 6 色编码：黑 0x00 | 白 0x11 | 绿 0x66 | 蓝 0x55 | 红 0x33 | 黄 0x22
 - BLE 可用命令范围：`0x3E` 起
 
@@ -77,20 +79,20 @@ film_service → film_hal → film_sys → ESP-IDF
 
 | 要改什么 | 核心文件 |
 |---|---|
-| 机型配置 | `firmware/frame_film/components/film_sys/inc/sys_cfg.h` + `firmware/frame_film/sdkconfig_{std,pro,max}` |
-| BLE 协议 | `firmware/frame_film/components/film_service/inc/service_ble.h` |
-| EPD 驱动 | `firmware/frame_film/components/film_hal/src/hal_epd_{360,368,709}.c` |
-| film 播放 | `firmware/frame_film/components/film_service/src/service_film.c` |
-| 固件入口 | `firmware/frame_film/main/main.c` |
-| 小程序 BLE | `tools/wechart/miniprogram/utils/ble-utils.js` |
-| Web BLE | `tools/ForFilm/js/frame.js` |
+| 机型配置 | `firmware/penaup/components/film_sys/inc/sys_cfg.h` + `firmware/penaup/sdkconfig_{std,pro,max}` |
+| BLE 协议 | `firmware/penaup/components/film_service/inc/service_ble.h` |
+| EPD 驱动 | `firmware/penaup/components/film_hal/src/hal_epd_{360,368,709}.c` |
+| film 播放 | `firmware/penaup/components/film_service/src/service_film.c` |
+| 固件入口 | `firmware/penaup/main/main.c` |
+| 小程序 BLE | `apps/wechat/miniprogram/utils/ble-utils.js` |
+| Web BLE / 渲染 | `apps/web/js/bluetooth.js`、`frame.js`、`image-worker.js`（Worker 只复用同一 film 契约） |
 | 协议文档 | `docs/blecmd/blecmd_protocol.md` |
 
 ## 常见陷阱（不要做）
 
 1. **不要只在 service 层调 esp_wifi_init 等 ESP-IDF driver** — 必须通过 HAL
 2. **不要只改一个机型的宏分支** — 机型差异代码需覆盖 `FRAMEFILM_STD/PRO/MAX`（EPD 驱动、输入设备、SD 等按宏隔离）
-3. **不要改 BLE 命令值** — 值一旦定义就固定，新增命令从 `0x3E` 起
+3. **不要改 BLE 命令值** — 已占用值固定，新增命令从 `0x42` 起
 4. **不要假设字符串编码** — BLE 传输一律 ASCII + `\0` 结尾
 5. **不要忘记更新 blecmd_protocol.md** — 协议文档必须与实际实现一致
 6. **不要在 service 层直接操作 GPIO** — 所有硬件操作走 film_hal
@@ -111,10 +113,10 @@ film_service → film_hal → film_sys → ESP-IDF
 
 ## 任务模板
 
-### 新增 BLE 命令 (如 0x3E)
-1. `service_ble.h` 定义 `#define BLE_FILM_TRANS_CH_XXX 0x3E`
+### 新增 BLE 命令 (如 0x42)
+1. `service_ble.h` 定义 `#define BLE_FILM_TRANS_CH_XXX 0x42`
 2. `service_ble.c` 添加 case 处理
-3. `ble-utils.js` + `frame.js` 添加同名常量
+3. `ble-utils.js` + `bluetooth.js` 添加同名常量
 4. `blecmd_protocol.md` 更新
 
 ### 新增 service 子服务
@@ -126,7 +128,7 @@ film_service → film_hal → film_sys → ESP-IDF
 ## 构建命令
 
 ```bash
-cd firmware/frame_film
+cd firmware/penaup
 cp sdkconfig_std sdkconfig                 # 按机型选 sdkconfig_{std,pro,max}
 # 编辑 components/film_sys/inc/sys_cfg.h，置对应机型宏为 1（三选一）
 idf.py build flash monitor
@@ -137,5 +139,7 @@ idf.py build flash monitor
 - `docs/blecmd/blecmd_protocol.md` — BLE 协议完整规范
 - `docs/film/film.md` — film 文件格式
 - `docs/hardware/hardware_spec.md` — 硬件规格 + 启动流程
-- `docs/wifi/wifi_doc.md` — WiFi 功能说明（文档仍标注 Pro 版，待同步）
+- `docs/wifi/wifi_doc.md` — WiFi / HTTP 心跳与 Max 兼容说明
 - `docs/knowledge/` — AI 知识库（项目总览/架构/规范/命令速查）
+- `docs/api/transfer-state.md` — Web、小程序、Node 与 iOS/Live Activity 状态契约
+- `docs/legal/provenance.md` — 历史外包、GPL 与第三方资产权利边界

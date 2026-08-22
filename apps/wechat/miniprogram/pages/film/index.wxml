@@ -1,0 +1,87 @@
+<view class="container">
+  <!-- 上传图片 -->
+  <button class="btn-primary" bindtap="chooseImage">从相册选择图片</button>
+
+  <!-- 参数设置面板 -->
+  <view class="settings-section">
+    <view class="section-header">参数设置</view>
+    <view class="section-content">
+      <!-- 抖动算法选择 -->
+      <view class="setting-item">
+        <view class="setting-label">抖动算法</view>
+        <picker mode="selector" range="{{ditherTypeNames}}" value="{{ditherTypeIndex}}" bindchange="onDitherTypeChange">
+          <view class="picker-value">{{ditherTypeNames[ditherTypeIndex]}}</view>
+        </picker>
+      </view>
+
+      <!-- 抖动强度滑块（非自适应时显示） -->
+      <view class="slider-row" wx:if="{{showStrength}}">
+        <text class="slider-label">抖动强度</text>
+        <slider min="0" max="5" step="0.1" value="{{ditherStrength}}" bindchanging="onDitherStrengthChanging" bindchange="onDitherStrengthChange" activeColor="#4ECDC4" />
+        <text class="slider-value">{{ditherStrengthDisplay}}</text>
+      </view>
+
+      <!-- 对比度滑块 -->
+      <view class="slider-row">
+        <text class="slider-label">对比度</text>
+        <slider min="50" max="200" step="10" value="{{contrastInt}}" bindchanging="onContrastChanging" bindchange="onContrastChange" activeColor="#4ECDC4" />
+        <text class="slider-value">{{contrast}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮组 -->
+  <view class="btn-group">
+    <button class="btn-secondary {{ditherEnabled ? 'active' : ''}}" bindtap="toggleDither">
+      {{ditherEnabled ? '关闭抖动' : '开启抖动'}}
+    </button>
+    <button class="btn-secondary" bindtap="autoConfigure">自动配置</button>
+    <button class="btn-secondary" bindtap="rotateCanvas">旋转90°</button>
+    <button class="btn-secondary warning" bindtap="resetImage">重置</button>
+  </view>
+
+  <!-- Canvas 容器（宝丽来风格） -->
+  <view class="canvas-container">
+    <view class="canvas-wrap"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd">
+      <canvas type="2d" id="film-canvas" class="film-canvas"></canvas>
+    </view>
+  </view>
+
+  <view class="info-text">选择照片后自动转换并显示，双指缩放调整大小，拖动调整位置</view>
+
+  <!-- 文件名输入 -->
+  <view class="setting-item file-name-row">
+    <view class="setting-label">文件名</view>
+    <input class="file-name-input" value="{{fileName}}" bindinput="onFileNameInput" placeholder="output_xxxxxx.film" />
+  </view>
+
+  <!-- 下载与发送按钮 -->
+  <view class="button-row">
+    <button class="btn-primary" bindtap="downloadFilm" disabled="{{!hasImage}}">下载</button>
+    <button class="btn-primary btn-bluetooth" bindtap="sendToDevice" disabled="{{!isConnected}}">发送到设备</button>
+  </view>
+
+  <!-- 传输进度 -->
+  <view class="transfer-container" wx:if="{{showTransfer}}">
+    <view class="transfer-kicker">{{transferPhaseLabel}}</view>
+    <view class="transfer-title">{{transferTitle}}</view>
+    <view class="transfer-status">{{transferStatus}}</view>
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{transferProgress}}%"></view>
+    </view>
+    <view class="transfer-progress">{{transferProgress}}%</view>
+    <view class="transfer-actions" wx:if="{{transferCanRetry || transferCanClose}}">
+      <button wx:if="{{transferCanRetry}}" class="btn-primary transfer-retry" bindtap="retryTransfer">再试一次</button>
+      <button wx:if="{{transferCanClose}}" class="btn-secondary transfer-close" bindtap="closeTransfer">稍后处理</button>
+    </view>
+  </view>
+
+  <!-- 结果信息 -->
+  <view class="info-text" wx:if="{{resultText}}">{{resultText}}</view>
+
+  <!-- 底部占位，防止被 tabBar 遮挡 -->
+  <view class="tab-bar-spacer"></view>
+</view>

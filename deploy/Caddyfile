@@ -1,0 +1,12 @@
+{$PENAUP_DOMAIN} {
+    encode zstd gzip
+
+    @events path /api/v1/events/stream
+    header @events Cache-Control "no-cache, no-transform"
+    header @events X-Accel-Buffering "no"
+    reverse_proxy @events 127.0.0.1:8787 {
+        flush_interval -1
+    }
+
+    reverse_proxy 127.0.0.1:8787
+}

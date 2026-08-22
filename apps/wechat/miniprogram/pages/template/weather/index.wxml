@@ -1,0 +1,41 @@
+<view class="container">
+  <view class="tpl-toolbar">
+    <view class="tpl-btn">{{cityLabel}}</view>
+    <view class="tpl-btn" bindtap="useDemo">演示数据</view>
+  </view>
+
+  <view class="scheme-row">
+    <view class="scheme-pill {{schemeIndex === index ? 'active' : ''}}"
+          wx:for="{{schemes}}" wx:key="name" data-idx="{{index}}" bindtap="selectScheme">{{item.name}}</view>
+  </view>
+
+  <view class="canvas-container">
+    <view class="canvas-wrap">
+      <canvas type="2d" id="canvas-tpl" class="preview-canvas"></canvas>
+    </view>
+  </view>
+
+  <button class="btn-primary" bindtap="sendToDevice">发送到设备</button>
+
+  <view wx:if="{{showTransfer}}" class="transfer-overlay">
+    <view class="transfer-modal" catchtap="noop">
+      <view class="flight-area">
+        <view class="airplane {{transferOutcome === 'uncertain' ? 'airplane-uncertain' : ''}} {{transferProgress >= 100 ? 'airplane-done' : ''}}"></view>
+        <view class="flight-trail"></view>
+      </view>
+      <view class="transfer-kicker">{{transferPhaseLabel}}</view>
+      <view class="transfer-title">{{transferTitle}}</view>
+      <view class="transfer-percent">{{transferProgress}}%</view>
+      <view class="transfer-msg">{{transferStatus}}</view>
+      <view class="modal-progress-bar">
+        <view class="modal-progress-fill" style="width: {{transferProgress}}%"></view>
+      </view>
+      <view class="transfer-actions" wx:if="{{transferCanRetry || transferCanClose}}">
+        <button wx:if="{{transferCanRetry}}" class="btn-primary transfer-retry" bindtap="retryTransfer">再试一次</button>
+        <button wx:if="{{transferCanClose}}" class="btn-secondary transfer-close" bindtap="closeTransfer">稍后处理</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="tab-bar-spacer"></view>
+</view>

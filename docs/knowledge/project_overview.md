@@ -1,83 +1,45 @@
-# FrameFilm 项目总览
+# Penaup 项目总览
 
-> AI 开发辅助文档 — 提供项目全局视图，供 Codex / OpenCode / Trae 等工具自动引用。
+> 供 Codex、OpenCode 和维护者使用的全局地图。产品展示名是“花生片 Penaup”，历史目录和协议兼容名仍可能出现 FrameFilm。
 
-## 项目定位
+## 产品事实
 
-FrameFilm（帧影）是一款开源彩色电子纸冰箱贴，基于 ESP32-S3，通过 BLE 与手机通信显示照片。
+花生片是一台 ESP32-S3 彩色电子纸拍立得：手机选择或拍摄照片，端侧生成 `.film`，通过 BLE 直接传输；支持网络能力的设备可以通过 Wi-Fi 向轻量服务端拉取文件。电子纸的价值是低静态功耗、户外可读和画面能够长期保留。
 
-- **主控**: ESP32-S3
-- **固件框架**: ESP-IDF v5.5.2
-- **许可证**: GPL-3.0
-- **平台**: 嵌入式固件 + Web工具 + 微信小程序
+## 三个端
 
-## 两个版本
-
-| | 基础版 (frame_film) | Pro 版 (frame_film_pro) |
+| 端 | 技术 | 主要职责 |
 |---|---|---|
-| 固件目录 | `firmware/frame_film/` | `firmware/frame_film_pro/` |
-| 屏幕 | WFT 3.6" 600×400 | SE0368-C 3.68" 792×528 |
-| 交互 | 旋转编码器 | 三按键 |
-| WiFi | 不支持 | 支持 STA + HTTP 下载 |
-| Flash/PSRAM | 4MB / Quad SPI | 16MB / Octal SPI |
-| 电池 | 304040 | 244147 |
-| 磁吸 | 磁铁 | MagSafe |
+| 固件 | C / ESP-IDF 5.5.2 | EPD、输入、电池、SD、BLE、Wi-Fi、OTA |
+| 微信小程序 | ES5 JavaScript / WXML / WXSS | 手机相册、相机、模板、BLE 发送 |
+| Web 工具 | ES6 / HTML / CSS / Web Bluetooth | 桌面端预览、转换、设备管理、OTA |
 
-## 目录结构速览
+## 固件分层
 
-```
-FrameFilm/
-├── firmware/                    # 固件
-│   ├── frame_film/              #   基础版 (ESP-IDF)
-│   │   ├── main/main.c          #     入口
-│   │   └── components/
-│   │       ├── film_sys/        #       系统层 (日志/NVS/配置)
-│   │       ├── film_hal/        #       硬件抽象层 (EPD/电池/LED/SD/编码器)
-│   │       └── film_service/    #       服务层 (BLE/文件/OTA/WiFi/参数)
-│   └── frame_film_pro/          #   Pro 版 (结构相同)
-├── tools/                       # 客户端工具
-│   ├── wechart/miniprogram/     #   微信小程序 (BLE + WiFi配网)
-│   │   └── utils/
-│   │       ├── ble-utils.js     #     BLE 协议实现
-│   │       └── film-utils.js    #     film 文件生成
-│   └── ForFilm/                 #   Web 工具 (Web Bluetooth API)
-│       └── js/
-│           ├── bluetooth.js     #     Web BLE 封装
-│           └── convert.js       #     图片→film 转换
-├── docs/                        # 文档
-│   ├── blecmd/                  #   BLE 协议规范
-│   ├── film/                    #   film 文件格式
-│   ├── hardware/                #   硬件规格
-│   ├── wifi/                    #   WiFi 功能说明
-│   └── knowledge/               #   AI 开发知识库 (当前目录)
-└── hardware/                    # 硬件设计 (PCB + 3D模型)
+```text
+film_service  ->  film_hal  ->  film_sys  ->  ESP-IDF
 ```
 
-## 核心文件索引
+服务层负责 BLE 命令、文件传输、播放、参数和 Wi-Fi；硬件层负责 EPD、SD、LED、输入和电池；系统层负责启动、配置和日志。服务层禁止直接调用 GPIO 或 ESP-IDF driver。
 
-### 必须了解的关键文件
-| 文件 | 作用 |
-|------|------|
-| `firmware/*/components/film_service/inc/service_ble.h` | BLE 协议命令定义（所有通道常量） |
-| `firmware/*/components/film_service/src/service_film.c` | film 播放核心逻辑 |
-| `firmware/*/components/film_hal/src/hal_epd.c` | 电子纸驱动 |
-| `firmware/*/main/main.c` | 固件入口 |
-| `tools/wechart/miniprogram/utils/ble-utils.js` | 小程序 BLE 协议 |
-| `tools/ForFilm/js/frame.js` | Web 端 BLE 协议 |
-| `docs/blecmd/blecmd_protocol.md` | 协议完整文档 |
+## 关键文件
 
-### 构建命令
-```bash
-# 基础版
-cd firmware/frame_film && idf.py build flash monitor
+| 工作 | 文件 |
+|---|---|
+| 机型宏 | `firmware/penaup/components/film_sys/inc/sys_cfg.h` |
+| BLE 命令 | `firmware/penaup/components/film_service/inc/service_ble.h` |
+| Wi-Fi 心跳 | `firmware/penaup/components/film_service/src/service_wifi.c` |
+| film 颜色 | `firmware/penaup/components/film_hal/inc/hal_epd.h` |
+| Web BLE | `apps/web/js/frame.js`、`bluetooth.js` |
+| 小程序 BLE | `apps/wechat/miniprogram/utils/ble-utils.js` |
+| 小程序 film | `apps/wechat/miniprogram/utils/film-utils.js` |
+| 新服务端 | `server/src/` |
 
-# Pro 版
-cd firmware/frame_film_pro && idf.py build flash monitor
-```
+## 不能破坏的事实
 
-## 关键技术概念
-
-- **film 文件格式**: 32B 文件头 + 120000B 像素数据 (每字节 2 像素, 4bit/像素)
-- **BLE GATT 协议**: 3 通道 (CH1 命令, CH2/CH3 数据), 包格式 `0x55 + CH + LEN + DATA + SUM`
-- **颜色编码**: 6色 (黑/白/绿/蓝/红/黄), 通过 ColorTable 映射
-- **存储**: SDNAND (默认) / TF 卡, FATFS 文件系统, SDMMC 模式
+- `BLE_CHUNK_SIZE = 192`；
+- 帧头 `0x55`，校验和为包内字节之和低八位；
+- film 文件为 32 字节头加半字节像素；
+- 六色编码为黑 `0x00`、白 `0x11`、绿 `0x66`、蓝 `0x55`、红 `0x33`、黄 `0x22`；
+- 新命令从 `0x3E` 起；
+- 三机型宏与 `sdkconfig_std/pro/max` 必须成对验证。

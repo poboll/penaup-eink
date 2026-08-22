@@ -1,0 +1,202 @@
+"""Penaup 历史 FastAPI 后端入口。
+
+- 仅用于迁移核对：启动时初始化数据库、可选管理员和内置模板。
+- 挂载管理 API / 设备 API / 静态资源
+"""
+import json
+from contextlib import asynccontextmanager
+
+from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from sqlalchemy.orm import Session
+
+from .api import ai, album, auth, device, device_proto, settings as settings_api, stream, template
+from .api.deps import get_current_user
+from .config import DATA_DIR, LEGACY_ADMIN_PASSWORD, LEGACY_ADMIN_USERNAME, WEB_DIST_DIR
+from .db import SessionLocal, get_db, init_db
+from .models import Album, Device, Stream, Template, User
+from .schemas.template import TemplateOut
+from .services.builtin_templates import builtin_definitions
+from .utils.security import hash_password
+
+
+def seed_admin():
+    db = SessionLocal()
+    try:
+        if db.query(User).count() == 0:
+            if not LEGACY_ADMIN_USERNAME or not LEGACY_ADMIN_PASSWORD:
+                print("[seed] 未配置历史 FastAPI 管理员，跳过管理员创建；请使用 server/runtime/ 或显式设置 FILMHUB_ADMIN/FILMHUB_ADMIN_PASSWORD")
+                return
+            db.add(User(username=LEGACY_ADMIN_USERNAME,
+                        password_hash=hash_password(LEGACY_ADMIN_PASSWORD)))
+            db.commit()
+            print(f"[seed] 已创建显式配置的历史管理员 {LEGACY_ADMIN_USERNAME}")
+    finally:
+        db.close()
+
+
+def _core_definition(d: dict) -> dict:
+    """剔除 data 与图层相册绑定后的模板结构（内置模板结构锁与升级比较用）"""
+    core = {k: v for k, v in d.items() if k != "data"}
+    layers = []
+    for layer in core.get("layers", []):
+        if isinstance(layer, dict):
+            l = dict(layer)
+            src = l.get("source")
+            if isinstance(src, dict):
+                l["source"] = {k: v for k, v in src.items() if k != "album_id"}
+            layers.append(l)
+        else:
+            layers.append(layer)
+    core["layers"] = layers
+    return core
+
+
+def _merge_old_data(old_def: dict, new_def: dict) -> dict:
+    """内置模板升级：保留旧应用态参数（仍在新 params 定义中的 key）、相册绑定（data.album 与图层 source.album_id）"""
+    import copy
+
+    merged = copy.deepcopy(new_def)
+    if "data" not in merged:
+        merged["data"] = {}
+    old_data = (old_def or {}).get("data") or {}
+    new_keys = {p.get("key") for p in new_def.get("params", [])}
+    old_params = old_data.get("params") or {}
+    merged["data"]["params"] = {
+        **new_def.get("data", {}).get("params", {}),
+        **{k: v for k, v in old_params.items() if k in new_keys},
+    }
+    if "album" in old_data:
+        merged["data"]["album"] = old_data["album"]
+    # 保留旧版图层中的相册绑定（按图层位置对齐）
+    old_layers = (old_def or {}).get("layers") if isinstance((old_def or {}).get("layers"), list) else []
+    new_layers = merged.get("layers") if isinstance(merged.get("layers"), list) else []
+    for i, nl in enumerate(new_layers):
+        if not isinstance(nl, dict) or i >= len(old_layers):
+            continue
+        ol = old_layers[i]
+        ns, os_ = nl.get("source"), ol.get("source")
+        if isinstance(ns, dict) and isinstance(os_, dict) and os_.get("album_id") is not None:
+            ns["album_id"] = os_["album_id"]
+    return merged
+
+
+# 旧版内置模板默认渲染参数（用于检测是否需要切换到自适应）
+_OLD_DEFAULT_RC = {"dither_type": "floyd_steinberg", "dither_strength": 80, "contrast": 100, "brightness": 0}
+
+
+def seed_builtin_templates():
+    db = SessionLocal()
+    try:
+        for bt in builtin_definitions():
+            t = db.query(Template).filter(
+                Template.is_builtin.is_(True), Template.name == bt["name"]).first()
+            if t is None:
+                db.add(Template(
+                    name=bt["name"], kind=bt["kind"], is_builtin=True,
+                    definition=json.dumps(bt["definition"], ensure_ascii=False),
+                    render_config=json.dumps(bt["render_config"], ensure_ascii=False),
+                ))
+                continue
+            # 同名内置模板：结构变化则升级，保留用户配置
+            old_def = json.loads(t.definition or "{}")
+            if _core_definition(old_def) != _core_definition(bt["definition"]):
+                t.definition = json.dumps(_merge_old_data(old_def, bt["definition"]), ensure_ascii=False)
+                t.kind = bt["kind"]
+                # 渲染算法：默认值更新，但保留用户自定义差异（新字段用默认，旧字段用户值覆盖默认）
+                old_rc = json.loads(t.render_config or "{}")
+                new_rc = {**bt["render_config"], **{k: v for k, v in old_rc.items() if k in bt["render_config"] and v != bt["render_config"].get(k)}}
+                # 保留旧版中有但新默认中没有的自定义字段
+                for k, v in old_rc.items():
+                    if k not in new_rc:
+                        new_rc[k] = v
+                t.render_config = json.dumps(new_rc, ensure_ascii=False)
+                print(f"[seed] 内置模板「{bt['name']}」已升级")
+                continue
+            # 仍为旧默认渲染参数的内置模板：切换为当前默认（自适应），保留用户自定义
+            if json.loads(t.render_config or "{}") == _OLD_DEFAULT_RC:
+                t.render_config = json.dumps(bt["render_config"], ensure_ascii=False)
+                print(f"[seed] 内置模板「{bt['name']}」渲染算法已切换为自适应")
+        db.commit()
+        print("[seed] 内置模板就绪")
+    finally:
+        db.close()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    seed_admin()
+    seed_builtin_templates()
+    yield
+
+
+app = FastAPI(title="Penaup Legacy Runtime", version="0.1.0-legacy", lifespan=lifespan)
+
+# CORS：默认仅同源（前端由本服务托管，无需跨域）。
+# 开发期 vite dev server 直连时通过环境变量 FILMHUB_CORS 指定允许来源（逗号分隔），如:
+#   FILMHUB_CORS=http://localhost:5173,http://127.0.0.1:5173
+import os as _os
+
+_cors_origins = [o.strip() for o in _os.getenv("FILMHUB_CORS", "").split(",") if o.strip()]
+if _cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+
+@app.middleware("http")
+async def no_cache_html(request, call_next):
+    """HTML 页面禁用缓存：避免改版后浏览器仍显示旧页面（需硬刷新）"""
+    response = await call_next(request)
+    if response.headers.get("content-type", "").startswith("text/html"):
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    return response
+
+# 管理 / 设备 API
+app.include_router(auth.router, prefix="/api/v1/admin")
+app.include_router(device.router)
+app.include_router(album.router)
+app.include_router(template.router)
+app.include_router(stream.router)
+app.include_router(ai.router)
+app.include_router(settings_api.router)
+app.include_router(device_proto.router)
+
+
+@app.get("/api/v1/admin/stats/dashboard")
+def dashboard(db: Session = Depends(get_db), _: User = Depends(get_current_user)):
+    return {
+        "devices": db.query(Device).count(),
+        "albums": db.query(Album).count(),
+        "templates": db.query(Template).count(),
+        "streams": db.query(Stream).count(),
+    }
+
+
+@app.get("/api/v1/admin/system/info")
+def system_info(_: User = Depends(get_current_user)):
+    import datetime as dt
+    import sys
+
+    return {
+        "version": app.version,
+        "python": sys.version.split()[0],
+        "platform": sys.platform,
+        "data_dir": str(DATA_DIR),
+        "server_time": dt.datetime.now().astimezone().isoformat(),
+    }
+
+
+# 静态资源
+app.mount("/files", StaticFiles(directory=str(DATA_DIR)), name="files")
+if WEB_DIST_DIR.exists():
+    app.mount("/", StaticFiles(directory=str(WEB_DIST_DIR), html=True), name="web")
+else:
+    @app.get("/")
+    def root():
+        return {"msg": "Penaup legacy backend is running", "docs": "/docs"}

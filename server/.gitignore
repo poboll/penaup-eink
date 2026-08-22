@@ -16,3 +16,9 @@ data/
 # ===== 设计草稿 =====
 # 早期设计方案对比稿（plan-a~f），正式管理前端在 web/dist
 web/design-preview/
+
+# ===== Node runtime =====
+node_modules/
+.env
+.env.*
+!.env.example

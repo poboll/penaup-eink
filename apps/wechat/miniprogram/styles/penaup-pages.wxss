@@ -1,0 +1,287 @@
+/* Copyright (c) 2026 poboll · shared Penaup page language */
+
+/* 首次进入：像翻开一张电子纸，不阻塞后续页面资源 */
+.intro-overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+  background: #1a1b18;
+  animation: penaup-fade-up .28s ease both;
+}
+.intro-sheet { width: 100%; color: #f7f7f2; text-align: left; }
+.intro-mark { position: relative; width: 82rpx; height: 64rpx; margin-bottom: 52rpx; }
+.intro-leaf { position: absolute; width: 36rpx; height: 52rpx; border: 3rpx solid #1a1b18; border-radius: 50%; background: #d4ad31; }
+.leaf-a { left: 8rpx; top: 0; transform: rotate(-28deg); }
+.leaf-b { left: 38rpx; top: 10rpx; transform: rotate(28deg); }
+.intro-kicker { display: block; margin-bottom: 20rpx; color: #8fb1df; font: 600 20rpx/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 3rpx; }
+.intro-title { display: block; white-space: pre-line; font: 400 64rpx/1.14 Georgia, "Songti SC", serif; letter-spacing: 0; }
+.intro-colors { display: flex; width: 100%; height: 8rpx; margin-top: 62rpx; }
+.intro-colors view { flex: 1; background: #1a1b18; }
+.intro-colors view:nth-child(2) { background: #f7f7f2; }
+.intro-colors view:nth-child(3) { background: #c95849; }
+.intro-colors view:nth-child(4) { background: #d4ad31; }
+.intro-colors view:nth-child(5) { background: #4d75b6; }
+.intro-colors view:nth-child(6) { background: #6f936e; }
+.intro-hint { display: block; margin-top: 22rpx; color: rgba(247, 247, 242, .58); font-size: 21rpx; }
+
+/* 电子纸画面：外框像一张纸，内容区保持平面、无发光 */
+.canvas-container {
+  width: 100%;
+  max-width: 668rpx;
+  margin: 26rpx auto 22rpx;
+  padding: 30rpx 26rpx 44rpx;
+  text-align: center;
+}
+
+.canvas-wrap {
+  position: relative;
+  width: 600rpx;
+  max-width: 100%;
+  height: 900rpx;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #ecece5;
+  border: 2rpx solid #c3c4bb;
+  border-radius: 3rpx;
+}
+
+.canvas-wrap::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -120%;
+  height: 18%;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(77, 117, 182, .12), transparent);
+  animation: penaup-scan 7s ease-in-out infinite;
+}
+
+.preview-canvas,
+.film-canvas,
+.draw-canvas { width: 100%; height: 100%; display: block; }
+
+.info-text {
+  margin: 18rpx 4rpx;
+  font-size: 23rpx;
+  line-height: 1.65;
+  text-align: center;
+}
+
+.button-row {
+  display: flex;
+  gap: 14rpx;
+  width: 100%;
+  max-width: 668rpx;
+  margin: 20rpx auto 0;
+}
+.button-row > button { flex: 1; min-width: 0; }
+.button-row .btn-primary,
+.button-row .btn-secondary { padding-left: 12rpx; padding-right: 12rpx; }
+
+.filename-area { width: 100%; max-width: 668rpx; margin: 20rpx auto 0; }
+.filename-display,
+.filename-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  min-height: 76rpx;
+  padding: 14rpx 18rpx;
+  border: 2rpx solid #d8d8cf;
+}
+.filename-label { color: #74766d; font-size: 21rpx; flex-shrink: 0; }
+.filename-value { flex: 1; overflow: hidden; color: #1a1b18; font-size: 24rpx; text-overflow: ellipsis; white-space: nowrap; }
+.filename-edit { color: #4d75b6; font-size: 22rpx; flex-shrink: 0; }
+.filename-input { flex: 1; min-width: 0; height: 54rpx; padding: 0 12rpx; font-size: 24rpx; }
+.filename-ext { color: #74766d; font-size: 22rpx; }
+
+/* 上传和模板共用的传输弹层 */
+.transfer-overlay,
+.preview-overlay,
+.color-picker-overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: penaup-fade-up .2s ease both;
+}
+.transfer-modal {
+  width: 590rpx;
+  max-width: calc(100vw - 72rpx);
+  padding: 36rpx 32rpx 30rpx;
+  text-align: center;
+  animation: penaup-fade-up .35s ease both;
+}
+.flight-area {
+  position: relative;
+  height: 112rpx;
+  margin-bottom: 22rpx;
+  overflow: hidden;
+  border-bottom: 2rpx solid #d8d8cf;
+}
+.airplane {
+  position: absolute;
+  top: 20rpx;
+  left: -12%;
+  width: 64rpx;
+  height: 78rpx;
+  overflow: hidden;
+  background: #fbfaf6;
+  border: 3rpx solid #1a1b18;
+  border-radius: 3rpx;
+  box-shadow: 8rpx 8rpx 0 rgba(26, 27, 24, .08);
+  animation: penaup-card-fly 1.8s cubic-bezier(.45, 0, .55, 1) infinite;
+}
+.airplane::before {
+  content: '';
+  position: absolute;
+  left: 7rpx;
+  right: 7rpx;
+  top: 7rpx;
+  bottom: 22rpx;
+  background: linear-gradient(135deg, #d4ad31 0 28%, #4d75b6 28% 54%, #6f936e 54% 76%, #c95849 76%);
+}
+.airplane::after {
+  content: 'PENAUP';
+  position: absolute;
+  left: 7rpx;
+  right: 7rpx;
+  bottom: 5rpx;
+  color: #74766d;
+  font: 10rpx/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 1rpx;
+}
+.airplane-done { animation: penaup-card-land .7s ease forwards; }
+.flight-trail {
+  position: absolute;
+  left: 8rpx;
+  right: 8rpx;
+  bottom: 11rpx;
+  height: 4rpx;
+  background: #4d75b6;
+  transform-origin: left center;
+  animation: penaup-trail 1.8s ease-in-out infinite;
+}
+.transfer-percent { margin-bottom: 8rpx; color: #4d75b6; font: 600 48rpx/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.transfer-kicker { margin-bottom: 10rpx; color: #4d75b6; font: 600 20rpx/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 2rpx; }
+.transfer-title { margin-bottom: 8rpx; color: #1a1b18; font: 500 30rpx/1.25 Georgia, "Songti SC", serif; }
+.transfer-msg { margin-bottom: 24rpx; font-size: 23rpx; }
+.modal-progress-bar { width: 100%; height: 10rpx; overflow: hidden; border-radius: 0; }
+.modal-progress-fill { height: 100%; transition: width .25s ease; }
+.transfer-exit { margin-top: 24rpx; color: #b65347; font-size: 24rpx; }
+.transfer-actions { display: flex; gap: 14rpx; margin-top: 24rpx; }
+.transfer-actions button { flex: 1; min-height: 76rpx; padding: 14rpx 12rpx; font-size: 23rpx; }
+.transfer-retry { background: #1a1b18; border-color: #1a1b18; }
+.transfer-close { color: #1a1b18; background: transparent; border-color: #bbbcb3; }
+.airplane-uncertain { border-color: #d4ad31; }
+.airplane-uncertain::before { background: linear-gradient(135deg, #d4ad31 0 30%, #f7f7f2 30% 55%, #d4ad31 55% 78%, #f7f7f2 78%); }
+
+@keyframes penaup-card-fly {
+  0% { left: -14%; transform: translateY(18rpx) rotate(-8deg); opacity: 0; }
+  12% { opacity: 1; }
+  50% { transform: translateY(-10rpx) rotate(4deg); }
+  88% { opacity: 1; }
+  100% { left: 108%; transform: translateY(14rpx) rotate(-6deg); opacity: 0; }
+}
+@keyframes penaup-card-land {
+  0% { left: 108%; opacity: 1; transform: translateY(12rpx) rotate(-6deg) scale(1); }
+  55% { left: 50%; opacity: 1; transform: translate(-50%, 0) rotate(0) scale(1.12); }
+  100% { left: 50%; opacity: 0; transform: translate(-50%, 0) rotate(0) scale(1.28); }
+}
+@keyframes penaup-trail {
+  0%, 100% { transform: scaleX(.15); opacity: .2; }
+  50% { transform: scaleX(1); opacity: .75; }
+}
+
+/* 模板详情 */
+.tpl-toolbar { display: flex; gap: 12rpx; margin-bottom: 18rpx; }
+.tpl-btn {
+  flex: 1;
+  min-height: 70rpx;
+  padding: 18rpx 12rpx;
+  color: #1a1b18;
+  background: #fbfaf6;
+  border: 2rpx solid #bbbcb3;
+  border-radius: 6rpx;
+  font-size: 23rpx;
+  text-align: center;
+}
+.scheme-row { display: flex; gap: 12rpx; margin-bottom: 18rpx; overflow-x: auto; white-space: nowrap; }
+.scheme-pill {
+  flex-shrink: 0;
+  padding: 12rpx 22rpx;
+  color: #74766d;
+  background: transparent;
+  border: 2rpx solid #bbbcb3;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+}
+.scheme-pill.active { color: #f7f7f2; background: #1a1b18; border-color: #1a1b18; }
+
+/* 传图 / 高级转换 */
+.adjust-hint {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 16rpx;
+  padding: 8rpx 0;
+  color: #f7f7f2;
+  background: rgba(26, 27, 24, .78);
+  border-radius: 3rpx;
+  font-size: 20rpx;
+}
+.settings-section { max-width: 668rpx; margin: 22rpx auto; padding: 0 24rpx; }
+.section-header { padding: 22rpx 0 18rpx; font-size: 27rpx; font-weight: 600; }
+.setting-item,
+.slider-row { display: flex; align-items: center; gap: 16rpx; min-height: 76rpx; border-bottom: 2rpx solid #d8d8cf; }
+.setting-item:last-child, .slider-row:last-child { border-bottom: 0; }
+.setting-label, .slider-label { width: 132rpx; flex-shrink: 0; font-size: 24rpx; }
+.picker-value { flex: 1; padding: 12rpx 16rpx; border: 2rpx solid #bbbcb3; font-size: 23rpx; text-align: right; }
+.slider-row slider { flex: 1; }
+.slider-value { width: 76rpx; color: #4d75b6; font: 22rpx ui-monospace, SFMono-Regular, Menlo, monospace; text-align: right; }
+.btn-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12rpx; max-width: 668rpx; margin: 20rpx auto; }
+.btn-group .btn-secondary { min-height: 70rpx; padding: 12rpx 8rpx; font-size: 21rpx; }
+.file-name-row { max-width: 668rpx; margin: 18rpx auto 0; padding: 14rpx 0; }
+.file-name-input { flex: 1; height: 60rpx; padding: 0 14rpx; border: 2rpx solid #bbbcb3; font-size: 23rpx; }
+.transfer-container { max-width: 668rpx; margin: 22rpx auto; padding: 22rpx; border: 2rpx solid #d8d8cf; }
+.progress-bar { height: 10rpx; margin: 14rpx 0 8rpx; overflow: hidden; }
+.progress-fill { height: 100%; transition: width .25s ease; }
+
+/* 颜色选择器 */
+.color-picker-modal { width: 620rpx; max-width: calc(100vw - 72rpx); overflow: hidden; }
+.picker-title { padding: 26rpx 28rpx 20rpx; border-bottom: 2rpx solid #d8d8cf; font-size: 28rpx; font-weight: 600; }
+.picker-body { padding: 24rpx 28rpx; }
+.picker-preview-area { display: flex; align-items: center; gap: 18rpx; margin-bottom: 24rpx; }
+.picker-preview { width: 80rpx; height: 80rpx; border: 2rpx solid #1a1b18; }
+.picker-hex { color: #74766d; font: 22rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
+.picker-row { display: flex; align-items: center; gap: 12rpx; height: 62rpx; }
+.picker-color-dot { width: 22rpx; height: 22rpx; border-radius: 50%; }
+.picker-slider { flex: 1; }
+.picker-val { width: 56rpx; color: #74766d; font: 21rpx ui-monospace, SFMono-Regular, Menlo, monospace; text-align: right; }
+.picker-buttons { display: flex; border-top: 2rpx solid #d8d8cf; }
+.btn-cancel, .btn-confirm { flex: 1; height: 84rpx; color: #1a1b18; background: transparent; border-radius: 0; font-size: 25rpx; }
+.btn-confirm { color: #4d75b6; border-left: 2rpx solid #d8d8cf; }
+
+/* 空态、片单、预览 */
+.empty-state { padding: 42rpx 18rpx; color: #74766d; font-size: 23rpx; text-align: center; }
+.preview-modal { width: 620rpx; max-width: calc(100vw - 72rpx); padding: 26rpx; background: #fbfaf6; border: 2rpx solid #d8d8cf; text-align: center; }
+.preview-img { width: 100%; height: 670rpx; background: #e9e9e1; }
+.preview-name { margin: 18rpx 0; color: #1a1b18; font-size: 24rpx; }
+.preview-close { padding: 16rpx; color: #4d75b6; border-top: 2rpx solid #d8d8cf; font-size: 24rpx; }
+
+@media (max-width: 620px) {
+  .btn-group { grid-template-columns: repeat(2, 1fr); }
+  .canvas-container { padding-left: 18rpx; padding-right: 18rpx; }
+}

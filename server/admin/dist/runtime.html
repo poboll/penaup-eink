@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f3ed">
+  <title>Penaup Runtime · 局域网控制台</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="runtime-shell" id="runtimeApp">
+    <header class="runtime-nav">
+      <a class="brand" href="/" aria-label="回到花生片工具">
+        <span class="sw"><i style="background:#1a1b18"></i><i style="background:#c95849"></i><i style="background:#d4ad31"></i><i style="background:#6f936e"></i><i style="background:#4d75b6"></i></span>
+        <b>花生片 Penaup</b>
+      </a>
+      <span class="runtime-kicker">RUNTIME / LOCAL FIRST</span>
+      <div class="runtime-actions">
+        <label class="token-field" title="可选：PENAUP_ADMIN_TOKEN">
+          <span>管理令牌</span>
+          <input id="adminToken" type="password" autocomplete="off" placeholder="未设置" aria-label="管理令牌">
+        </label>
+        <button class="btn btn-primary btn-sm" id="saveToken">保存</button>
+      </div>
+    </header>
+
+    <main class="runtime-main">
+      <section class="runtime-intro">
+        <div>
+          <p class="runtime-eyebrow">LOCAL DARKROOM / 01</p>
+          <h1>把每一次心跳，<br><em>留在正确的位置。</em></h1>
+          <p class="runtime-lede">Penaup Runtime 是花生片的轻量局域网中枢：设备上报状态，手机或 Web 写入 film，内容留在你的网络里。</p>
+        </div>
+        <div class="runtime-signal" id="runtimeSignal" data-state="idle">
+          <span class="signal-ring"></span>
+          <b id="healthLabel">等待第一次心跳</b>
+          <span id="healthMeta">GET /health</span>
+        </div>
+      </section>
+
+      <section class="runtime-stats" aria-label="运行时概览">
+        <article class="runtime-stat"><span>设备</span><strong id="deviceCount">—</strong><small id="deviceHint">还没有设备登记</small></article>
+        <article class="runtime-stat"><span>在线</span><strong id="onlineCount">—</strong><small>最近三次心跳内</small></article>
+        <article class="runtime-stat"><span>film 媒体</span><strong id="mediaCount">—</strong><small>本地文件存储</small></article>
+        <article class="runtime-stat"><span>事件</span><strong id="eventCount">—</strong><small>最近 50 条</small></article>
+      </section>
+
+      <section class="runtime-grid">
+        <article class="runtime-panel upload-panel">
+          <div class="panel-heading"><div><span class="runtime-index">02</span><h2>把一帧放进来</h2></div><span class="panel-note">POST /api/v1/admin/media</span></div>
+          <p>只接受已转换好的 `.film` 文件。照片转换仍在手机或 Web 端本地完成，运行时不接触原始相册。</p>
+          <label class="dropzone" id="dropzone">
+            <input id="filmFile" type="file" accept=".film,application/octet-stream">
+            <span class="drop-mark">＋</span>
+            <strong id="fileLabel">选择一个 film 文件</strong>
+            <small>最大 16 MB · 数据写入本机 data/media</small>
+          </label>
+          <div class="upload-actions"><button class="btn btn-primary" id="uploadButton" disabled>上传并留存</button><span id="uploadStatus" class="inline-status"></span></div>
+        </article>
+
+        <article class="runtime-panel latest-panel">
+          <div class="panel-heading"><div><span class="runtime-index">03</span><h2>最近留下的画面</h2></div><span class="panel-note">latest.film</span></div>
+          <div class="latest-frame" id="latestFrame"><span>尚未上传 film</span></div>
+          <div class="latest-meta" id="latestMeta">设备在下一次心跳时可以通过固定别名取走最新画面。</div>
+        </article>
+      </section>
+
+      <section class="runtime-panel wide-panel">
+        <div class="panel-heading"><div><span class="runtime-index">04</span><h2>设备正在说什么</h2></div><button class="btn btn-sm" id="refreshButton">刷新状态</button></div>
+        <div class="runtime-table-wrap"><table class="runtime-table"><thead><tr><th>设备</th><th>型号</th><th>状态</th><th>电量</th><th>最后心跳</th><th>下发指令</th></tr></thead><tbody id="deviceRows"><tr><td colspan="6" class="runtime-empty">正在等待设备心跳…</td></tr></tbody></table></div>
+      </section>
+
+      <section class="runtime-panel wide-panel">
+        <div class="panel-heading"><div><span class="runtime-index">05</span><h2>事件留痕</h2></div><span class="panel-note">SQLite WAL / SSE ready</span></div>
+        <ol class="event-list" id="eventList"><li class="runtime-empty">还没有事件。</li></ol>
+      </section>
+
+      <footer class="runtime-footer">Copyright (c) 2026 poboll · Poboll Non-Commercial License v1.0 · 禁止商业使用 · Node.js 24 / Fastify / SQLite</footer>
+    </main>
+  </div>
+
+  <script>
+    const TOKEN_KEY = 'penaup.adminToken';
+    const $ = (id) => document.getElementById(id);
+    const state = { devices: [], media: [], events: [] };
+    $('adminToken').value = localStorage.getItem(TOKEN_KEY) || '';
+
+    function headers(extra) {
+      const token = localStorage.getItem(TOKEN_KEY) || '';
+      return Object.assign(token ? { Authorization: 'Bearer ' + token } : {}, extra || {});
+    }
+    async function request(url, options) {
+      const response = await fetch(url, Object.assign({}, options || {}, { headers: headers(options && options.headers) }));
+      if (!response.ok) throw new Error('请求失败 · HTTP ' + response.status);
+      const type = response.headers.get('content-type') || '';
+      const payload = type.includes('application/json') ? await response.json() : response;
+      return payload && payload.ok && Object.prototype.hasOwnProperty.call(payload, 'data') ? payload.data : payload;
+    }
+    function fmtTime(value) {
+      if (!value) return '—';
+      const date = new Date(value);
+      return date.toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+    }
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+    }
+    function setHealth(ok, message) {
+      $('runtimeSignal').dataset.state = ok ? 'ok' : 'error';
+      $('healthLabel').textContent = message;
+      $('healthMeta').textContent = ok ? 'SQLite / SSE / MQTT optional' : '请检查运行时地址与管理令牌';
+    }
+    function render() {
+      const online = state.devices.filter((device) => device.online).length;
+      $('deviceCount').textContent = state.devices.length;
+      $('onlineCount').textContent = online;
+      $('mediaCount').textContent = state.media.length;
+      $('eventCount').textContent = state.events.length;
+      $('deviceHint').textContent = state.devices.length ? '设备心跳已登记' : '还没有设备登记';
+      $('deviceRows').innerHTML = state.devices.length ? state.devices.map((device) => `
+        <tr><td><strong>${escapeHtml(device.name || device.deviceId)}</strong><small>${escapeHtml(device.deviceId)}</small></td>
+        <td>${escapeHtml(device.model || 'unknown')}</td>
+        <td><span class="runtime-status ${device.online ? 'is-online' : ''}">${device.online ? '在线' : '离线'}</span><small>${escapeHtml(device.state || 'unknown')}</small></td>
+        <td>${device.batteryPercent >= 0 ? device.batteryPercent + '%' : '—'}</td>
+        <td>${fmtTime(device.lastSeenAt)}</td>
+        <td><button class="btn btn-sm" data-command="${escapeHtml(device.deviceId)}">唤醒刷新</button></td></tr>`).join('') : '<tr><td colspan="6" class="runtime-empty">设备第一次请求 /api/v1/device/heartbeat 后会出现在这里。</td></tr>';
+      $('eventList').innerHTML = state.events.length ? state.events.slice(0, 12).map((event) => `<li><span class="event-dot"></span><time>${fmtTime(event.at)}</time><b>${escapeHtml(event.type)}</b><span>${escapeHtml(event.deviceId || 'runtime')}</span></li>`).join('') : '<li class="runtime-empty">还没有事件。</li>';
+      const latest = state.media.find((media) => String(media.name).toLowerCase().endsWith('.film'));
+      $('latestFrame').innerHTML = latest ? `<div class="film-swatch"><i></i><i></i><i></i><i></i><i></i><i></i></div>` : '<span>尚未上传 film</span>';
+      $('latestMeta').textContent = latest ? `${latest.name} · ${latest.size} B · ${fmtTime(latest.created_at || latest.createdAt)} · /api/v1/device/film/latest.film` : '设备在下一次心跳时可以通过固定别名取走最新画面。';
+    }
+    async function refresh() {
+      try {
+        const health = await request('/health');
+        setHealth(true, health.displayName || 'Penaup Runtime 在线');
+        [state.devices, state.media, state.events] = await Promise.all([
+          request('/api/v1/admin/devices'),
+          request('/api/v1/admin/media'),
+          request('/api/v1/admin/events?limit=50')
+        ]);
+        render();
+      } catch (error) {
+        setHealth(false, error.message);
+      }
+    }
+    let streamController = null;
+    let streamRefreshTimer = null;
+    function scheduleStreamRefresh() {
+      clearTimeout(streamRefreshTimer);
+      streamRefreshTimer = setTimeout(refresh, 120);
+    }
+    async function connectEventStream() {
+      if (!window.ReadableStream || !window.TextDecoder) return;
+      if (streamController) streamController.abort();
+      streamController = new AbortController();
+      try {
+        const response = await fetch('/api/v1/events/stream', { headers: headers(), signal: streamController.signal });
+        if (!response.ok || !response.body) return;
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        while (true) {
+          const chunk = await reader.read();
+          if (chunk.done) break;
+          buffer += decoder.decode(chunk.value, { stream: true });
+          const blocks = buffer.split('\n\n');
+          buffer = blocks.pop() || '';
+          for (const block of blocks) {
+            const dataLine = block.split('\n').find((line) => line.startsWith('data: '));
+            if (dataLine) scheduleStreamRefresh();
+          }
+        }
+        if (!streamController.signal.aborted) setTimeout(connectEventStream, 3000);
+      } catch (error) {
+        if (error.name !== 'AbortError') setTimeout(connectEventStream, 3000);
+      }
+    }
+    $('saveToken').addEventListener('click', () => {
+      localStorage.setItem(TOKEN_KEY, $('adminToken').value.trim());
+      refresh();
+      connectEventStream();
+    });
+    $('refreshButton').addEventListener('click', refresh);
+    $('filmFile').addEventListener('change', () => {
+      const file = $('filmFile').files[0];
+      $('fileLabel').textContent = file ? file.name : '选择一个 film 文件';
+      $('uploadButton').disabled = !file;
+    });
+    $('uploadButton').addEventListener('click', async () => {
+      const file = $('filmFile').files[0];
+      if (!file) return;
+      $('uploadButton').disabled = true;
+      $('uploadStatus').textContent = '正在把画面放进本地暗房…';
+      const form = new FormData(); form.append('film', file, file.name);
+      try { await request('/api/v1/admin/media', { method: 'POST', body: form }); $('uploadStatus').textContent = '已留下。'; $('filmFile').value = ''; $('fileLabel').textContent = '选择一个 film 文件'; await refresh(); }
+      catch (error) { $('uploadStatus').textContent = error.message; }
+      $('uploadButton').disabled = false;
+    });
+    $('deviceRows').addEventListener('click', async (event) => {
+      const button = event.target.closest('[data-command]'); if (!button) return;
+      button.disabled = true;
+      try { await request('/api/v1/admin/devices/' + encodeURIComponent(button.dataset.command) + '/commands', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cmd: 'refresh' }) }); button.textContent = '已排队'; }
+      catch (error) { button.textContent = '失败'; }
+      setTimeout(() => { button.disabled = false; button.textContent = '唤醒刷新'; }, 1800);
+    });
+    refresh();
+    connectEventStream();
+    setInterval(refresh, 30000);
+  </script>
+</body>
+</html>

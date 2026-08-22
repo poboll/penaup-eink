@@ -1,0 +1,107 @@
+/* Copyright (c) 2026 poboll · shared Penaup controls */
+
+.file-field-label {
+    display: block;
+    margin-bottom: 9px;
+    color: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .04em;
+}
+
+.file-picker-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.file-picker {
+    display: flex;
+    min-height: 72px;
+    align-items: center;
+    gap: 13px;
+    padding: 12px 15px;
+    color: inherit;
+    background: color-mix(in srgb, currentColor 4%, transparent);
+    border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background .22s ease, border-color .22s ease, transform .22s ease, box-shadow .22s ease;
+}
+
+.file-picker:hover {
+    background: color-mix(in srgb, currentColor 8%, transparent);
+    border-color: currentColor;
+    transform: translateY(-1px);
+}
+
+.file-picker-input:focus-visible + .file-picker {
+    outline: 3px solid color-mix(in srgb, currentColor 28%, transparent);
+    outline-offset: 3px;
+}
+
+.file-picker.is-selected {
+    border-color: #4d73ad;
+    box-shadow: 0 8px 20px rgba(77, 115, 173, .12);
+}
+
+.file-picker-mark {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    place-items: center;
+    color: #4d73ad;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    font: 24px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.file-picker-copy {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+}
+
+.file-picker-copy strong {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.file-picker-copy small {
+    overflow: hidden;
+    color: color-mix(in srgb, currentColor 62%, transparent);
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.paper-arrival-note { display: flex; align-items: center; gap: 8px; min-height: 22px; margin-top: 8px; color: #676963; font: 10px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; transition: color .24s ease; }
+.paper-arrival-dot { width: 6px; height: 6px; flex: 0 0 6px; border-radius: 50%; background: #b9bbb1; transition: background .24s ease, box-shadow .24s ease, transform .24s ease; }
+.paper-arrival-note.is-arrived { color: #4d73ad; }
+.paper-arrival-note.is-arrived .paper-arrival-dot { background: #4d73ad; box-shadow: 0 0 0 5px rgba(77, 115, 173, .12); transform: scale(1.15); }
+.paper-arrival-note.is-rendered { color: #55785b; }
+.paper-arrival-note.is-rendered .paper-arrival-dot { background: #55785b; box-shadow: 0 0 0 5px rgba(85, 120, 91, .12); }
+
+.file-picker-arrow {
+    margin-left: auto;
+    color: color-mix(in srgb, currentColor 58%, transparent);
+    font-size: 20px;
+}
+
+@supports not (background: color-mix(in srgb, black 10%, transparent)) {
+    .file-picker { background: rgba(127, 127, 127, .05); border-color: rgba(127, 127, 127, .28); }
+    .file-picker-copy small, .file-picker-arrow { color: #676963; }
+}
+
+@media (max-width: 720px) {
+    .file-picker { min-height: 68px; padding: 11px 13px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .file-picker { transition: none; }
+}

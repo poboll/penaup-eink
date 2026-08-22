@@ -1,0 +1,72 @@
+@import "../../styles/penaup-pages.wxss";
+
+.banner-strip {
+  position: relative;
+  min-height: 260rpx;
+  padding: 34rpx 30rpx;
+  overflow: hidden;
+  color: #f7f7f2;
+  background: #1a1b18;
+  border-radius: 8rpx;
+}
+.banner-strip::after {
+  content: '✦';
+  position: absolute;
+  right: 34rpx;
+  bottom: 14rpx;
+  color: #d4ad31;
+  font: 100rpx/1 Georgia, serif;
+  opacity: .72;
+}
+.bn-t { position: relative; z-index: 1; font: 600 48rpx/1.18 Georgia, "Songti SC", serif; letter-spacing: 1rpx; }
+.bn-s { position: relative; z-index: 1; margin-top: 14rpx; color: rgba(247, 247, 242, .7); font-size: 24rpx; }
+.bn-chip { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 10rpx; margin-top: 38rpx; padding: 10rpx 16rpx; color: #f7f7f2; border: 2rpx solid rgba(247, 247, 242, .28); border-radius: 999rpx; font-size: 21rpx; }
+.bn-dot { width: 12rpx; height: 12rpx; border-radius: 50%; background: #86877f; }
+.bn-dot.on { background: #6f936e; }
+
+.device-row { display: flex; align-items: center; gap: 18rpx; margin-top: 18rpx; }
+.dev-thumb { display: flex; align-items: center; justify-content: center; width: 112rpx; height: 112rpx; overflow: hidden; color: #4d75b6; font: 20rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
+.dev-thumb image { width: 100%; height: 100%; }
+.dev-info { flex: 1; min-width: 0; }
+.dev-name { display: flex; align-items: center; gap: 12rpx; font-size: 28rpx; font-weight: 600; }
+.dev-meta { margin-top: 8rpx; overflow: hidden; font-size: 22rpx; text-overflow: ellipsis; white-space: nowrap; }
+.dev-batt { min-width: 92rpx; padding: 12rpx 14rpx; color: #55785b; background: #e9e9e1; text-align: center; }
+.dev-batt .num { font: 600 28rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
+.dev-batt .t { margin-top: 2rpx; color: #74766d; font-size: 20rpx; }
+
+.cta-row { display: flex; gap: 14rpx; margin-top: 18rpx; }
+.cta-half { flex: 1; min-height: 148rpx; padding: 26rpx 24rpx; }
+.cta-t { display: block; font-size: 31rpx; }
+.cta-sub { display: block; margin-top: 10rpx; font-size: 21rpx; }
+.color-study { margin-top: 18rpx; padding: 24rpx; color: #f7f7f2; background: #222520; border: 2rpx solid #474a43; border-radius: 8rpx; box-shadow: 10rpx 10rpx 0 rgba(26, 27, 24, .08); }
+.color-study-head, .color-study-line { display: flex; align-items: center; justify-content: space-between; gap: 14rpx; color: rgba(247, 247, 242, .58); font: 18rpx ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1rpx; }
+.color-study-count { color: #d4ad31; font-weight: 600; letter-spacing: 0; }
+.color-study-palette { display: flex; gap: 6rpx; height: 12rpx; margin: 24rpx 0 18rpx; }
+.color-study-palette view { flex: 1; border-radius: 999rpx; }
+.color-study-palette view:nth-child(1) { background: #1a1b18; border: 2rpx solid rgba(247, 247, 242, .35); }
+.color-study-palette view:nth-child(2) { background: #f7f7f2; }
+.color-study-palette view:nth-child(3) { background: #c95849; }
+.color-study-palette view:nth-child(4) { background: #d4ad31; }
+.color-study-palette view:nth-child(5) { background: #4d75b6; }
+.color-study-palette view:nth-child(6) { background: #6f936e; }
+.color-study-line { color: rgba(247, 247, 242, .78); }
+.color-study-modes { display: flex; gap: 10rpx; margin-top: 20rpx; }
+.color-study-modes text { flex: 1; padding: 10rpx 8rpx; color: #f7f7f2; border: 2rpx solid rgba(247, 247, 242, .22); font: 18rpx/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; text-align: center; }
+.color-study-copy { display: block; margin-top: 18rpx; color: rgba(247, 247, 242, .64); font: 22rpx/1.65 Georgia, "Songti SC", serif; }
+.tpl-row { display: flex; gap: 14rpx; }
+.tpl { flex: 1; min-height: 154rpx; padding: 16rpx; }
+.t-ic { display: flex; align-items: center; justify-content: center; height: 84rpx; }
+.t-ic image { width: 54rpx; height: 54rpx; opacity: .76; }
+.t-name { margin-top: 12rpx; font-size: 22rpx; text-align: center; }
+.label-row { display: flex; align-items: center; justify-content: space-between; }
+.label-row .label { margin-bottom: 18rpx; }
+.clear-recent { padding: 12rpx 0; font-size: 21rpx; }
+.recent-row { display: flex; gap: 12rpx; overflow-x: auto; }
+.recent { flex: 0 0 178rpx; padding: 10rpx; }
+.r-img { width: 100%; height: 128rpx; overflow: hidden; }
+.r-img image { width: 100%; height: 100%; }
+.r-name { margin-top: 10rpx; overflow: hidden; font-size: 21rpx; text-overflow: ellipsis; white-space: nowrap; }
+.r-time { margin-top: 3rpx; font-size: 18rpx; }
+
+.transfer-modal { min-height: 240rpx; }
+.modal-progress-bar { margin-top: 18rpx; }
