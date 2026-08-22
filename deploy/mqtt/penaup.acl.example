@@ -1,0 +1,12 @@
+# Copyright (c) 2026 poboll - LicenseRef-Poboll-NonCommercial
+# Replace the example device entry once per physical device.
+
+# The Node bridge needs to observe all states and issue commands to all devices.
+user penaup-bridge
+topic read penaup/device/+/state
+topic write penaup/device/+/command
+
+# A device must never receive the bridge wildcard permissions.
+user penaup-device-EXAMPLE
+topic write penaup/device/EXAMPLE/state
+topic read penaup/device/EXAMPLE/command

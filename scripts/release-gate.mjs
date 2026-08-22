@@ -97,6 +97,9 @@ const requiredPaths = [
   'server/admin/dist',
   'legacy/fastapi',
   'compat/framefilm/README.md',
+  'deploy/mqtt/README.md',
+  'deploy/mqtt/mosquitto.conf.example',
+  'deploy/mqtt/penaup.acl.example',
   'docs/api/transfer-state.md',
   'docs/legal/provenance.md'
 ];
@@ -172,6 +175,15 @@ for (const [model, flash, psram] of sdkconfigs) {
   assertMatch(`sdkconfig_${model} flash size`, config, new RegExp(`CONFIG_ESPTOOLPY_FLASHSIZE="${flash}"`));
   assertMatch(`sdkconfig_${model} PSRAM mode`, config, new RegExp(`^${psram}$`, 'm'));
 }
+
+const mqttConfig = read('deploy/mqtt/mosquitto.conf.example');
+const mqttAcl = read('deploy/mqtt/penaup.acl.example');
+assertMatch('MQTT disables anonymous access', mqttConfig, /allow_anonymous false/);
+assertMatch('MQTT exposes a TLS listener', mqttConfig, /listener 8883 0\.0\.0\.0/);
+assertMatch('MQTT bridge state wildcard', mqttAcl, /topic read penaup\/device\/\+\/state/);
+assertMatch('MQTT bridge command wildcard', mqttAcl, /topic write penaup\/device\/\+\/command/);
+assertMatch('MQTT device state is exact', mqttAcl, /topic write penaup\/device\/EXAMPLE\/state/);
+assertMatch('MQTT device command is exact', mqttAcl, /topic read penaup\/device\/EXAMPLE\/command/);
 
 const externalTools = [
   ['ESP-IDF idf.py', Boolean(executableOnPath('idf.py')), 'install ESP-IDF 5.5.2 and export its environment'],
