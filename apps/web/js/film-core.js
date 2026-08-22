@@ -8,6 +8,10 @@
 
   var FILM_HEADER_SIZE = 32;
   var FILM_COLOR_COUNT = 6;
+  // Six physical indexes can form more perceived tones through rendering.
+  var COLOR_FEEL_LAYERS = 8;
+  var PERCEIVED_COLOR_FEEL_COUNT = FILM_COLOR_COUNT * COLOR_FEEL_LAYERS;
+  var COLOR_RENDERING_MODES = ['layer', 'dots', 'dither'];
   var BLE_CHUNK_SIZE = 192;
   var COLOR_TABLE = [0x00, 0xff, 0xfc, 0xe0, 0x03, 0x1c];
   var EPD_COLOR_CODES = [0x00, 0x11, 0x22, 0x33, 0x55, 0x66];
@@ -140,5 +144,5 @@
     var number = function (value) { return Math.max(0, Number(value) || 0); };
     return { transfer_id: String(input.transfer_id || input.transferId || ''), device_id: String(input.device_id || input.deviceId || ''), phase: phase, completed_bytes: number(input.completed_bytes == null ? input.completedBytes : input.completed_bytes), total_bytes: number(input.total_bytes == null ? input.totalBytes : input.total_bytes), progress_hint: Math.max(0, Math.min(1, Number(input.progress_hint == null ? input.progressHint : input.progress_hint) || 0)), outcome: input.outcome || (phase === 'succeeded' ? 'success' : phase === 'failed' ? 'failure' : phase === 'device_state_uncertain' ? 'uncertain' : 'pending'), detail: String(input.detail || ''), updated_at: input.updated_at || input.updatedAt || new Date().toISOString(), card_title: String(input.card_title || input.cardTitle || '花生片正在显影'), rendering_detail: String(input.rendering_detail || input.renderingDetail || '') };
   }
-  return { FILM_HEADER_SIZE: FILM_HEADER_SIZE, FILM_COLOR_COUNT: FILM_COLOR_COUNT, BLE_CHUNK_SIZE: BLE_CHUNK_SIZE, COLOR_TABLE: COLOR_TABLE, EPD_COLOR_CODES: EPD_COLOR_CODES, PALETTE: PALETTE, PROFILES: PROFILES, TRANSFER_PHASES: TRANSFER_PHASES, TERMINAL_TRANSFER_PHASES: TERMINAL_TRANSFER_PHASES, normalizeProfileKey: normalizeProfileKey, getProfile: getProfile, pixelIndex: pixelIndex, createFilmHeader: createFilmHeader, createFilmFile: createFilmFile, parseFilmHeader: parseFilmHeader, validateFilmBuffer: validateFilmBuffer, packColorIndexes: packColorIndexes, unpackColorIndexes: unpackColorIndexes, toTransferEvent: toTransferEvent, isTerminalTransferPhase: isTerminalTransferPhase, isTransferPhaseAdvance: isTransferPhaseAdvance };
+  return { FILM_HEADER_SIZE: FILM_HEADER_SIZE, FILM_COLOR_COUNT: FILM_COLOR_COUNT, COLOR_FEEL_LAYERS: COLOR_FEEL_LAYERS, PERCEIVED_COLOR_FEEL_COUNT: PERCEIVED_COLOR_FEEL_COUNT, COLOR_RENDERING_MODES: COLOR_RENDERING_MODES, BLE_CHUNK_SIZE: BLE_CHUNK_SIZE, COLOR_TABLE: COLOR_TABLE, EPD_COLOR_CODES: EPD_COLOR_CODES, PALETTE: PALETTE, PROFILES: PROFILES, TRANSFER_PHASES: TRANSFER_PHASES, TERMINAL_TRANSFER_PHASES: TERMINAL_TRANSFER_PHASES, normalizeProfileKey: normalizeProfileKey, getProfile: getProfile, pixelIndex: pixelIndex, createFilmHeader: createFilmHeader, createFilmFile: createFilmFile, parseFilmHeader: parseFilmHeader, validateFilmBuffer: validateFilmBuffer, packColorIndexes: packColorIndexes, unpackColorIndexes: unpackColorIndexes, toTransferEvent: toTransferEvent, isTerminalTransferPhase: isTerminalTransferPhase, isTransferPhaseAdvance: isTransferPhaseAdvance };
 }));

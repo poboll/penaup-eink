@@ -83,7 +83,9 @@ static bat_t m_bat = {false, 0, 0, 0, false};
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
+#if FRAMEFILM_MAX != 1
 static bool hal_adc_cali_chan0_handle(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t *out_handle);
+#endif
 static int hal_bat_voltage_to_level(int voltage);
 
 
@@ -235,6 +237,7 @@ static int hal_bat_voltage_to_level(int voltage)
     return 0;
 }
 
+#if FRAMEFILM_MAX != 1
 static bool hal_adc_cali_chan0_handle(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t *out_handle)
 {
     adc_cali_handle_t handle = NULL;
@@ -294,6 +297,7 @@ static bool hal_adc_cali_chan0_handle(adc_unit_t unit, adc_channel_t channel, ad
 
     return calibrated;
 }
+#endif
 
 void hal_bat_deinit(void)
 {

@@ -331,11 +331,12 @@ static void ble_cmd_process(ble_cmd_t *cmd)
         }
         case BLE_FILM_TRANS_CH_FILE_NAME :
         {
+            size_t filename_len = (size_t)cmd->len;
             if(m_film_trans_state == BLE_FILM_TRANS_STARTED &&
-               cmd->len > 0 && cmd->len <= sizeof(m_film_trans_filename) - 1)
+               filename_len > 0 && filename_len < sizeof(m_film_trans_filename))
             {
-                memcpy(m_film_trans_filename, cmd->pdata, cmd->len);
-                m_film_trans_filename[cmd->len] = '\0';
+                memcpy(m_film_trans_filename, cmd->pdata, filename_len);
+                m_film_trans_filename[filename_len] = '\0';
                 m_film_trans_state = BLE_FILM_TRANS_RECV_NAME;
                 sys_logi(BEL_SERVICE_TAG, "Received filename: %s", m_film_trans_filename);
             }

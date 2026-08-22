@@ -8,6 +8,11 @@
 
 export const FILM_HEADER_SIZE = 32;
 export const FILM_COLOR_COUNT = 6;
+// The panel still stores six physical indexes. Rendering combinations create
+// additional perceived tones without changing the .film binary contract.
+export const COLOR_FEEL_LAYERS = 8;
+export const PERCEIVED_COLOR_FEEL_COUNT = FILM_COLOR_COUNT * COLOR_FEEL_LAYERS;
+export const COLOR_RENDERING_MODES = Object.freeze(['layer', 'dots', 'dither']);
 export const BLE_CHUNK_SIZE = 192;
 
 // The table stores the legacy file-level source values. The firmware maps

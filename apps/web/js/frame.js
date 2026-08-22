@@ -250,6 +250,7 @@ function frameUpdateImage(canvasId) {
 
     var revision = (frameRenderRevision[canvasId] || 0) + 1;
     frameRenderRevision[canvasId] = revision;
+    var perceivedColorFeelCount = (window.PenaupFilmCore && window.PenaupFilmCore.PERCEIVED_COLOR_FEEL_COUNT) || 48;
     var renderPromise = window.PenaupImageWorker && window.PenaupImageWorker.supported
         ? window.PenaupImageWorker.process({
             data: imageData.data.slice().buffer,
@@ -266,7 +267,7 @@ function frameUpdateImage(canvasId) {
     renderPromise.then(function(workerResult) {
         if (frameRenderRevision[canvasId] !== revision) return;
         ctx.putImageData(new ImageData(new Uint8ClampedArray(workerResult.preview), canvasWidth, canvasHeight), 0, 0);
-        frameRenderStatus(canvasId, '六色显影完成 · 48 种色彩观感可预览', 'success');
+        frameRenderStatus(canvasId, '六色显影完成 · 最多 ' + perceivedColorFeelCount + ' 种色彩观感可预览', 'success');
         updateCanvasScale();
     }).catch(function(error) {
         if (frameRenderRevision[canvasId] !== revision || error.name === 'AbortError') return;
@@ -275,7 +276,7 @@ function frameUpdateImage(canvasId) {
             var processedData = processImageData(processedImageData);
             var finalImageData = decodeProcessedData(processedData, canvasWidth, canvasHeight);
             ctx.putImageData(finalImageData, 0, 0);
-            frameRenderStatus(canvasId, '六色显影完成 · 本地降级模式', 'render-note');
+            frameRenderStatus(canvasId, '六色显影完成 · 最多 ' + perceivedColorFeelCount + ' 种观感 · 本地降级模式', 'render-note');
             updateCanvasScale();
         } catch (fallbackError) {
             frameRenderStatus(canvasId, '显影失败 · 请换一张照片重试', 'error');

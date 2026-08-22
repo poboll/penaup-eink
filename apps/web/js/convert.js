@@ -475,9 +475,10 @@ function updateImage() {
             if (result) {
                 var cfg = workerResult.adaptiveConfig;
                 var algoNames = { floydSteinberg: 'Floyd-Steinberg', atkinson: 'Atkinson', stucki: 'Stucki', jarvis: 'Jarvis-Judice-Ninke' };
+                var perceivedColorFeelCount = (window.PenaupFilmCore && window.PenaupFilmCore.PERCEIVED_COLOR_FEEL_COUNT) || 48;
                 result.innerHTML = ditherType === 'adaptive' && cfg
                     ? '<div class="info">自适应选择：' + (algoNames[cfg.type] || cfg.type) + '，强度 ' + cfg.strength.toFixed(1) + '</div>'
-                    : '<div class="info">六色显影完成 · film 可随时写入</div>';
+                    : '<div class="info">六色显影完成 · 最多 ' + perceivedColorFeelCount + ' 种观感 · film 可随时写入</div>';
             }
             updateCanvasScale();
         }).catch(function (error) {

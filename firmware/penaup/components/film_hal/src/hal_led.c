@@ -79,7 +79,9 @@ static led_t m_led =
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
+#if FRAMEFILM_MAX != 1
 static led_strip_handle_t configure_led(void);
+#endif
 
 /*********************************************************************
  * GLOBAL FUNCTIONS
@@ -219,7 +221,8 @@ void hal_led_deinit(void)
     sys_logi(LED_TAG, "LED deinitialized");
 }
 
-led_strip_handle_t configure_led(void)
+#if FRAMEFILM_MAX != 1
+static led_strip_handle_t configure_led(void)
 {
     // LED strip general initialization, according to your led board design
     led_strip_config_t strip_config =
@@ -250,3 +253,4 @@ led_strip_handle_t configure_led(void)
     sys_logi(LED_TAG, "Created LED strip object with RMT backend");
     return led_strip;
 }
+#endif

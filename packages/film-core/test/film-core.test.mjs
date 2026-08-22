@@ -2,13 +2,24 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   COLOR_TABLE,
+  COLOR_FEEL_LAYERS,
   FILM_HEADER_SIZE,
+  FILM_COLOR_COUNT,
+  PERCEIVED_COLOR_FEEL_COUNT,
+  COLOR_RENDERING_MODES,
   getProfile,
   createFilmFile,
   validateFilmBuffer,
   pixelIndex,
   toTransferEvent
 } from '../src/index.js';
+
+test('six physical colors expose the shared 48-feel rendering contract', () => {
+  assert.equal(FILM_COLOR_COUNT, 6);
+  assert.equal(COLOR_FEEL_LAYERS, 8);
+  assert.equal(PERCEIVED_COLOR_FEEL_COUNT, 48);
+  assert.deepEqual(COLOR_RENDERING_MODES, ['layer', 'dots', 'dither']);
+});
 
 test('all Penaup profiles produce and validate the documented sizes', () => {
   for (const key of ['PENAUP_STD', 'PENAUP_PRO', 'PENAUP_MAX']) {
