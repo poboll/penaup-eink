@@ -10,12 +10,14 @@
   "scripts": {
     "start": "npm --prefix server start",
     "dev": "npm --prefix server run dev",
-    "check": "node scripts/check-js.mjs && npm --prefix packages/film-core run check && npm --prefix server run check",
+    "check": "node scripts/check-js.mjs && npm --prefix packages/film-core run check && npm --prefix server run check && npm run check:contracts",
+    "check:contracts": "node scripts/release-gate.mjs",
     "test": "npm run test:server && npm run test:film-core && npm run test:wechat",
     "test:server": "npm --prefix server test",
     "test:film-core": "npm --prefix packages/film-core test",
     "test:wechat": "node --test apps/wechat/miniprogram/test/*.test.js",
     "audit": "npm --prefix server audit --omit=dev --registry=https://registry.npmjs.org",
+    "release:gate": "npm run check && npm test && npm run audit && node scripts/release-gate.mjs --strict-external",
     "film-core:sync": "npm --prefix server run film-core:sync",
     "migrate:fastapi": "npm --prefix server run migrate:fastapi --"
   }

@@ -5,6 +5,7 @@
 - [ ] 图片、摄影、字体、图标、SDK、数据手册和 npm 依赖清单有作者/来源/版本/许可；
 - [ ] 新增 `poboll` 内容使用 `LICENSE` 的非商业许可，产品和仓库没有宣称商业授权；
 - [ ] 根目录 `npm run check`、`npm test` 和官方 registry `npm run audit` 均通过；
+- [ ] `npm run check:contracts` 通过；发布机再运行 `npm run release:gate`，并解决所有 pending 外部工具项；
 - [ ] 原图 EXIF 清理、文件魔数、路径穿越、用户归属和 512 MiB 配额测试通过；
 - [ ] 生产环境关闭 dev code，配置真实邮件 provider、HttpOnly Secure Cookie、Caddy TLS、CORS allowlist 和限流；
 - [ ] `/health` 与 `/readyz` 已接入部署探针，并验证 SQLite/媒体目录不可写时会阻止就绪；
