@@ -1,6 +1,38 @@
 // Film 格式常量来自 packages/film-core；本地生成文件供微信运行时加载。
 var FilmCore = require('./film-core');
 const FILM_HEADER_SIZE = FilmCore.FILM_HEADER_SIZE;
+var COLOR_RENDERING_MODE_DEFINITIONS = FilmCore.COLOR_RENDERING_MODE_DEFINITIONS || [
+  { id: 'layer', label: '叠色层次', shortLabel: '叠色', description: '用自适应显影保留柔和的明暗过渡。', ditherType: 'adaptive', defaultStrength: 1 },
+  { id: 'dots', label: '网点', shortLabel: '网点', description: '用有序色点铺开中间调，颗粒更清楚。', ditherType: 'bayer', defaultStrength: 1.1 },
+  { id: 'dither', label: '抖动', shortLabel: '抖动', description: '把误差分散到邻近像素，尽量保留细节。', ditherType: 'floydSteinberg', defaultStrength: 1 }
+];
+
+function normalizeRenderingMode(mode) {
+  var value = String(mode || '').toLowerCase();
+  for (var index = 0; index < COLOR_RENDERING_MODE_DEFINITIONS.length; index += 1) {
+    if (COLOR_RENDERING_MODE_DEFINITIONS[index].id === value) return value;
+  }
+  return 'layer';
+}
+
+function getRenderingModeDefinition(mode) {
+  var normalized = normalizeRenderingMode(mode);
+  for (var index = 0; index < COLOR_RENDERING_MODE_DEFINITIONS.length; index += 1) {
+    if (COLOR_RENDERING_MODE_DEFINITIONS[index].id === normalized) return COLOR_RENDERING_MODE_DEFINITIONS[index];
+  }
+  return COLOR_RENDERING_MODE_DEFINITIONS[0];
+}
+
+function getRenderingModeOptions() {
+  return COLOR_RENDERING_MODE_DEFINITIONS.map(function (mode) {
+    return {
+      id: mode.id,
+      label: mode.label,
+      shortLabel: mode.shortLabel,
+      description: mode.description
+    };
+  });
+}
 
 // 设备配置表
 function toWechatConfig(profile) {
@@ -458,9 +490,42 @@ function adaptiveDither(imageData) {
   return applyDitherByType(imageData, bestConfig.type, bestConfig.strength);
 }
 
+// 4x4 Bayer 有序网点：用稳定的空间阈值表达中间调，不改变六色 film 索引。
+var BAYER_MATRIX = [
+  [0, 8, 2, 10],
+  [12, 4, 14, 6],
+  [3, 11, 1, 9],
+  [15, 7, 13, 5]
+];
+
+function bayerDither(imageData, strength) {
+  var width = imageData.width;
+  var height = imageData.height;
+  var data = imageData.data;
+  var amount = Number(strength);
+  if (!isFinite(amount)) amount = 1.1;
+  for (var y = 0; y < height; y += 1) {
+    var row = BAYER_MATRIX[y & 3];
+    for (var x = 0; x < width; x += 1) {
+      var bias = (row[x & 3] - 8) * amount;
+      var index = (y * width + x) * 4;
+      var closest = findClosestColor(
+        Math.min(255, Math.max(0, data[index] + bias)),
+        Math.min(255, Math.max(0, data[index + 1] + bias)),
+        Math.min(255, Math.max(0, data[index + 2] + bias))
+      );
+      data[index] = closest.r;
+      data[index + 1] = closest.g;
+      data[index + 2] = closest.b;
+    }
+  }
+  return imageData;
+}
+
 function applyDitherByType(imageData, type, strength) {
   switch (type) {
     case 'adaptive': return adaptiveDither(imageData);
+    case 'bayer': return bayerDither(imageData, strength);
     case 'floydSteinberg': return floydSteinbergDither(imageData, strength);
     case 'atkinson': return atkinsonDither(imageData, strength);
     case 'stucki': return stuckiDither(imageData, strength);
@@ -498,15 +563,24 @@ function processAndDisplay(portraitCanvas, portraitCtx, ditherType, ditherStreng
   var cw = cfg.canvasWidth;
   var ch = cfg.canvasHeight;
 
+  var modeDefinition = null;
+  for (var modeIndex = 0; modeIndex < COLOR_RENDERING_MODE_DEFINITIONS.length; modeIndex += 1) {
+    if (COLOR_RENDERING_MODE_DEFINITIONS[modeIndex].id === ditherType) {
+      modeDefinition = COLOR_RENDERING_MODE_DEFINITIONS[modeIndex];
+      break;
+    }
+  }
+  var processingType = modeDefinition ? modeDefinition.ditherType : ditherType;
+  var processingStrength = modeDefinition ? modeDefinition.defaultStrength : ditherStrength;
   var landscapeData = extractLandscapeData(portraitCanvas);
   // 与原版 ForFrame 一致：先应用外部对比度，再抖动
   if (contrast && contrast !== 1.0) {
     adjustContrast(landscapeData, contrast);
   }
-  if (ditherType === 'adaptive') {
+  if (processingType === 'adaptive') {
     landscapeData = adaptiveDither(landscapeData);
-  } else if (ditherType) {
-    landscapeData = applyDitherByType(landscapeData, ditherType, ditherStrength || 1.0);
+  } else if (processingType) {
+    landscapeData = applyDitherByType(landscapeData, processingType, processingStrength || 1.0);
   }
   var processedData = processImageData(landscapeData);
   var decoded = decodeProcessedData(processedData, sw, sh);
@@ -742,11 +816,13 @@ module.exports = {
   setDeviceType, getDeviceType, getDeviceConfig, getDeviceConfigForType,
   getCanvasWidth, getCanvasHeight, getScreenWidth, getScreenHeight,
   getFilmPixelDataSize, getFilmFileTotalSize,
+  COLOR_RENDERING_MODE_DEFINITIONS,
+  normalizeRenderingMode, getRenderingModeDefinition, getRenderingModeOptions,
   rgbPalette,
   findClosestColor,
   adjustContrast,
   floydSteinbergDither, atkinsonDither, stuckiDither, jarvisDither,
-  applyDitherByType,
+  applyDitherByType, bayerDither,
   processImageData, decodeProcessedData,
   extractLandscapeData,
   processAndDisplay,

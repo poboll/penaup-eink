@@ -18,6 +18,7 @@ export function createConfig(overrides = {}) {
   return {
     nodeEnv: overrides.nodeEnv || process.env.NODE_ENV || 'development',
     host: overrides.host || process.env.PENAUP_HOST || '127.0.0.1',
+    trustProxy: overrides.trustProxy ?? process.env.PENAUP_TRUST_PROXY === '1',
     port: overrides.port || integerFromEnv('PENAUP_PORT', 8787, 1, 65535),
     dataDir,
     databasePath: overrides.databasePath || path.join(dataDir, 'penaup.db'),
@@ -45,6 +46,9 @@ export function createConfig(overrides = {}) {
     mqttPassword: overrides.mqttPassword ?? process.env.PENAUP_MQTT_PASSWORD ?? '',
     mqttTopicPrefix: overrides.mqttTopicPrefix || process.env.PENAUP_MQTT_TOPIC_PREFIX || 'penaup/device',
     schedulerIntervalMs: overrides.schedulerIntervalMs ?? integerFromEnv('PENAUP_SCHEDULER_INTERVAL_MS', 15000, 1000, 300000),
+    rateLimitWindowMs: overrides.rateLimitWindowMs ?? integerFromEnv('PENAUP_RATE_LIMIT_WINDOW_MS', 60000, 1000, 3600000),
+    rateLimitMax: overrides.rateLimitMax ?? integerFromEnv('PENAUP_RATE_LIMIT_MAX', 120, 10, 10000),
+    rateLimitMaxKeys: overrides.rateLimitMaxKeys ?? integerFromEnv('PENAUP_RATE_LIMIT_MAX_KEYS', 4096, 128, 100000),
     aiBaseUrl: overrides.aiBaseUrl ?? process.env.PENAUP_AI_BASE_URL ?? '',
     aiApiKey: overrides.aiApiKey ?? process.env.PENAUP_AI_API_KEY ?? '',
     aiTimeoutMs: overrides.aiTimeoutMs || integerFromEnv('PENAUP_AI_TIMEOUT_MS', 20000, 3000, 60000),

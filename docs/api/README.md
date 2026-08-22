@@ -79,6 +79,26 @@ POST /api/v1/ai/generate
 
 用户只能读取自己拥有的设备、媒体、相册、模板、片单和 transfer。浏览器使用 HttpOnly Cookie 时，所有写请求（包括 refresh/logout）都需要 `X-CSRF-Token`；小程序和未来 iOS 使用短期 Bearer access token，并以 refresh token 换新令牌。失败 transfer 可创建新的 retry transfer；`device_state_uncertain` 不允许自动重发，必须先确认设备画面。
 
+## 请求限流
+
+所有 `/api/` 请求都会按客户端 IP 使用进程内固定窗口限流，设备心跳
+`/api/v1/device/heartbeat` 保留独立通道，不消耗用户 API 配额。默认窗口为 60 秒、每个
+IP 120 次请求，可通过 `PENAUP_RATE_LIMIT_WINDOW_MS`、`PENAUP_RATE_LIMIT_MAX` 和
+`PENAUP_RATE_LIMIT_MAX_KEYS` 调整；服务重启后计数清零。被限制时返回 `429`，响应包含
+`Retry-After`（秒）、`X-RateLimit-Limit`、`X-RateLimit-Remaining`，JSON 为：
+
+```json
+{
+  "ok": false,
+  "error": "rate_limited",
+  "retry_after_seconds": 12
+}
+```
+
+生产环境只有在 Caddy 是唯一可信反向代理时才启用 `PENAUP_TRUST_PROXY=1`，否则限流按
+代理地址计数。客户端应遵守 `Retry-After`，使用指数退避；不要为了重试 `device_state_uncertain`
+而自动重复发送照片。
+
 ## 设备兼容接口
 
 ```text

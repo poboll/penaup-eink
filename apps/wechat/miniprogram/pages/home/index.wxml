@@ -64,7 +64,7 @@
     <view class="color-study-palette"><view></view><view></view><view></view><view></view><view></view><view></view></view>
     <view class="color-study-line"><text>6 种基色 × 8 档层级</text><text>最多 48 种观感</text></view>
     <view class="color-study-modes" aria-label="三种显影方式"><text>叠色</text><text>网点</text><text>抖动</text></view>
-    <text class="color-study-copy">六色是基础墨粒，不是颜色上限。叠色、网点与抖动把明暗和过渡织出来；画面停住后，电子纸不需要持续点亮。</text>
+    <text class="color-study-copy">六色是基础墨粒，不是颜色少一点。叠色、网点与抖动把明暗和过渡织出来，最多形成 48 种色彩观感；画面停住后，电子纸不需要持续点亮。</text>
   </view>
 
   <!-- 今日模板 -->
@@ -110,6 +110,7 @@
       </view>
       <view class="transfer-kicker">{{transferPhaseLabel}}</view>
       <view class="transfer-title">{{transferTitle}}</view>
+      <view wx:if="{{transferRenderingDetail}}" class="transfer-rendering">显影方式 · {{transferRenderingDetail}}</view>
       <view class="transfer-percent">{{transferProgress}}%</view>
       <view class="transfer-msg">{{transferStatus}}</view>
       <view class="modal-progress-bar">

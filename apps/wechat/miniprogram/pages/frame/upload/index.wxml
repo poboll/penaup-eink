@@ -8,6 +8,23 @@
     </view>
   </view>
 
+  <view class="rendering-study">
+    <view class="rendering-study-head">
+      <text>EPD / COLOR STUDY</text>
+      <text class="rendering-study-count">6 × 8 = 48</text>
+    </view>
+    <view class="rendering-palette" aria-hidden="true"><view></view><view></view><view></view><view></view><view></view><view></view></view>
+    <view class="rendering-study-line"><text>六种基色 · 三种显影路径</text><text>最多 48 种观感</text></view>
+    <view class="rendering-mode-list" role="group" aria-label="选择显影方式">
+      <button wx:for="{{renderingModes}}" wx:key="id" class="rendering-mode-button {{item.id == renderingMode ? 'is-active' : ''}}" data-mode="{{item.id}}" bindtap="chooseRenderingMode" aria-pressed="{{item.id == renderingMode}}">
+        <text class="rendering-mode-label">{{item.label}}</text>
+        <text class="rendering-mode-detail">{{item.shortLabel}}</text>
+      </button>
+    </view>
+    <text class="rendering-mode-note">{{renderingModeNote}}</text>
+    <text class="rendering-study-copy">六色是基础墨粒，不是颜色上限。叠色、网点和抖动负责把明暗与过渡织出来；画面停住后，电子纸不需要持续点亮。</text>
+  </view>
+
   <view class="button-row">
     <button class="btn-secondary" bindtap="chooseImage">从相册选择</button>
     <button class="btn-secondary {{adjustOn ? 'btn-adjust-on' : ''}}" bindtap="toggleAdjust">{{adjustOn ? '✓ 调节中' : '调节'}}</button>
@@ -36,6 +53,7 @@
       </view>
       <view class="transfer-kicker">{{transferPhaseLabel}}</view>
       <view class="transfer-title">{{transferTitle}}</view>
+      <view wx:if="{{transferRenderingDetail}}" class="transfer-rendering">显影方式 · {{transferRenderingDetail}}</view>
       <view class="transfer-percent">{{transferProgress}}%</view>
       <view class="transfer-msg">{{transferStatus}}</view>
       <view class="modal-progress-bar">

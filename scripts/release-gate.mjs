@@ -9,6 +9,7 @@ import {
   COLOR_TABLE,
   EPD_COLOR_CODES,
   FILM_COLOR_COUNT,
+  COLOR_RENDERING_MODE_DEFINITIONS,
   TRANSFER_PHASES,
   createFilmFile,
   getProfile,
@@ -160,6 +161,19 @@ assertEqual('Web and WeChat film-core generated source', filmCoreWechat, filmCor
 const webStorySurface = read('apps/web/index.html');
 const webStudioSurface = read('apps/web/studio/index.html');
 const webProductSurface = `${webStorySurface}\n${webStudioSurface}`;
+assertEqual('shared rendering mode count', COLOR_RENDERING_MODE_DEFINITIONS.length, 3);
+const wechatUploadSurface = [
+  read('apps/wechat/miniprogram/pages/home/index.wxml'),
+  read('apps/wechat/miniprogram/pages/frame/upload/index.wxml'),
+  read('apps/wechat/miniprogram/pages/frame/upload/index.js'),
+  read('apps/wechat/miniprogram/utils/film-utils.js')
+].join('\n');
+for (const mode of COLOR_RENDERING_MODE_DEFINITIONS) {
+  assertMatch(`Web rendering mode ${mode.id}`, webStudioSurface, new RegExp(`data-rendering-mode="${mode.id}"`));
+  assertMatch(`WeChat rendering mode ${mode.id}`, wechatUploadSurface, new RegExp(`['"]${mode.id}['"]|data-mode="\\{\\{item.id\\}\\}"`));
+}
+assertMatch('WeChat rendering mode selector', wechatUploadSurface, /chooseRenderingMode/);
+assertMatch('WeChat Bayer rendering', wechatUploadSurface, /case 'bayer'/);
 if (/FrameFilm/i.test(webProductSurface)) fail('Web product copy brand boundary', 'legacy FrameFilm name is visible on a product surface');
 else pass('Web product copy brand boundary');
 assertMatch('Web product copy explains 48 color feels', webProductSurface, /48[^\n]{0,24}(?:种|色)/);

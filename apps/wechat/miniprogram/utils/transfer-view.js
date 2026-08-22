@@ -31,6 +31,7 @@ function beginning(name) {
     transferCanRetry: false,
     transferCanClose: false,
     transferBusy: true,
+    transferRenderingDetail: '',
     transferFileName: name || ''
   };
 }
@@ -57,6 +58,7 @@ function fromEvent(event) {
     transferCanRetry: retryable,
     transferCanClose: terminal,
     transferBusy: !terminal,
+    transferRenderingDetail: event.rendering_detail || event.renderingDetail || '',
     transferFileName: event.file_name || ''
   };
 }

@@ -25,11 +25,15 @@ Page({
     transferOutcome: 'pending',
     transferCanRetry: false,
     transferCanClose: false,
+    transferRenderingDetail: '',
     showFileName: false,
     isEditingName: false,
     customFileName: '',
     adjustOn: false,
-    showAdjustHint: false
+    showAdjustHint: false,
+    renderingMode: 'layer',
+    renderingModes: filmUtils.getRenderingModeOptions(),
+    renderingModeNote: filmUtils.getRenderingModeDefinition('layer').description
   },
 
   _canvas: null,
@@ -67,7 +71,7 @@ Page({
     });
   },
 
-  // 绘制照片：applyDither=true 时走 EPD 抖动，false 时显示原图（缩放过程用）
+  // 绘制照片：applyRendering=true 时走选中的 EPD 显影方式，false 时显示原图（缩放过程用）
   _drawPhoto: function (applyDither) {
     var that = this;
     var canvas = that._canvas;
@@ -97,14 +101,14 @@ Page({
     }
     if (applyDither) {
       try {
-        filmUtils.processAndDisplay(canvas, ctx, 'adaptive', 1.0, 1.2);
+        filmUtils.processAndDisplay(canvas, ctx, that.data.renderingMode, null, 1.2);
       } catch (e) {
         console.error('processAndDisplay error:', e);
       }
     }
   },
 
-  // 松手 1s 后加载抖动效果（完成后自动隐藏提示）
+  // 松手 1s 后加载显影效果（完成后自动隐藏提示）
   _scheduleDither: function () {
     var that = this;
     that._cancelEditTimer();
@@ -132,6 +136,16 @@ Page({
       this._cancelEditTimer();
       this._gesture = null;
       if (this._img) this._drawPhoto(true);
+    }
+  },
+
+  chooseRenderingMode: function (e) {
+    var mode = filmUtils.normalizeRenderingMode(e.currentTarget.dataset.mode);
+    var definition = filmUtils.getRenderingModeDefinition(mode);
+    this.setData({ renderingMode: mode, renderingModeNote: definition.description });
+    if (this._img) {
+      this._cancelEditTimer();
+      this._drawPhoto(!this.data.adjustOn);
     }
   },
 
@@ -277,7 +291,7 @@ Page({
       return;
     }
 
-    // 若缩放调整后 1s 延迟抖动尚未触发，先立即应用抖动保证发送的是最终效果
+    // 若缩放调整后 1s 延迟显影尚未触发，先立即应用最终效果保证发送内容一致
     that._cancelEditTimer();
     that._gesture = null;
     if (that._img) that._drawPhoto(true);
@@ -313,6 +327,7 @@ Page({
     if (!pending) return;
     that.setData(transferView.beginning(pending.baseName));
     bleTransfer.sendFilm(pending.fileData, pending.baseName, {
+      renderingDetail: filmUtils.getRenderingModeDefinition(that.data.renderingMode).label,
       onStatus: function (event) { that.setData(transferView.fromEvent(event)); }
     }).catch(function (err) {
       console.error('Penaup upload transfer failed:', err);

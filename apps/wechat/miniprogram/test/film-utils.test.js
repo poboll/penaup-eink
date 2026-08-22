@@ -43,3 +43,31 @@ test('legacy default still produces the STD film size', () => {
   assert.equal(film.getDeviceType(), 'PENAUP');
   assert.equal(film.getFilmFileTotalSize(), 120032);
 });
+
+test('Wechat exposes the shared three-path rendering contract', () => {
+  assert.deepEqual(
+    film.getRenderingModeOptions().map(function (mode) { return mode.id; }),
+    ['layer', 'dots', 'dither']
+  );
+  assert.equal(film.getRenderingModeDefinition('dots').ditherType, 'bayer');
+  assert.equal(film.normalizeRenderingMode('unknown'), 'layer');
+});
+
+test('Bayer rendering keeps the output inside the six-color palette', () => {
+  var imageData = {
+    width: 4,
+    height: 4,
+    data: new Uint8ClampedArray(4 * 4 * 4)
+  };
+  for (var index = 0; index < imageData.data.length; index += 4) {
+    imageData.data[index] = 132;
+    imageData.data[index + 1] = 98;
+    imageData.data[index + 2] = 74;
+    imageData.data[index + 3] = 255;
+  }
+  film.bayerDither(imageData, 1.1);
+  var palette = film.rgbPalette.map(function (color) { return color.r + ',' + color.g + ',' + color.b; });
+  for (var pixel = 0; pixel < imageData.data.length; pixel += 4) {
+    assert.equal(palette.includes(imageData.data[pixel] + ',' + imageData.data[pixel + 1] + ',' + imageData.data[pixel + 2]), true);
+  }
+});

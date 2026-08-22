@@ -15,6 +15,7 @@ import { createAuthService } from './modules/auth.js';
 import { createEmailDelivery } from './modules/email.js';
 import { createAiService } from './modules/ai.js';
 import { TaskQueue } from './queue.js';
+import { createRateLimiter } from './rate-limit.js';
 import { createStreamScheduler } from './scheduler.js';
 import { registerHttpRoutes } from './transports/http.js';
 import { registerLegacyAdminRoutes } from './transports/legacy-admin.js';
@@ -87,12 +88,32 @@ export async function buildApp(options = {}) {
   await ensureRuntimeDirectories(config);
   const database = options.database || new PenaupDatabase(config.databasePath);
   const events = options.events || new EventHub();
-  const app = Fastify({ logger: options.logger === undefined ? defaultLogger(config) : options.logger, bodyLimit: 2 * 1024 * 1024 });
+  const app = Fastify({
+    logger: options.logger === undefined ? defaultLogger(config) : options.logger,
+    bodyLimit: 2 * 1024 * 1024,
+    trustProxy: config.trustProxy
+  });
   const emailDelivery = createEmailDelivery({ database, config });
   const auth = createAuthService({ database, config, emailDelivery, logger: app?.log });
   const ai = createAiService({ config, database, fetchImpl: options.fetchImpl });
   const queue = options.queue || new TaskQueue({ concurrency: 1, maxSize: 100 });
-  const runtime = { config, database, events, mqtt: null, auth, ai, queue, scheduler: null };
+  const rateLimit = options.rateLimit || createRateLimiter({
+    windowMs: config.rateLimitWindowMs,
+    max: config.rateLimitMax,
+    maxKeys: config.rateLimitMaxKeys
+  });
+  const runtime = { config, database, events, mqtt: null, auth, ai, queue, scheduler: null, rateLimit };
+
+  app.addHook('onRequest', async (request, reply) => {
+    const pathname = String(request.url || '').split('?', 1)[0];
+    if (!pathname.startsWith('/api/') || pathname.startsWith('/api/v1/device/heartbeat')) return;
+    const result = rateLimit.consume(request.ip || request.socket?.remoteAddress || 'anonymous');
+    reply.header('X-RateLimit-Limit', String(result.limit));
+    reply.header('X-RateLimit-Remaining', String(result.remaining));
+    if (result.allowed) return;
+    reply.header('Retry-After', String(result.retryAfterSeconds));
+    return reply.code(429).send({ ok: false, error: 'rate_limited', retry_after_seconds: result.retryAfterSeconds });
+  });
 
   app.addHook('onSend', async (request, reply, payload) => {
     reply.header('X-Content-Type-Options', 'nosniff');

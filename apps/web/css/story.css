@@ -56,6 +56,10 @@ a { color: inherit; }
 .hero-proof-equation i { color: var(--quiet); font: normal 11px/1 var(--sans); }
 .hero-proof-equation em { margin: 0 3px; color: var(--red); font: normal 20px/1 var(--mono); }
 .hero-proof-detail { align-self: center; letter-spacing: .04em; text-transform: none; }
+.hero-scroll-cue { display: flex; width: fit-content; min-height: 44px; align-items: center; gap: 10px; margin-top: 18px; color: var(--quiet); font: 10px var(--mono); text-decoration: none; transition: color .24s ease; }
+.hero-scroll-cue:hover, .hero-scroll-cue:focus-visible { color: var(--ink); }
+.hero-scroll-cue i { color: var(--blue); font: normal 16px/1 var(--mono); animation: scroll-cue 1.8s ease-in-out infinite; }
+.hero-scroll-line { display: block; width: 46px; height: 1px; background: var(--line); }
 .hero-object { position: relative; display: grid; min-height: 500px; place-items: center; }
 .hero-object::before { content: ""; position: absolute; width: min(43vw, 510px); aspect-ratio: 1; border: 1px solid var(--line); border-radius: 50%; box-shadow: 0 0 0 48px rgba(255, 254, 250, .42), 0 0 0 49px var(--line); }
 .device-shadow { position: absolute; bottom: 7%; width: 72%; height: 9%; border-radius: 50%; background: rgba(23, 24, 22, .15); filter: blur(24px); }
@@ -168,4 +172,5 @@ a { color: inherit; }
 @media (max-width: 560px) { .hero-proof { grid-template-columns: 1fr; gap: 8px; width: 100%; } .hero-proof-label, .hero-proof-detail { grid-column: 1; } .hero-proof-detail { line-height: 1.45; } .hero-badge { top: 1%; right: 0; transform: scale(.88) rotate(-6deg); transform-origin: top right; } .color-lab-controls { align-items: flex-start; flex-direction: column; } }
 @keyframes color-scan { 0%, 8% { transform: translateX(0); opacity: 0; } 15% { opacity: 1; } 86% { opacity: 1; } 94%, 100% { transform: translateX(1080%); opacity: 0; } }
 @keyframes pigment-bloom { 0%, 100% { transform: scale(.92); opacity: .68; } 46%, 64% { transform: scale(1); opacity: .94; } }
+@keyframes scroll-cue { 0%, 100% { transform: translateY(-2px); opacity: .58; } 50% { transform: translateY(3px); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } .js [data-reveal] { opacity: 1; transform: none; } .color-lab-grid span { transform: none; opacity: .88; } .color-lab-grid::after { display: none; } }

@@ -7,6 +7,7 @@ test('CommonJS consumers resolve the browser film contract', () => {
   assert.equal(FilmCore.BLE_CHUNK_SIZE, 192);
   assert.equal(FilmCore.PERCEIVED_COLOR_FEEL_COUNT, 48);
   assert.deepEqual(Array.from(FilmCore.COLOR_RENDERING_MODES), ['layer', 'dots', 'dither']);
+  assert.equal(FilmCore.COLOR_RENDERING_MODE_DEFINITIONS[2].ditherType, 'floydSteinberg');
   assert.equal(FilmCore.isTerminalTransferPhase('succeeded'), true);
   assert.equal(FilmCore.isTransferPhaseAdvance('transferring', 'refreshing'), true);
   assert.equal(FilmCore.isTransferPhaseAdvance('refreshing', 'transferring'), false);

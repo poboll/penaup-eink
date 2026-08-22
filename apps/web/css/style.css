@@ -42,6 +42,10 @@ body::before {
 button, input, select, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 3px;
+}
 ::selection { color: var(--paper); background: var(--blue); }
 
 .penaup-splash {
@@ -363,6 +367,15 @@ input[type="range"] { accent-color: var(--blue); }
 .slider-container input[type="range"] { flex: 1; }
 .slider-container span { flex: 0 0 45px; font: 11px var(--mono); text-align: right; }
 .theme-select { width: auto; min-width: 160px; }
+.rendering-mode-fieldset { margin: 20px 0 18px; padding: 14px 0 0; border: 0; border-top: 1px solid var(--line); }
+.rendering-mode-fieldset legend { padding: 0 10px 0 0; color: var(--ink-soft); font: 12px var(--mono); }
+.rendering-mode-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 11px; }
+.rendering-mode-button { display: grid; min-height: 66px; align-content: center; gap: 5px; padding: 9px 10px; color: var(--ink-soft); border: 1px solid var(--line); background: transparent; cursor: pointer; text-align: left; transition: color .24s ease, border-color .24s ease, background .24s ease, transform .24s var(--ease); }
+.rendering-mode-button strong { color: inherit; font: 600 13px var(--serif); }
+.rendering-mode-button small { color: inherit; font: 10px var(--mono); }
+.rendering-mode-button:hover, .rendering-mode-button:focus-visible { color: var(--ink); border-color: var(--ink); background: var(--paper-raised); transform: translateY(-1px); }
+.rendering-mode-button.is-active, .rendering-mode-button[aria-pressed="true"] { color: var(--ink); border-color: var(--blue); background: rgba(77, 115, 173, .08); box-shadow: inset 0 -3px var(--blue); }
+.rendering-mode-note { min-height: 34px; margin: 10px 0 0; color: var(--ink-soft); font: 11px/1.5 var(--sans); }
 .debug-log { display: none; max-height: 180px; overflow: auto; margin-bottom: 12px; padding: 10px; color: var(--ink-soft); background: var(--paper-deep); font: 10px/1.5 var(--mono); }
 .debug-log.show { display: block; }
 .action-item { padding: 14px 0; border-bottom: 1px solid var(--line); }
@@ -492,6 +505,7 @@ body.experience-ready .app-topbar { animation: header-in .7s var(--ease) both; }
     .wake-slider-wrapper .slider-container { flex-basis: 100%; order: 3; }
     .frame-tab { flex-direction: column; gap: 3px; font-size: 9px; }
     .polaroid-frame { padding-bottom: 58px; }
+    .rendering-mode-list { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

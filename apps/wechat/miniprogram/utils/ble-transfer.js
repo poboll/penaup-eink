@@ -65,6 +65,7 @@ function sendFilm(fileData, baseName, options) {
 
   function report(phase, detail, progress, extra) {
     var event = eventFor(phase, detail, progress, totalBytes, fileName, extra);
+    if (options.renderingDetail) event.rendering_detail = String(options.renderingDetail);
     emit(notify, event);
     return event;
   }

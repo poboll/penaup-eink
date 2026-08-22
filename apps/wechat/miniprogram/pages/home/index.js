@@ -28,6 +28,7 @@ Page({
     transferOutcome: 'pending',
     transferCanRetry: false,
     transferCanClose: false,
+    transferRenderingDetail: '',
     transferBusy: false
   },
 

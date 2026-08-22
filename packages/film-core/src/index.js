@@ -13,6 +13,32 @@ export const FILM_COLOR_COUNT = 6;
 export const COLOR_FEEL_LAYERS = 8;
 export const PERCEIVED_COLOR_FEEL_COUNT = FILM_COLOR_COUNT * COLOR_FEEL_LAYERS;
 export const COLOR_RENDERING_MODES = Object.freeze(['layer', 'dots', 'dither']);
+export const COLOR_RENDERING_MODE_DEFINITIONS = Object.freeze([
+  Object.freeze({
+    id: 'layer',
+    label: '叠色层次',
+    shortLabel: '叠色',
+    description: '用自适应显影保留柔和的明暗过渡。',
+    ditherType: 'adaptive',
+    defaultStrength: 1
+  }),
+  Object.freeze({
+    id: 'dots',
+    label: '网点',
+    shortLabel: '网点',
+    description: '用有序色点铺开中间调，颗粒更清楚。',
+    ditherType: 'bayer',
+    defaultStrength: 1.1
+  }),
+  Object.freeze({
+    id: 'dither',
+    label: '抖动',
+    shortLabel: '抖动',
+    description: '把误差分散到邻近像素，尽量保留细节。',
+    ditherType: 'floydSteinberg',
+    defaultStrength: 1
+  })
+]);
 export const BLE_CHUNK_SIZE = 192;
 
 // The table stores the legacy file-level source values. The firmware maps

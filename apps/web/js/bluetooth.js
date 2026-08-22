@@ -105,6 +105,7 @@ let otaTransFileSize = 0;
 let otaTransSentBytes = 0;
 
 let bleCmdQueue = [];
+let scanInFlight = false;
 
 async function queueBleCmd(fn) {
     bleCmdQueue.push(fn);
@@ -125,6 +126,14 @@ async function processQueue() {
     }
 }
 
+function setScanState(button, busy) {
+    scanInFlight = busy;
+    if (!button) return;
+    button.disabled = busy;
+    button.setAttribute('aria-busy', busy ? 'true' : 'false');
+    button.textContent = busy ? '正在寻找花生片...' : '扫描设备';
+}
+
 function initBluetooth() {
     const scanButton = document.getElementById('scan-button');
     if (!scanButton) return;
@@ -133,9 +142,14 @@ function initBluetooth() {
         const deviceList = document.getElementById('device-list');
         const status = document.getElementById('connection-status');
 
+        if (scanInFlight) return;
+        setScanState(scanButton, true);
+
         try {
             if (!navigator.bluetooth) {
                 status.textContent = '浏览器不支持蓝牙';
+                status.className = 'status error';
+                deviceList.innerHTML = '<div class="no-devices">请使用支持 Web Bluetooth 的 Chromium 浏览器，或改用微信小程序。</div>';
                 return;
             }
 
@@ -219,9 +233,12 @@ function initBluetooth() {
 
         } catch (error) {
             console.error('连接错误:', error);
-            status.textContent = '连接失败: ' + error.message;
-            status.className = 'status';
-            deviceList.innerHTML = '<div class="no-devices">连接已取消或失败</div>';
+            const cancelled = error && (error.name === 'NotFoundError' || error.name === 'AbortError');
+            status.textContent = cancelled ? '已取消扫描' : '连接失败';
+            status.className = 'status error';
+            deviceList.innerHTML = '<div class="no-devices">' + (cancelled ? '没有选择设备，可以再次扫描。' : '设备没有连上，请确认花生片已唤醒后重试。') + '</div>';
+        } finally {
+            setScanState(scanButton, false);
         }
     });
 }

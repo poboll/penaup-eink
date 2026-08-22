@@ -458,7 +458,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div id="ditherAlgorithmGroup" class="form-group rendering-algorithm-group" hidden>
                             <label for="ditherType">抖动算法：</label>
                             <select id="ditherType">
                                 <option value="adaptive">自适应（推荐）</option>
@@ -470,6 +470,22 @@
                                 <option value="bayer">Bayer 4×4 有序抖动</option>
                             </select>
                         </div>
+
+                        <fieldset class="rendering-mode-fieldset">
+                            <legend>显影方式</legend>
+                            <div class="rendering-mode-list" role="group" aria-label="选择显影方式">
+                                <button type="button" class="rendering-mode-button is-active" data-rendering-mode="layer" aria-pressed="true">
+                                    <strong>叠色层次</strong><small>柔和过渡</small>
+                                </button>
+                                <button type="button" class="rendering-mode-button" data-rendering-mode="dots" aria-pressed="false">
+                                    <strong>网点</strong><small>颗粒分明</small>
+                                </button>
+                                <button type="button" class="rendering-mode-button" data-rendering-mode="dither" aria-pressed="false">
+                                    <strong>抖动</strong><small>保留细节</small>
+                                </button>
+                            </div>
+                            <p id="rendering-mode-note" class="rendering-mode-note" role="status" aria-live="polite">叠色层次会用自适应显影保留柔和的明暗过渡。</p>
+                        </fieldset>
 
                         <div id="ditherStrengthContainer" class="slider-container">
                             <label for="ditherStrength">抖动强度：</label>

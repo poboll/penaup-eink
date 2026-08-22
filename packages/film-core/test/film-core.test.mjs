@@ -7,6 +7,7 @@ import {
   FILM_COLOR_COUNT,
   PERCEIVED_COLOR_FEEL_COUNT,
   COLOR_RENDERING_MODES,
+  COLOR_RENDERING_MODE_DEFINITIONS,
   getProfile,
   createFilmFile,
   validateFilmBuffer,
@@ -19,6 +20,8 @@ test('six physical colors expose the shared 48-feel rendering contract', () => {
   assert.equal(COLOR_FEEL_LAYERS, 8);
   assert.equal(PERCEIVED_COLOR_FEEL_COUNT, 48);
   assert.deepEqual(COLOR_RENDERING_MODES, ['layer', 'dots', 'dither']);
+  assert.deepEqual(COLOR_RENDERING_MODE_DEFINITIONS.map((mode) => mode.id), COLOR_RENDERING_MODES);
+  assert.equal(COLOR_RENDERING_MODE_DEFINITIONS[1].ditherType, 'bayer');
 });
 
 test('all Penaup profiles produce and validate the documented sizes', () => {

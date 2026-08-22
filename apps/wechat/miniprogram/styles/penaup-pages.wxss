@@ -177,6 +177,7 @@
 .transfer-percent { margin-bottom: 8rpx; color: #4d75b6; font: 600 48rpx/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .transfer-kicker { margin-bottom: 10rpx; color: #4d75b6; font: 600 20rpx/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 2rpx; }
 .transfer-title { margin-bottom: 8rpx; color: #1a1b18; font: 500 30rpx/1.25 Georgia, "Songti SC", serif; }
+.transfer-rendering { margin: -2rpx 0 10rpx; color: #4d75b6; font: 19rpx/1.35 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .transfer-msg { margin-bottom: 24rpx; font-size: 23rpx; }
 .modal-progress-bar { width: 100%; height: 10rpx; overflow: hidden; border-radius: 0; }
 .modal-progress-fill { height: 100%; transition: width .25s ease; }

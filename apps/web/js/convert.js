@@ -16,6 +16,96 @@ var originalImage = null;
 var uploadedFileName = 'output';
 window.processedDataForDownload = null;
 var renderRevision = 0;
+var renderingMode = 'layer';
+
+var renderingModeCopy = {
+    layer: '叠色层次会用自适应显影保留柔和的明暗过渡。',
+    dots: '网点会把六种基础颜料排成规律颗粒，保留清晰的色阶边界。',
+    dither: '抖动会把误差分散到邻近像素，尽量保留照片里的细节。'
+};
+
+function getRenderingModeDefinition(mode) {
+    var definitions = (window.PenaupFilmCore && window.PenaupFilmCore.COLOR_RENDERING_MODE_DEFINITIONS) || [];
+    for (var index = 0; index < definitions.length; index += 1) {
+        if (definitions[index].id === mode) return definitions[index];
+    }
+    return null;
+}
+
+function normalizeRenderingMode(value) {
+    var modes = (window.PenaupFilmCore && window.PenaupFilmCore.COLOR_RENDERING_MODES) || ['layer', 'dots', 'dither'];
+    return modes.indexOf(value) >= 0 ? value : 'layer';
+}
+
+function getRenderingModeSettings() {
+    var ditherType = document.getElementById('ditherType').value;
+    var ditherStrength = parseFloat(document.getElementById('ditherStrength').value);
+    var definition = getRenderingModeDefinition(renderingMode);
+    if (definition && renderingMode !== 'dither') {
+        return {
+            type: definition.ditherType,
+            strength: renderingMode === 'dots' ? ditherStrength : definition.defaultStrength
+        };
+    }
+    return { type: ditherType, strength: ditherStrength };
+}
+
+function syncRenderingControls() {
+    var algorithmGroup = document.getElementById('ditherAlgorithmGroup');
+    var typeControl = document.getElementById('ditherType');
+    var strengthControl = document.getElementById('ditherStrength');
+    var strengthValue = document.getElementById('ditherStrengthValue');
+    var strengthContainer = document.getElementById('ditherStrengthContainer');
+    var definition = getRenderingModeDefinition(renderingMode);
+
+    if (definition && renderingMode !== 'dither' && typeControl) {
+        typeControl.value = definition.ditherType;
+        if (renderingMode === 'dots' && strengthControl) {
+            strengthControl.value = String(definition.defaultStrength);
+            if (strengthValue) strengthValue.textContent = definition.defaultStrength.toFixed(1);
+        }
+    }
+
+    var showAlgorithm = renderingMode === 'dither';
+    if (algorithmGroup) {
+        algorithmGroup.hidden = !showAlgorithm;
+        algorithmGroup.style.display = showAlgorithm ? '' : 'none';
+    }
+
+    var showStrength = renderingMode === 'dots' || (showAlgorithm && typeControl && typeControl.value !== 'adaptive');
+    if (strengthContainer) {
+        strengthContainer.hidden = !showStrength;
+        strengthContainer.style.display = showStrength ? '' : 'none';
+    }
+}
+
+function syncDitherToggle() {
+    var toggleButton = document.getElementById('toggleDither');
+    if (!toggleButton) return;
+    toggleButton.textContent = isDitheringEnabled ? '关闭显影' : '预览原图';
+    toggleButton.classList.toggle('active', isDitheringEnabled);
+    toggleButton.setAttribute('aria-pressed', isDitheringEnabled ? 'true' : 'false');
+}
+
+function setRenderingMode(mode) {
+    renderingMode = normalizeRenderingMode(mode);
+    document.querySelectorAll('[data-rendering-mode]').forEach(function (button) {
+        var active = button.getAttribute('data-rendering-mode') === renderingMode;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+    var note = document.getElementById('rendering-mode-note');
+    if (note) {
+        var definition = getRenderingModeDefinition(renderingMode);
+        note.textContent = definition && definition.description ? definition.description : renderingModeCopy[renderingMode];
+    }
+    syncRenderingControls();
+    if (!isDitheringEnabled) {
+        isDitheringEnabled = true;
+        syncDitherToggle();
+    }
+    if (originalImage) updateImage();
+}
 
 // 拖动偏移换算：横屏设备画布被 CSS rotate(90deg) 显示，竖屏设备（Max）不旋转。
 // 两种显示方式下 canvasRotation 对应的坐标映射不同，需分别换算，使拖动方向与视觉一致。
@@ -75,12 +165,18 @@ function initConvertTool() {
         debounceUpdateImage();
     });
     document.getElementById('ditherType').addEventListener('change', function() {
-        document.getElementById('ditherStrengthContainer').style.display =
-            this.value === 'adaptive' ? 'none' : '';
+        syncRenderingControls();
         debounceUpdateImage();
     });
-    document.getElementById('ditherStrengthContainer').style.display =
-        document.getElementById('ditherType').value === 'adaptive' ? 'none' : '';
+
+    document.querySelectorAll('[data-rendering-mode]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            setRenderingMode(this.getAttribute('data-rendering-mode'));
+        });
+    });
+    setRenderingMode(renderingMode);
+    syncRenderingControls();
+    syncDitherToggle();
     
     // 鼠标滚轮缩放功能
     const canvas = document.getElementById('canvas');
@@ -256,6 +352,10 @@ function handleFileUpload(event) {
         const img = new Image();
         img.onload = function () {
             originalImage = img;
+            if (!isDitheringEnabled) {
+                isDitheringEnabled = true;
+                syncDitherToggle();
+            }
 
             var canvas = document.getElementById('canvas');
             var canvasWidth = getCanvasWidth();
@@ -293,15 +393,15 @@ function handleFileUpload(event) {
 
 function toggleDither() {
     isDitheringEnabled = !isDitheringEnabled;
-    const toggleButton = document.getElementById('toggleDither');
-    toggleButton.textContent = isDitheringEnabled ? '禁用抖动' : '启用抖动';
-    toggleButton.classList.toggle('active', isDitheringEnabled);
+    syncDitherToggle();
     updateImage();
 }
 
 function resetImage() {
     currentImageData = null;
     originalImage = null;
+    isDitheringEnabled = false;
+    renderingMode = 'layer';
     uploadedFileName = 'output';
     canvasRotation = 0;
     scale = 1.0;
@@ -321,6 +421,9 @@ function resetImage() {
     if (fileName) fileName.textContent = '未选择照片';
     if (picker) picker.classList.remove('is-selected');
     if (fileInput) fileInput.value = '';
+    setRenderingMode('layer');
+    isDitheringEnabled = false;
+    syncDitherToggle();
 }
 
 function rotateCanvas() {
@@ -449,8 +552,9 @@ function updateImage() {
     // 根据状态应用抖动或显示原始图像。大图量化交给 Worker，拖动和滑块
     // 变化时只保留最新一帧，避免主线程被旧任务挤满。
     if (isDitheringEnabled) {
-        const ditherType = document.getElementById('ditherType').value;
-        const ditherStrength = parseFloat(document.getElementById('ditherStrength').value);
+        const renderingSettings = getRenderingModeSettings();
+        const ditherType = renderingSettings.type;
+        const ditherStrength = renderingSettings.strength;
         const result = document.getElementById('imageResult');
         if (result) result.innerHTML = '<div class="info render-note">正在显影 · 本地处理</div>';
 
@@ -477,15 +581,15 @@ function updateImage() {
                 var algoNames = { floydSteinberg: 'Floyd-Steinberg', atkinson: 'Atkinson', stucki: 'Stucki', jarvis: 'Jarvis-Judice-Ninke' };
                 var perceivedColorFeelCount = (window.PenaupFilmCore && window.PenaupFilmCore.PERCEIVED_COLOR_FEEL_COUNT) || 48;
                 result.innerHTML = ditherType === 'adaptive' && cfg
-                    ? '<div class="info">自适应选择：' + (algoNames[cfg.type] || cfg.type) + '，强度 ' + cfg.strength.toFixed(1) + '</div>'
-                    : '<div class="info">六色显影完成 · 最多 ' + perceivedColorFeelCount + ' 种观感 · film 可随时写入</div>';
+                    ? '<div class="info">' + renderingModeCopy[renderingMode] + ' 自适应选择：' + (algoNames[cfg.type] || cfg.type) + '，强度 ' + cfg.strength.toFixed(1) + ' · 最多 ' + perceivedColorFeelCount + ' 种观感</div>'
+                    : '<div class="info">' + renderingModeCopy[renderingMode] + ' 六色显影完成 · 最多 ' + perceivedColorFeelCount + ' 种观感 · film 可随时写入</div>';
             }
             updateCanvasScale();
         }).catch(function (error) {
             if (revision !== renderRevision || error.name === 'AbortError') return;
             // 老旧浏览器或 Worker 被策略禁用时，保留原有同步渲染链路。
             try {
-                var processedImageData = ditherImage(imageData);
+                var processedImageData = ditherImage(imageData, renderingSettings);
                 var processedData = processImageData(processedImageData);
                 var finalImageData = decodeProcessedData(processedData, canvasWidth, canvasHeight);
                 ctx.putImageData(finalImageData, 0, 0);
@@ -562,7 +666,7 @@ function buildDeviceImageData() {
     var contrastFactor = parseFloat(document.getElementById('contrast').value);
     adjustContrast(imageData, contrastFactor);
     if (isDitheringEnabled) {
-        imageData = ditherImage(imageData);
+        imageData = ditherImage(imageData, getRenderingModeSettings());
     }
     return imageData;
 }
@@ -1333,9 +1437,10 @@ function adaptiveDither(imageData) {
     return applyDitherByType(imageData, bestConfig.type, bestConfig.strength);
 }
 
-function ditherImage(imageData) {
-    const ditherType = document.getElementById('ditherType').value;
-    const ditherStrength = parseFloat(document.getElementById('ditherStrength').value);
+function ditherImage(imageData, settings) {
+    const activeSettings = settings || getRenderingModeSettings();
+    const ditherType = activeSettings.type;
+    const ditherStrength = activeSettings.strength;
 
     switch (ditherType) {
         case 'adaptive':
@@ -1523,6 +1628,7 @@ function autoConfigureDither() {
 
     const imageAnalysis = analyzeImage(currentImageData);
     const optimalParams = getOptimalDitherParameters(imageAnalysis);
+    setRenderingMode('dither');
     applyDitherParameters(optimalParams);
 
     if (!isDitheringEnabled) {
@@ -1563,8 +1669,9 @@ function convertImage() {
 
 async function buildFilmPixelsInWorker(imageData) {
     if (!window.PenaupImageWorker || !window.PenaupImageWorker.supported) return null;
-    const ditherType = document.getElementById('ditherType').value;
-    const ditherStrength = parseFloat(document.getElementById('ditherStrength').value);
+    const renderingSettings = getRenderingModeSettings();
+    const ditherType = renderingSettings.type;
+    const ditherStrength = renderingSettings.strength;
     const contrastFactor = parseFloat(document.getElementById('contrast').value);
     const workerResult = await window.PenaupImageWorker.process({
         data: imageData.data.slice().buffer,

@@ -12,6 +12,11 @@
   var COLOR_FEEL_LAYERS = 8;
   var PERCEIVED_COLOR_FEEL_COUNT = FILM_COLOR_COUNT * COLOR_FEEL_LAYERS;
   var COLOR_RENDERING_MODES = ['layer', 'dots', 'dither'];
+  var COLOR_RENDERING_MODE_DEFINITIONS = [
+    { id: 'layer', label: '叠色层次', shortLabel: '叠色', description: '用自适应显影保留柔和的明暗过渡。', ditherType: 'adaptive', defaultStrength: 1 },
+    { id: 'dots', label: '网点', shortLabel: '网点', description: '用有序色点铺开中间调，颗粒更清楚。', ditherType: 'bayer', defaultStrength: 1.1 },
+    { id: 'dither', label: '抖动', shortLabel: '抖动', description: '把误差分散到邻近像素，尽量保留细节。', ditherType: 'floydSteinberg', defaultStrength: 1 }
+  ];
   var BLE_CHUNK_SIZE = 192;
   var COLOR_TABLE = [0x00, 0xff, 0xfc, 0xe0, 0x03, 0x1c];
   var EPD_COLOR_CODES = [0x00, 0x11, 0x22, 0x33, 0x55, 0x66];
@@ -144,5 +149,5 @@
     var number = function (value) { return Math.max(0, Number(value) || 0); };
     return { transfer_id: String(input.transfer_id || input.transferId || ''), device_id: String(input.device_id || input.deviceId || ''), phase: phase, completed_bytes: number(input.completed_bytes == null ? input.completedBytes : input.completed_bytes), total_bytes: number(input.total_bytes == null ? input.totalBytes : input.total_bytes), progress_hint: Math.max(0, Math.min(1, Number(input.progress_hint == null ? input.progressHint : input.progress_hint) || 0)), outcome: input.outcome || (phase === 'succeeded' ? 'success' : phase === 'failed' ? 'failure' : phase === 'device_state_uncertain' ? 'uncertain' : 'pending'), detail: String(input.detail || ''), updated_at: input.updated_at || input.updatedAt || new Date().toISOString(), card_title: String(input.card_title || input.cardTitle || '花生片正在显影'), rendering_detail: String(input.rendering_detail || input.renderingDetail || '') };
   }
-  return { FILM_HEADER_SIZE: FILM_HEADER_SIZE, FILM_COLOR_COUNT: FILM_COLOR_COUNT, COLOR_FEEL_LAYERS: COLOR_FEEL_LAYERS, PERCEIVED_COLOR_FEEL_COUNT: PERCEIVED_COLOR_FEEL_COUNT, COLOR_RENDERING_MODES: COLOR_RENDERING_MODES, BLE_CHUNK_SIZE: BLE_CHUNK_SIZE, COLOR_TABLE: COLOR_TABLE, EPD_COLOR_CODES: EPD_COLOR_CODES, PALETTE: PALETTE, PROFILES: PROFILES, TRANSFER_PHASES: TRANSFER_PHASES, TERMINAL_TRANSFER_PHASES: TERMINAL_TRANSFER_PHASES, normalizeProfileKey: normalizeProfileKey, getProfile: getProfile, pixelIndex: pixelIndex, createFilmHeader: createFilmHeader, createFilmFile: createFilmFile, parseFilmHeader: parseFilmHeader, validateFilmBuffer: validateFilmBuffer, packColorIndexes: packColorIndexes, unpackColorIndexes: unpackColorIndexes, toTransferEvent: toTransferEvent, isTerminalTransferPhase: isTerminalTransferPhase, isTransferPhaseAdvance: isTransferPhaseAdvance };
+  return { FILM_HEADER_SIZE: FILM_HEADER_SIZE, FILM_COLOR_COUNT: FILM_COLOR_COUNT, COLOR_FEEL_LAYERS: COLOR_FEEL_LAYERS, PERCEIVED_COLOR_FEEL_COUNT: PERCEIVED_COLOR_FEEL_COUNT, COLOR_RENDERING_MODES: COLOR_RENDERING_MODES, COLOR_RENDERING_MODE_DEFINITIONS: COLOR_RENDERING_MODE_DEFINITIONS, BLE_CHUNK_SIZE: BLE_CHUNK_SIZE, COLOR_TABLE: COLOR_TABLE, EPD_COLOR_CODES: EPD_COLOR_CODES, PALETTE: PALETTE, PROFILES: PROFILES, TRANSFER_PHASES: TRANSFER_PHASES, TERMINAL_TRANSFER_PHASES: TERMINAL_TRANSFER_PHASES, normalizeProfileKey: normalizeProfileKey, getProfile: getProfile, pixelIndex: pixelIndex, createFilmHeader: createFilmHeader, createFilmFile: createFilmFile, parseFilmHeader: parseFilmHeader, validateFilmBuffer: validateFilmBuffer, packColorIndexes: packColorIndexes, unpackColorIndexes: unpackColorIndexes, toTransferEvent: toTransferEvent, isTerminalTransferPhase: isTerminalTransferPhase, isTransferPhaseAdvance: isTransferPhaseAdvance };
 }));
