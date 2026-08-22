@@ -1,0 +1,38 @@
+name: Penaup checks
+
+on:
+  push:
+    branches: [main, "codex/**"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    name: Node 24 contracts and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install runtime dependencies
+        run: npm ci --prefix server
+
+      - name: Check source, contracts and tests
+        run: npm run check
+
+      - name: Run cross-runtime tests
+        run: npm test
+
+      - name: Audit production dependencies
+        run: npm run audit

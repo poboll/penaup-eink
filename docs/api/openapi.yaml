@@ -1,0 +1,390 @@
+openapi: 3.1.0
+info:
+  title: Penaup Runtime API
+  version: 0.1.0
+  description: |
+    花生片 Penaup 的用户、设备、媒体和显影状态接口。
+    照片本体不经过 MQTT；Web、微信小程序和未来 iOS 使用同一套 transfer 状态。
+  license:
+    name: Poboll Non-Commercial License v1.0
+    identifier: LicenseRef-Poboll-NonCommercial
+servers:
+  - url: https://penaup.example.com
+    description: 生产部署示例
+  - url: http://127.0.0.1:8787
+    description: 本地运行时
+tags:
+  - name: auth
+  - name: devices
+  - name: media
+  - name: transfers
+  - name: events
+paths:
+  /api/v1/auth/challenges:
+    post:
+      tags: [auth]
+      security: []
+      summary: 发送邮箱一次性验证码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChallengeRequest'
+      responses:
+        '202':
+          description: 验证码已交给邮件 provider
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeResponse'
+        '403': { description: 需要邀请 }
+        '429': { description: 频率限制 }
+  /api/v1/auth/verify:
+    post:
+      tags: [auth]
+      security: []
+      summary: 验证一次性验证码并创建会话
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyRequest'
+      responses:
+        '200':
+          description: Bearer 与 refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401': { description: 验证码错误 }
+  /api/v1/auth/refresh:
+    post:
+      tags: [auth]
+      summary: 轮换 refresh token
+      description: 浏览器 Cookie 请求需要 X-CSRF-Token；小程序/iOS 可使用 Bearer refresh token。
+      security:
+        - BearerAuth: []
+        - CookieSession: []
+      responses:
+        '200':
+          description: 新会话
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401': { description: refresh token 无效 }
+        '403': { description: CSRF 缺失 }
+  /api/v1/auth/logout:
+    post:
+      tags: [auth]
+      summary: 注销当前会话
+      security:
+        - BearerAuth: []
+        - CookieSession: []
+      responses:
+        '200': { description: 已注销 }
+        '403': { description: CSRF 缺失 }
+  /api/v1/me:
+    get:
+      tags: [auth]
+      security:
+        - BearerAuth: []
+        - CookieSession: []
+      summary: 当前用户
+      responses:
+        '200':
+          description: 用户资料
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401': { description: 未登录 }
+  /api/v1/devices:
+    get:
+      tags: [devices]
+      security:
+        - BearerAuth: []
+        - CookieSession: []
+      summary: 当前用户的设备
+      responses:
+        '200':
+          description: 设备列表
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, data]
+                properties:
+                  ok: { const: true }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Device' }
+  /api/v1/devices/{deviceId}/claim:
+    post:
+      tags: [devices]
+      security:
+        - BearerAuth: []
+        - CookieSession: []
+      summary: 认领已登记设备
+      parameters:
+        - $ref: '#/components/parameters/DeviceId'
+      responses:
+        '200': { description: 已认领设备 }
+        '409': { description: 已被其他用户认领 }
+  /api/v1/devices/{deviceId}/commands:
+    post:
+      tags: [devices]
+      security:
+        - BearerAuth: []
+        - CookieSession: []
+      summary: 向设备下发命令
+      parameters:
+        - $ref: '#/components/parameters/DeviceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCommandRequest'
+      responses:
+        '200': { description: 命令已入队 }
+        '404': { description: 设备不属于当前用户 }
+        '503': { description: 队列或 MQTT 不可用 }
+  /api/v1/media:
+    post:
+      tags: [media]
+      security:
+        - BearerAuth: []
+        - CookieSession: []
+      summary: 上传图片或 film
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+                album_id: { type: integer, minimum: 1 }
+      responses:
+        '200': { description: 媒体已保存 }
+        '413': { description: 超过用户配额或请求限制 }
+        '415': { description: 媒体类型不支持 }
+    get:
+      tags: [media]
+      security:
+        - BearerAuth: []
+        - CookieSession: []
+      summary: 当前用户媒体索引
+      responses:
+        '200': { description: 媒体列表 }
+  /api/v1/transfers:
+    post:
+      tags: [transfers]
+      security:
+        - BearerAuth: []
+        - CookieSession: []
+      summary: 创建显影传输记录
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferCreateRequest'
+      responses:
+        '202': { description: 传输已创建 }
+    get:
+      tags: [transfers]
+      security:
+        - BearerAuth: []
+        - CookieSession: []
+      summary: 当前用户传输历史
+      responses:
+        '200': { description: 传输列表 }
+  /api/v1/transfers/{transferId}:
+    get:
+      tags: [transfers]
+      security:
+        - BearerAuth: []
+        - CookieSession: []
+      summary: 查询一次显影状态
+      parameters:
+        - $ref: '#/components/parameters/TransferId'
+      responses:
+        '200': { description: 当前状态 }
+        '404': { description: transfer 不存在 }
+  /api/v1/transfers/{transferId}/retry:
+    post:
+      tags: [transfers]
+      security:
+        - BearerAuth: []
+        - CookieSession: []
+      summary: 重试失败的显影
+      description: device_state_uncertain 必须先由用户确认设备画面，不能自动重试。
+      parameters:
+        - $ref: '#/components/parameters/TransferId'
+      responses:
+        '202': { description: 新 transfer 已创建 }
+        '409': { description: 当前状态不可重试 }
+  /api/v1/transfers/{transferId}/events:
+    post:
+      tags: [transfers]
+      security:
+        - BearerAuth: []
+        - CookieSession: []
+      summary: 写入客户端可证明的传输阶段
+      description: 客户端不能直接伪造 succeeded；设备刷新确认必须来自可信设备桥接层。
+      parameters:
+        - $ref: '#/components/parameters/TransferId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferEvent'
+      responses:
+        '200': { description: 状态已更新 }
+        '409': { description: 状态跃迁非法或需要设备确认 }
+  /api/v1/events/stream:
+    get:
+      tags: [events]
+      security:
+        - BearerAuth: []
+        - CookieSession: []
+      summary: SSE 实时事件
+      description: iOS 可用 URLSession bytes/AsyncStream 消费；断线后使用 transfer 查询接口补齐状态。
+      responses:
+        '200':
+          description: text/event-stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: event 行包含 type 与 JSON data
+        '401': { description: 未登录 }
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque
+    CookieSession:
+      type: apiKey
+      in: cookie
+      name: penaup_session
+  parameters:
+    DeviceId:
+      name: deviceId
+      in: path
+      required: true
+      schema: { type: string, minLength: 1, maxLength: 128 }
+    TransferId:
+      name: transferId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+  schemas:
+    ChallengeRequest:
+      type: object
+      required: [email]
+      properties:
+        email: { type: string, format: email, maxLength: 320 }
+        invite_token: { type: string, maxLength: 256 }
+    VerifyRequest:
+      type: object
+      required: [challenge_id, code]
+      properties:
+        challenge_id: { type: integer, minimum: 1 }
+        code: { type: string, pattern: '^\\d{6}$' }
+    ChallengeResponse:
+      type: object
+      required: [ok, data]
+      properties:
+        ok: { const: true }
+        data:
+          type: object
+          required: [challenge_id, expires_at]
+          properties:
+            challenge_id: { type: integer }
+            expires_at: { type: string, format: date-time }
+    TokenResponse:
+      type: object
+      required: [ok, data]
+      properties:
+        ok: { const: true }
+        data:
+          type: object
+          required: [access_token, refresh_token, token_type, expires_at]
+          properties:
+            access_token: { type: string }
+            refresh_token: { type: string }
+            token_type: { const: Bearer }
+            expires_at: { type: string, format: date-time }
+            refresh_expires_at: { type: string, format: date-time }
+    UserResponse:
+      type: object
+      required: [ok, data]
+      properties:
+        ok: { const: true }
+        data:
+          type: object
+          required: [id, email]
+          properties:
+            id: { type: integer }
+            email: { type: string, format: email }
+            role: { type: string }
+    Device:
+      type: object
+      required: [deviceId, model, online]
+      properties:
+        deviceId: { type: string }
+        model: { type: string, enum: [PENAUP_STD, PENAUP_PRO, PENAUP_MAX] }
+        name: { type: string }
+        online: { type: boolean }
+        batteryPercent: { type: integer, minimum: 0, maximum: 100 }
+        state: { type: string }
+    DeviceCommandRequest:
+      type: object
+      required: [cmd]
+      properties:
+        cmd: { type: string, maxLength: 128 }
+        params: { type: object, additionalProperties: true }
+    TransferCreateRequest:
+      type: object
+      required: [device_id]
+      properties:
+        device_id: { type: string, maxLength: 128 }
+        media_id: { type: integer, minimum: 1 }
+        card_title: { type: string, maxLength: 128 }
+        rendering_detail: { type: string, maxLength: 256 }
+    TransferEvent:
+      type: object
+      required: [transfer_id, device_id, phase, completed_bytes, total_bytes, progress_hint, outcome, updated_at]
+      properties:
+        transfer_id: { type: string, format: uuid }
+        device_id: { type: string }
+        phase: { $ref: '#/components/schemas/TransferPhase' }
+        completed_bytes: { type: integer, minimum: 0 }
+        total_bytes: { type: integer, minimum: 0 }
+        progress_hint: { type: number, minimum: 0, maximum: 1 }
+        outcome: { type: string, enum: [pending, success, failure, uncertain] }
+        detail: { type: string }
+        updated_at: { type: string, format: date-time }
+        card_title: { type: string }
+        rendering_detail: { type: string }
+    TransferPhase:
+      type: string
+      enum:
+        - idle
+        - preparing
+        - discovering
+        - connecting
+        - handshaking
+        - transferring
+        - refreshing
+        - succeeded
+        - failed
+        - device_state_uncertain

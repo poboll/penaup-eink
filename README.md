@@ -40,11 +40,13 @@ deploy/                   Caddy、systemd、备份和环境模板
 
 ```bash
 npm test       # Node 服务、film-core、微信协议测试
-npm run check  # 76 个 JS 文件 + Node/film-core 语法检查
+npm run check  # JavaScript、Node/film-core 语法与跨端契约检查
 npm run check:contracts # 三端 BLE/film、三机型配置、许可证和目录契约
 npm run audit  # 官方 npm registry 依赖审计
 npm start      # 启动 server/，默认 127.0.0.1:8787
 ```
+
+GitHub Actions 会在 `main` 和审阅分支上重复执行 Node 24 的可复现检查、跨端测试和生产依赖审计；需要本机 ESP-IDF、真实微信 AppID、Caddy、Mosquitto 或设备的严格门禁仍由发布机执行。
 
 发布机器使用 `npm run release:gate`。严格门禁会在本地契约、测试和依赖审计之后继续检查
 ESP-IDF `idf.py`、Caddy、Mosquitto 和微信开发者工具；缺少工具、硬件或微信 AppID 权限时会失败，

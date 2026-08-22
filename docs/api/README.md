@@ -51,4 +51,4 @@ GET /api/v1/device/film/latest.film
 - 文件名只保留 ASCII 安全字符，存储路径必须落在 `PENAUP_DATA_DIR/media` 内；
 - 原图处理失败时保留草稿/客户端数据，不将失败状态伪装为成功。
 
-完整 transfer 字段和 iOS/Live Activity 映射见 [transfer-state.md](transfer-state.md)。
+完整 transfer 字段和跨端状态约束见 [transfer-state.md](transfer-state.md)；原生客户端的令牌、SSE、BLE 和 Live Activity 接入见 [ios-integration.md](ios-integration.md)。机器可读接口见 [openapi.yaml](openapi.yaml)。

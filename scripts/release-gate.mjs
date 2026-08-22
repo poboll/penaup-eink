@@ -103,6 +103,8 @@ const requiredPaths = [
   'deploy/mqtt/README.md',
   'deploy/mqtt/mosquitto.conf.example',
   'deploy/mqtt/penaup.acl.example',
+  'docs/api/openapi.yaml',
+  'docs/api/ios-integration.md',
   'docs/api/transfer-state.md',
   'docs/legal/provenance.md'
 ];

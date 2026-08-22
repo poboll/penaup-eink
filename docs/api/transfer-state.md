@@ -1,6 +1,6 @@
 # Transfer State Contract
 
-> Copyright (c) 2026 poboll · 供 Web、微信小程序、Node 和未来 `PeanupApp` 共用。
+> Copyright (c) 2026 poboll · 供 Web、微信小程序、Node 和未来 `PenaupApp` 共用。
 
 ## 阶段
 
