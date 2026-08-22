@@ -136,7 +136,7 @@ a { color: inherit; }
     background: rgba(245, 245, 240, .78);
     backdrop-filter: blur(16px);
 }
-.app-brand { display: inline-flex; align-items: center; gap: 11px; width: fit-content; text-decoration: none; }
+.app-brand { display: inline-flex; min-height: 44px; align-items: center; gap: 11px; width: fit-content; text-decoration: none; }
 .brand-mark { flex: 0 0 30px; width: 30px; height: 24px; color: var(--ink); transform: scale(.72); transform-origin: left center; }
 .brand-mark i { width: 15px; height: 21px; }
 .brand-mark i:first-child { left: 3px; }
@@ -331,7 +331,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--blue); box-shado
 
 .page-header { justify-content: space-between; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--ink); }
 .page-header h1 { margin: 0; font-size: clamp(40px, 4.5rem, 74px); }
-.battery-icon { display: flex; align-items: center; gap: 8px; color: var(--ink-soft); cursor: pointer; font: 11px var(--mono); }
+.battery-icon { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--ink-soft); cursor: pointer; font: 11px var(--mono); }
 .battery-svg { width: 28px; height: 14px; }
 .battery-outline, .battery-cap { fill: none; stroke: currentColor; stroke-width: 1; }
 .battery-fill-icon { fill: var(--green); }
@@ -343,7 +343,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--blue); box-shado
 .section-header .debug-toggle { margin-left: auto; }
 .section-content { padding: 12px 0 0; }
 .file-list-header { justify-content: space-between; min-height: 44px; color: var(--ink-soft); font: 11px var(--mono); text-transform: uppercase; }
-.icon-button { display: inline-grid; width: 34px; height: 34px; place-items: center; padding: 0; color: var(--ink); border: 1px solid var(--line); border-radius: 50%; background: transparent; cursor: pointer; }
+.icon-button { display: inline-grid; width: 44px; height: 44px; place-items: center; padding: 0; color: var(--ink); border: 1px solid var(--line); border-radius: 50%; background: transparent; cursor: pointer; }
 .icon-button:hover { background: var(--paper-raised); border-color: var(--ink); }
 .file-item { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 7px 0; border-top: 1px solid var(--line); }
 .file-item.selected { color: var(--blue); }
@@ -448,7 +448,7 @@ input[type="range"] { accent-color: var(--blue); }
 .ota-info, .ota-file-section, .ota-tips { padding: 14px 0; }
 .ota-tips h3 { margin: 0 0 8px; font-size: 20px; color: var(--ink); }
 .ota-tips ul { margin: 0; padding-left: 18px; }
-.setting-hint-icon { position: relative; color: var(--ink-soft); cursor: help; }
+.setting-hint-icon { position: relative; display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; color: var(--ink-soft); cursor: help; }
 .setting-hint-icon i { font-size: 16px; }
 .hint-tooltip { position: absolute; z-index: 5; right: 0; bottom: 26px; display: none; width: 190px; padding: 8px; color: var(--paper-raised); background: var(--ink); font-size: 11px; }
 .setting-hint-icon:hover .hint-tooltip, .setting-hint-icon:focus-within .hint-tooltip { display: block; }

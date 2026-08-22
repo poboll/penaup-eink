@@ -1,12 +1,19 @@
 {$PENAUP_DOMAIN} {
-    encode zstd gzip
+	encode zstd gzip
 
-    @events path /api/v1/events/stream
-    header @events Cache-Control "no-cache, no-transform"
-    header @events X-Accel-Buffering "no"
-    reverse_proxy @events 127.0.0.1:8787 {
-        flush_interval -1
-    }
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
 
-    reverse_proxy 127.0.0.1:8787
+	@events path /api/v1/events/stream
+	header @events Cache-Control "no-cache, no-transform"
+	header @events X-Accel-Buffering "no"
+	reverse_proxy @events 127.0.0.1:8787 {
+		flush_interval -1
+	}
+
+	reverse_proxy 127.0.0.1:8787
 }

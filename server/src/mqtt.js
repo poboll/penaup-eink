@@ -19,6 +19,7 @@ export function createMqttBridge(config, options = {}) {
   const client = mqtt.connect(config.mqttUrl, {
     username: config.mqttUsername || undefined,
     password: config.mqttPassword || undefined,
+    protocolVersion: 5,
     reconnectPeriod: 3000,
     clientId: `penaup-runtime-${process.pid}`
   });

@@ -129,11 +129,15 @@ else pass('runtime data exclusion');
 const filmCoreBrowser = read('apps/web/js/film-core.js');
 const filmCoreWechat = read('apps/wechat/miniprogram/utils/film-core.js');
 assertEqual('Web and WeChat film-core generated source', filmCoreWechat, filmCoreBrowser);
-const webProductSurface = `${read('apps/web/index.html')}\n${read('apps/web/studio/index.html')}`;
+const webStorySurface = read('apps/web/index.html');
+const webStudioSurface = read('apps/web/studio/index.html');
+const webProductSurface = `${webStorySurface}\n${webStudioSurface}`;
 if (/FrameFilm/i.test(webProductSurface)) fail('Web product copy brand boundary', 'legacy FrameFilm name is visible on a product surface');
 else pass('Web product copy brand boundary');
 assertMatch('Web product copy explains 48 color feels', webProductSurface, /48[^\n]{0,24}(?:种|色)/);
 assertMatch('Web product copy explains e-ink power behavior', webProductSurface, /不需要[^\n]{0,20}持续点亮/);
+assertMatch('Studio brand returns to story home', webStudioSurface, /class="app-brand" href="\.\.\/"/);
+assertMatch('Studio keeps browser zoom available', webStudioSurface, /name="viewport" content="width=device-width, initial-scale=1"/);
 assertEqual('film color count', FILM_COLOR_COUNT, 6);
 assertEqual('BLE chunk size', BLE_CHUNK_SIZE, 192);
 assertEqual('film color table', JSON.stringify(Array.from(COLOR_TABLE)), JSON.stringify([0x00, 0xff, 0xfc, 0xe0, 0x03, 0x1c]));
@@ -183,7 +187,10 @@ for (const [model, flash, psram] of sdkconfigs) {
 
 const mqttConfig = read('deploy/mqtt/mosquitto.conf.example');
 const mqttAcl = read('deploy/mqtt/penaup.acl.example');
-assertMatch('MQTT disables anonymous access', mqttConfig, /allow_anonymous false/);
+assertMatch('MQTT bridge pins MQTT 5', read('server/src/mqtt.js'), /protocolVersion:\s*5/);
+assertMatch('MQTT disables anonymous access', mqttConfig, /listener_allow_anonymous false/);
+if (/per_listener_settings\s+true/.test(mqttConfig)) fail('MQTT avoids deprecated listener setting', 'per_listener_settings is deprecated in Mosquitto 2.x');
+else pass('MQTT avoids deprecated listener setting');
 assertMatch('MQTT exposes a TLS listener', mqttConfig, /listener 8883 0\.0\.0\.0/);
 assertMatch('MQTT bridge state wildcard', mqttAcl, /topic read penaup\/device\/\+\/state/);
 assertMatch('MQTT bridge command wildcard', mqttAcl, /topic write penaup\/device\/\+\/command/);

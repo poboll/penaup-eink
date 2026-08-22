@@ -3,19 +3,18 @@
 
 persistence true
 persistence_location /var/lib/mosquitto/
-per_listener_settings true
 
 # The Penaup Node bridge stays on the same host and uses the loopback listener.
 listener 1883 127.0.0.1
 protocol mqtt
-allow_anonymous false
+listener_allow_anonymous false
 password_file /etc/mosquitto/passwd
 acl_file /etc/mosquitto/penaup.acl
 
 # Wi-Fi devices use the public TLS listener. Do not expose plaintext 1883.
 listener 8883 0.0.0.0
 protocol mqtt
-allow_anonymous false
+listener_allow_anonymous false
 password_file /etc/mosquitto/passwd
 acl_file /etc/mosquitto/penaup.acl
 cafile /etc/letsencrypt/live/mqtt.penaup.example.com/chain.pem

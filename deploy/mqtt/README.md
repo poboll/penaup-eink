@@ -2,7 +2,7 @@
 
 > Copyright (c) 2026 poboll · 示例不包含真实密码或生产证书。
 
-这里提供 Mosquitto 的最小生产边界：本机 Node bridge 使用回环 listener，设备使用 TLS listener；
+这里提供 Mosquitto 2.x 的最小生产边界：本机 Node bridge 使用回环 listener，设备使用 TLS listener；
 桥接账号可以读所有设备状态并写所有设备指令，设备账号只能访问自己的两个 topic。HTTP 心跳返回的
 device token 仍然是设备身份的第二层校验，MQTT ACL 不能替代它。
 

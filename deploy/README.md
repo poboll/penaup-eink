@@ -10,6 +10,6 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now penaup
 ```
 
-把 `Caddyfile` 中的 `PENAUP_DOMAIN` 设置为实际域名后加载 Caddy。`/api/v1/events/stream` 使用禁缓冲反向代理；负载均衡或 systemd 存活检查用 `GET /health`，只有 `GET /readyz` 返回 200 才允许接收用户流量。每日运行 `backup.sh`，备份同时包含 SQLite 一致性副本和 `media/`，保留 14 天，目标 RPO 24 小时、RTO 4 小时。
+用环境变量提供实际域名后加载 Caddy：`PENAUP_DOMAIN=penaup.example.com caddy validate --config deploy/Caddyfile --adapter caddyfile`。`/api/v1/events/stream` 使用禁缓冲反向代理；负载均衡或 systemd 存活检查用 `GET /health`，只有 `GET /readyz` 返回 200 才允许接收用户流量。每日运行 `backup.sh`，备份同时包含 SQLite 一致性副本和 `media/`，保留 14 天，目标 RPO 24 小时、RTO 4 小时。
 
 MQTT broker 必须启用用户名/密码和 ACL：设备只能发布自己的 `penaup/device/<id>/state`、订阅自己的 `.../command`，禁止匿名连接和自动注册；设备首次登记仍以 HTTP 心跳 token 为准。Mosquitto 的 listener、TLS 和最小 ACL 示例见 [`mqtt/README.md`](mqtt/README.md)。
