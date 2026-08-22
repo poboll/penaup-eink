@@ -83,6 +83,27 @@ function assertEqual(label, left, right) {
   else fail(label, `expected ${JSON.stringify(right)}, received ${JSON.stringify(left)}`);
 }
 
+function normalizeRuntimeRoute(route) {
+  return route
+    .replace('/devices/:id', '/devices/{deviceId}')
+    .replace('/media/:id', '/media/{mediaId}')
+    .replace('/albums/:id', '/albums/{albumId}')
+    .replace('/templates/:id', '/templates/{templateId}')
+    .replace('/streams/:id', '/streams/{streamId}')
+    .replace('/transfers/:id', '/transfers/{transferId}')
+    .replace(/:([A-Za-z0-9_]+)/g, '{$1}');
+}
+
+function documentedOpenApiOperations(document) {
+  const pathsSection = `${document.slice(document.indexOf('\npaths:\n') + 8, document.indexOf('\ncomponents:\n'))}\n  /__openapi_end__:\n`;
+  const operations = new Set();
+  for (const match of pathsSection.matchAll(/^  (\/[^:]+):\n([\s\S]*?)(?=^  \/\S)/gm)) {
+    const route = match[1];
+    for (const method of match[2].matchAll(/^    (get|post|put|patch|delete):/gm)) operations.add(`${method[1].toUpperCase()} ${route}`);
+  }
+  return operations;
+}
+
 const requiredPaths = [
   'apps/web/index.html',
   'apps/wechat/project.config.json',
@@ -103,6 +124,8 @@ const requiredPaths = [
   'deploy/mqtt/README.md',
   'deploy/mqtt/mosquitto.conf.example',
   'deploy/mqtt/penaup.acl.example',
+  'deploy/backup.sh',
+  'deploy/restore.sh',
   'docs/api/openapi.yaml',
   'docs/api/ios-integration.md',
   'docs/api/transfer-state.md',
@@ -143,6 +166,28 @@ assertMatch('Web product copy explains 48 color feels', webProductSurface, /48[^
 assertMatch('Web product copy explains e-ink power behavior', webProductSurface, /不需要[^\n]{0,20}持续点亮/);
 assertMatch('Studio brand returns to story home', webStudioSurface, /class="app-brand" href="\.\.\/"/);
 assertMatch('Studio keeps browser zoom available', webStudioSurface, /name="viewport" content="width=device-width, initial-scale=1"/);
+const publicRouteSources = ['server/src/app.js', 'server/src/modules/auth.js', 'server/src/transports/http.js']
+  .map((relativePath) => read(relativePath)).join('\n');
+const documentedPublicOperations = documentedOpenApiOperations(read('docs/api/openapi.yaml'));
+const runtimePublicOperations = new Set();
+for (const match of publicRouteSources.matchAll(/app\.(get|post|put|patch|delete)\(['"]([^'"]+)/g)) {
+  const route = match[2];
+  if (!route.startsWith('/api/v1/admin/')) runtimePublicOperations.add(`${match[1].toUpperCase()} ${normalizeRuntimeRoute(route)}`);
+}
+for (const method of ['PUT', 'PATCH']) {
+  for (const route of [
+    '/api/v1/albums/:id',
+    '/api/v1/albums/:id/photos/:photoId/layout',
+    '/api/v1/templates/:id',
+    '/api/v1/streams/:id',
+    '/api/v1/streams/:id/items/:itemId'
+  ]) runtimePublicOperations.add(`${method} ${normalizeRuntimeRoute(route)}`);
+}
+for (const operation of runtimePublicOperations) {
+  if (documentedPublicOperations.has(operation)) pass(`OpenAPI route ${operation}`);
+  else fail(`OpenAPI route ${operation}`, 'runtime route is not documented');
+}
+
 assertEqual('film color count', FILM_COLOR_COUNT, 6);
 assertEqual('BLE chunk size', BLE_CHUNK_SIZE, 192);
 assertEqual('film color table', JSON.stringify(Array.from(COLOR_TABLE)), JSON.stringify([0x00, 0xff, 0xfc, 0xe0, 0x03, 0x1c]));

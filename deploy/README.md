@@ -12,4 +12,15 @@ sudo systemctl enable --now penaup
 
 用环境变量提供实际域名后加载 Caddy：`PENAUP_DOMAIN=penaup.example.com caddy validate --config deploy/Caddyfile --adapter caddyfile`。`/api/v1/events/stream` 使用禁缓冲反向代理；负载均衡或 systemd 存活检查用 `GET /health`，只有 `GET /readyz` 返回 200 才允许接收用户流量。每日运行 `backup.sh`，备份同时包含 SQLite 一致性副本和 `media/`，保留 14 天，目标 RPO 24 小时、RTO 4 小时。
 
+恢复必须指向一个明确的新目录，默认不会覆盖已有数据：
+
+```bash
+deploy/restore.sh /var/backups/penaup/20260823T000000Z /var/lib/penaup/data
+```
+
+需要替换现有运行目录时显式使用 `--force`；脚本会先将旧目录移动为
+`data.before-restore-<timestamp>`，校验 SQLite integrity、限制 tar 归档只能写入
+`media/`，并拒绝符号链接和特殊文件。切换 systemd 前，应停止服务、核对恢复目录中的
+`penaup.db` 与媒体 SHA-256，确认 `GET /readyz` 返回 200 后再恢复流量。
+
 MQTT broker 必须启用用户名/密码和 ACL：设备只能发布自己的 `penaup/device/<id>/state`、订阅自己的 `.../command`，禁止匿名连接和自动注册；设备首次登记仍以 HTTP 心跳 token 为准。Mosquitto 的 listener、TLS 和最小 ACL 示例见 [`mqtt/README.md`](mqtt/README.md)。
