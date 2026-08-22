@@ -45,8 +45,12 @@ function initNavigation() {
             const pageId = this.getAttribute('data-page');
 
             // 更新导航状态
-            navItems.forEach(nav => nav.classList.remove('active'));
+            navItems.forEach(nav => {
+                nav.classList.remove('active');
+                nav.removeAttribute('aria-current');
+            });
             this.classList.add('active');
+            this.setAttribute('aria-current', 'page');
 
             // 更新页面显示
             pages.forEach(page => page.classList.remove('active'));

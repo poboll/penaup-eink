@@ -106,6 +106,7 @@
 
         function closeSplash() {
             if (!splash) return;
+            if (splash.classList.contains('is-leaving')) return;
             splash.classList.add('is-leaving');
             window.setTimeout(function () {
                 splash.hidden = true;
@@ -117,6 +118,12 @@
         if (!splashSeen && splash) {
             window.setTimeout(closeSplash, reduceMotion ? 80 : 1200);
             splash.addEventListener('click', closeSplash, { once: true });
+            splash.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    closeSplash();
+                }
+            });
         } else if (splash) {
             splash.hidden = true;
             document.body.classList.add('experience-ready');

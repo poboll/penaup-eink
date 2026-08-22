@@ -57,6 +57,29 @@ a { color: inherit; }
 }
 .penaup-splash.is-leaving { opacity: 0; transform: translateY(-10px); visibility: hidden; }
 .penaup-splash[hidden] { display: none; }
+.splash-dismiss {
+    position: absolute;
+    top: max(18px, env(safe-area-inset-top));
+    right: max(18px, env(safe-area-inset-right));
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    color: rgba(251, 251, 248, .72);
+    border: 1px solid rgba(251, 251, 248, .32);
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    font: 24px/1 var(--sans);
+    transition: color .24s ease, background .24s ease, border-color .24s ease, transform .24s var(--ease);
+}
+.splash-dismiss:hover, .splash-dismiss:focus-visible {
+    color: var(--ink);
+    border-color: var(--yellow);
+    background: var(--yellow);
+    outline: none;
+    transform: rotate(90deg);
+}
 .splash-mark, .brand-mark {
     position: relative;
     width: 44px;
@@ -473,4 +496,5 @@ body.experience-ready .app-topbar { animation: header-in .7s var(--ease) both; }
 
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    .splash-dismiss:hover, .splash-dismiss:focus-visible { transform: none; }
 }

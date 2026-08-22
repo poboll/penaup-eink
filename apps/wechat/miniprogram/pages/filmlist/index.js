@@ -443,7 +443,7 @@ Page({
     that._batchContext = { batch: batch, index: 0 };
     that.setData({
       showTransfer: true,
-      transferTitle: '花生片正在显影片单',
+      transferTitle: '花生片正在显影',
       transferPhase: 'preparing',
       transferPhaseLabel: '片单 / 准备',
       transferStatus: '相纸已经落入画布',
