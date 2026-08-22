@@ -36,6 +36,15 @@ deploy/                   Caddy、systemd、备份和环境模板
 
 ## 快速开始
 
+仓库根目录提供统一的 Node.js 24 命令入口：
+
+```bash
+npm test       # Node 服务、film-core、微信协议测试
+npm run check  # 76 个 JS 文件 + Node/film-core 语法检查
+npm run audit  # 官方 npm registry 依赖审计
+npm start      # 启动 server/，默认 127.0.0.1:8787
+```
+
 ### Web
 
 ```bash
@@ -49,7 +58,7 @@ Node 运行时固定在 24.x（见 `.node-version`）。如果修改 `packages/f
 `npm run film-core:sync`，再运行 Web/小程序测试；`apps/web/js/film-core.js`、小程序构建文件
 和 `packages/film-core/dist/` 都是生成物，不能手工分叉维护。
 
-打开 `http://127.0.0.1:8787/` 查看产品故事页，打开 `/studio/` 进入创作工作台。Web Bluetooth 需要 HTTPS 或 localhost，并需要支持 Web Bluetooth 的 Chromium 系浏览器。
+打开 `http://127.0.0.1:8787/` 查看产品故事页，打开 `/studio/` 进入创作工作台。Web Bluetooth 需要 HTTPS 或 localhost，并需要支持 Web Bluetooth 的 Chromium 系浏览器。部署探针使用 `GET /health`（进程存活）和 `GET /readyz`（SQLite 与媒体目录可读写）。
 
 也可以只托管 `apps/web/`：
 

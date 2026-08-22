@@ -97,8 +97,13 @@ export async function buildApp(options = {}) {
   app.addHook('onSend', async (request, reply, payload) => {
     reply.header('X-Content-Type-Options', 'nosniff');
     reply.header('X-Frame-Options', 'DENY');
+    reply.header('X-DNS-Prefetch-Control', 'off');
+    reply.header('X-Permitted-Cross-Domain-Policies', 'none');
     reply.header('Referrer-Policy', 'no-referrer');
     reply.header('Permissions-Policy', 'geolocation=(), microphone=()');
+    reply.header('Cross-Origin-Resource-Policy', 'same-origin');
+    reply.header('Cross-Origin-Opener-Policy', 'same-origin');
+    if (request.url.startsWith('/api/') || request.url === '/health' || request.url === '/readyz') reply.header('Cache-Control', 'no-store');
     reply.header('Content-Security-Policy', [
       "default-src 'self'",
       "base-uri 'self'",
@@ -187,6 +192,23 @@ export async function buildApp(options = {}) {
     mqtt_status: runtime.mqtt.getStatus(),
     now: new Date().toISOString()
   }));
+
+  app.get('/readyz', async (request, reply) => {
+    let databaseReady = false;
+    let storageReady = false;
+    try {
+      database.raw.prepare('SELECT 1').get();
+      databaseReady = true;
+      fs.accessSync(config.dataDir, fs.constants.R_OK | fs.constants.W_OK);
+      fs.accessSync(config.mediaDir, fs.constants.R_OK | fs.constants.W_OK);
+      storageReady = true;
+    } catch (error) {
+      if (request.log?.warn) request.log.warn({ err: error }, 'Penaup readiness check failed');
+    }
+    const ready = databaseReady && storageReady;
+    if (!ready) return reply.code(503).send({ ok: false, database: databaseReady, storage: storageReady });
+    return { ok: true, database: true, storage: true };
+  });
 
   app.get('/api/v1/admin/devices', { preHandler: requireAdmin }, async () => ({ ok: true, data: database.listDevices() }));
   app.get('/api/v1/admin/events', { preHandler: requireAdmin }, async (request) => ({ ok: true, data: database.listEvents(request.query?.limit) }));

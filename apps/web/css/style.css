@@ -121,6 +121,7 @@ a { color: inherit; }
 .app-brand strong { font-weight: 700; }
 .app-brand em { color: var(--ink-soft); font-style: normal; }
 .app-motto { margin: 0; color: var(--ink-soft); font: 400 13px var(--serif); }
+.app-motto-detail { display: block; margin-top: 3px; color: var(--blue); font: 600 9px/1.2 var(--mono); letter-spacing: .04em; }
 .app-meta { display: inline-flex; justify-content: flex-end; align-items: center; gap: 8px; color: var(--ink-soft); }
 .meta-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--line-strong); transition: background .3s ease, box-shadow .3s ease; }
 .meta-dot.is-connected { background: var(--green); box-shadow: 0 0 0 4px rgba(85, 120, 91, .14); }
@@ -357,6 +358,7 @@ input[type="range"] { accent-color: var(--blue); }
 .transfer-progress { margin-top: 8px; color: var(--blue); font: 12px var(--mono); text-align: right; }
 .result { margin-top: 14px; }
 .render-note { color: var(--blue); }
+.rendering-principle { margin: 2px 0 18px; padding: 11px 13px; color: var(--ink-soft); border-left: 2px solid var(--yellow); background: rgba(255, 254, 250, .62); font: 11px/1.55 var(--sans); }
 .error { color: var(--red); }
 .success { color: var(--green); }
 .message {

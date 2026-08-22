@@ -847,17 +847,6 @@ async function sendBleModeSet(mode) {
     }
 }
 
-async function sendBleModeGet() {
-    if (!device || !server || !characteristic) {
-        return;
-    }
-    try {
-        await sendBleCmd(BLE_FILM_TRANS_CH_CTRL_MODE_GET);
-    } catch (error) {
-        console.error('查询模式失败:', error);
-    }
-}
-
 function updatePhotoModeDisplay(mode) {
     document.querySelectorAll('.mode-button').forEach(btn => {
         btn.classList.remove('active');
@@ -868,19 +857,6 @@ function updatePhotoModeDisplay(mode) {
     if (activeBtn) {
         activeBtn.classList.add('active');
     }
-}
-
-function setPhotoMode(mode) {
-    var modeMap = { manual: 0, auto: 1, wifi: 2 };
-    var modeValue = modeMap[mode] || 0;
-
-    // 如果选择WiFi轮播但WiFi未启用，不允许
-    if (modeValue === 2 && !document.getElementById('wifi-enable-switch').checked) {
-        showMessage('请先启用WiFi', 'error');
-        return;
-    }
-
-    sendBleModeSet(modeValue);
 }
 
 function setupBluetoothListener() {
@@ -1092,7 +1068,8 @@ function setPhotoMode(mode) {
     document.querySelectorAll('.mode-button').forEach(btn => {
         btn.classList.remove('active');
     });
-    document.querySelector(`.mode-button[data-mode="${mode}"]`).classList.add('active');
+    var activeButton = document.querySelector('.mode-button[data-mode="' + mode + '"]');
+    if (activeButton) activeButton.classList.add('active');
 }
 
 function sendBleFileList() {

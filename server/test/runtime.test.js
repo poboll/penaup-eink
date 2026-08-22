@@ -48,6 +48,20 @@ test('health exposes Penaup runtime capabilities', async () => {
   await fs.rm(root, { recursive: true, force: true });
 });
 
+test('readyz verifies the database and media storage are writable', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'penaup-ready-'));
+  const app = await buildApp({
+    config: { dataDir: root, databasePath: path.join(root, 'test.db'), mediaDir: path.join(root, 'media'), mqttUrl: '' },
+    logger: false
+  });
+  const response = await app.inject({ method: 'GET', url: '/readyz' });
+  assert.equal(response.statusCode, 200);
+  assert.deepEqual(response.json(), { ok: true, database: true, storage: true });
+  assert.equal(response.headers['cache-control'], 'no-store');
+  await app.close();
+  await fs.rm(root, { recursive: true, force: true });
+});
+
 test('SSE keeps a live connection and forwards EventHub updates', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'penaup-sse-'));
   const events = new EventHub();
@@ -431,6 +445,15 @@ test('user resources, stream controls and AI adapter remain owner-scoped', async
     assert.equal(bobHeartbeat.statusCode, 200);
     assert.equal((await app.inject({ method: 'POST', url: '/api/v1/devices/alice-api-device/claim', headers: aliceHeaders })).statusCode, 200);
     assert.equal((await app.inject({ method: 'POST', url: '/api/v1/devices/bob-api-device/claim', headers: bobHeaders })).statusCode, 200);
+
+    const invalidCommandParams = await app.inject({
+      method: 'POST',
+      url: '/api/v1/devices/alice-api-device/commands',
+      headers: aliceHeaders,
+      payload: { cmd: 'set_config', params: ['not-an-object'] }
+    });
+    assert.equal(invalidCommandParams.statusCode, 400);
+    assert.equal(invalidCommandParams.json().error, 'command_params_invalid');
 
     const albumResponse = await app.inject({ method: 'POST', url: '/api/v1/albums', headers: aliceHeaders, payload: { name: '只给 Alice 的一叠相纸' } });
     assert.equal(albumResponse.statusCode, 200);

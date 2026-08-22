@@ -90,7 +90,12 @@ export function registerHttpRoutes(app, { config, database, events, mqtt, auth, 
   app.post('/api/v1/devices/:id/commands', { preHandler: requireUser }, async (request, reply) => {
     const device = ownedDevice(database, request.params.id, userId(request));
     if (!device) return reply.code(404).send({ ok: false, error: 'device_not_found' });
-    const input = requestBody(request); const command = typeof input.cmd === 'string' ? input.cmd : input.command;
+    const input = requestBody(request);
+    if (bodyTooLarge(input)) return reply.code(413).send({ ok: false, error: 'request_too_large' });
+    if (input.params != null && (typeof input.params !== 'object' || Array.isArray(input.params))) {
+      return reply.code(400).send({ ok: false, error: 'command_params_invalid' });
+    }
+    const command = typeof input.cmd === 'string' ? input.cmd : input.command;
     if (!command) return reply.code(400).send({ ok: false, error: 'command_required' });
     if (command.length > 128) return reply.code(400).send({ ok: false, error: 'command_too_long' });
     const issued = database.issueCommand(request.params.id, command, input.params || {});
@@ -380,7 +385,9 @@ export function registerHttpRoutes(app, { config, database, events, mqtt, auth, 
   });
 
   app.post('/api/v1/transfers', { preHandler: requireUser }, async (request, reply) => {
-    const input = requestBody(request); const deviceId = String(input.device_id || input.deviceId || '');
+    const input = requestBody(request);
+    if (bodyTooLarge(input)) return reply.code(413).send({ ok: false, error: 'request_too_large' });
+    const deviceId = String(input.device_id || input.deviceId || '').slice(0, 128);
     const device = database.getDevice(deviceId); if (!device || device.ownerId !== userId(request)) return reply.code(404).send({ ok: false, error: 'device_not_found' });
     const mediaId = Number(input.media_id || input.mediaId || 0) || null;
     const media = mediaId ? database.getMedia(mediaId, userId(request)) : null;
@@ -425,6 +432,7 @@ export function registerHttpRoutes(app, { config, database, events, mqtt, auth, 
     const current = database.getTransfer(request.params.id, userId(request));
     if (!current) return reply.code(404).send({ ok: false, error: 'transfer_not_found' });
     const input = requestBody(request);
+    if (bodyTooLarge(input, 32 * 1024)) return reply.code(413).send({ ok: false, error: 'request_too_large' });
     if (input.phase && !TRANSFER_PHASES.includes(input.phase)) return reply.code(400).send({ ok: false, error: 'transfer_phase_invalid' });
     let next;
     try {
@@ -439,7 +447,11 @@ export function registerHttpRoutes(app, { config, database, events, mqtt, auth, 
   });
 
   app.get('/api/v1/settings', { preHandler: requireUser }, async (request) => ({ ok: true, data: database.getSetting('ui', userId(request)) || { reduced_motion: false, default_profile: 'PENAUP_STD' } }));
-  app.put('/api/v1/settings', { preHandler: requireUser }, async (request) => ({ ok: true, data: database.setSetting('ui', requestBody(request), userId(request)) }));
+  app.put('/api/v1/settings', { preHandler: requireUser }, async (request, reply) => {
+    const input = requestBody(request);
+    if (bodyTooLarge(input, 24 * 1024)) return reply.code(413).send({ ok: false, error: 'request_too_large' });
+    return { ok: true, data: database.setSetting('ui', input, userId(request)) };
+  });
   app.get('/api/v1/ai/providers', { preHandler: requireUser }, async () => ({ ok: true, data: ai.providerState() }));
   app.get('/api/v1/ai/settings', { preHandler: requireUser }, async (request) => ({ ok: true, data: ai.settings(userId(request)) }));
   app.put('/api/v1/ai/settings', { preHandler: requireUser }, async (request, reply) => {
