@@ -97,16 +97,18 @@ idf.py build
 idf.py flash monitor
 ```
 
-发布前推荐使用隔离构建矩阵脚本，一次生成三套互不污染的构建目录；它不会修改仓库内的机型宏或 `sdkconfig`：
+发布前推荐使用隔离构建矩阵脚本，一次生成三套互不污染的构建目录；默认会在结束后清理脚本自己创建的临时目录，不会修改仓库内的机型宏或 `sdkconfig`：
 
 ```bash
 source /Users/Apple/.espressif/frameworks/esp-idf-v5.5.2/export.sh
 npm run firmware:build:matrix
 # 只验证 Pro：npm run firmware:build:matrix -- --models=pro
 # 先检查计划：npm run firmware:build:matrix -- --dry-run
+# 需要保留临时 build/ 复查：npm run firmware:build:matrix -- --models=pro --keep-build-root
+# 需要自己管理生命周期：npm run firmware:build:matrix -- --build-root=/绝对路径/空目录
 ```
 
-脚本会输出临时构建根目录和每个 `penaup.bin` 的大小；`flash`、`monitor` 和实体刷新仍必须在确认端口与硬件型号后手动执行。本机最近一次 ESP-IDF 5.5.2 构建证据与剩余硬件门禁见 [`docs/ops/verification-matrix.md`](docs/ops/verification-matrix.md)。
+脚本会输出隔离构建根目录和每个 `penaup.bin` 的大小；自动创建的目录默认在输出后清理，显式传入 `--build-root` 时由调用者管理。`flash`、`monitor` 和实体刷新仍必须在确认端口与硬件型号后手动执行。本机最近一次 ESP-IDF 5.5.2 构建证据与剩余硬件门禁见 [`docs/ops/verification-matrix.md`](docs/ops/verification-matrix.md)。
 
 ## 运行时架构
 

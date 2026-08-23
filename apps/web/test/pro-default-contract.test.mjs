@@ -18,10 +18,12 @@ test('the primary no-device Web path starts on the Pro portrait paper', () => {
   assert.match(utils, /var DEFAULT_DEVICE_TYPE = 'PENAUPPRO';/);
   assert.match(studio, /PRIMARY PAPER \/ E6 PRO/);
   assert.match(studio, /3\.68 英寸 · 528 × 792 竖向视觉/);
-  assert.equal((studio.match(/width="792" height="528"/g) || []).length, 4);
+  assert.equal((studio.match(/width="528" height="792"/g) || []).length, 5);
+  assert.match(utils, /var w = cfg\.canvasWidth \|\| cfg\.screenWidth;/);
+  assert.match(utils, /var h = cfg\.canvasHeight \|\| cfg\.screenHeight;/);
   assert.match(studio, /id="weread-canvas" width="528" height="792"/);
   assert.match(style, /\.polaroid-inner \{[^\n]*aspect-ratio: 2 \/ 3/);
-  assert.match(style, /\.polaroid-inner canvas \{[^\n]*width: 792px; height: 528px/);
+  assert.match(style, /\.polaroid-inner canvas \{[^\n]*width: 528px; height: 792px/);
   assert.match(paper, /\.weread-polaroid-inner \{\n    aspect-ratio: 2 \/ 3/);
 });
 

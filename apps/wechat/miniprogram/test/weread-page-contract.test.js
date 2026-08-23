@@ -19,8 +19,8 @@ test('WeRead mini program page keeps the Pro wallpaper and key boundary', () => 
   const templatePage = read('pages/template/index.wxml');
 
   assert.ok(app.pages.includes('pages/weread/index'));
-  assert.equal(app.window.backgroundColor, '#F8F8F4');
-  assert.equal(app.window.navigationBarBackgroundColor, '#F8F8F4');
+  assert.equal(app.window.backgroundColor, '#FAFAF7');
+  assert.equal(app.window.navigationBarBackgroundColor, '#FAFAF7');
   assert.equal(app.tabBar.backgroundColor, '#FFFEFA');
   assert.match(page, /PENAUP_PRO|528 × 792/);
   assert.match(page, /data-mode="weekly"/);
@@ -40,7 +40,7 @@ test('WeRead mini program page keeps the Pro wallpaper and key boundary', () => 
   assert.match(styles, /@media \(max-width: 380px\)/);
   assert.match(styles, /\.field-help[\s\S]*font-size: 23rpx/);
   assert.match(appStyles, /@import "\.\/styles\/paper-surface\.wxss"/);
-  assert.match(paperSurface, /#f8f8f4/);
+  assert.match(paperSurface, /#fafaf7/);
   assert.match(templatePage, /tpl-paper-mark/);
   assert.match(templatePage, /3\.68″/);
   assert.doesNotMatch(paperSurface, /repeating-linear-gradient\(112deg/);

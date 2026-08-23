@@ -21,6 +21,7 @@ function usage() {
 选项：
   --models=std,pro,max  只构建指定机型，默认全部
   --build-root=PATH     指定隔离构建根目录，默认创建在系统临时目录
+  --keep-build-root     保留脚本自动创建的临时目录，便于复查 build/ 产物
   --idf=PATH            指定 idf.py 路径，默认从 PATH 查找
   --dry-run             只输出计划，不运行 idf.py
   --help                显示帮助
@@ -30,7 +31,7 @@ sys_cfg.h 机型宏；不会修改仓库内的源码、sdkconfig 或任何 build
 }
 
 function parseArgs(argv) {
-  const result = { models: ['std', 'pro', 'max'], buildRoot: '', idf: '', dryRun: false };
+  const result = { models: ['std', 'pro', 'max'], buildRoot: '', idf: '', dryRun: false, keepBuildRoot: false };
   for (const argument of argv) {
     if (argument === '--help' || argument === '-h') {
       console.log(usage());
@@ -38,6 +39,10 @@ function parseArgs(argv) {
     }
     if (argument === '--dry-run') {
       result.dryRun = true;
+      continue;
+    }
+    if (argument === '--keep-build-root') {
+      result.keepBuildRoot = true;
       continue;
     }
     if (argument.startsWith('--models=')) {
@@ -178,17 +183,30 @@ function main() {
   const buildRoot = options.buildRoot
     ? path.resolve(options.buildRoot)
     : fs.mkdtempSync(path.join(os.tmpdir(), 'penaup-firmware-matrix-'));
-  prepareBuildRoot(buildRoot);
-  console.log(`隔离构建根目录：${buildRoot}`);
-  const results = [];
-  for (const model of options.models) {
-    const projectPath = path.join(buildRoot, model);
-    if (fs.existsSync(projectPath)) throw new Error(`机型构建目录已存在，为避免覆盖：${projectPath}`);
-    copyProject(projectPath, model);
-    results.push(runBuild(idfPath, projectPath, model, options.dryRun));
+  const ownsBuildRoot = !options.buildRoot;
+  const shouldCleanup = ownsBuildRoot && !options.keepBuildRoot;
+  try {
+    prepareBuildRoot(buildRoot);
+    console.log(`隔离构建根目录：${buildRoot}`);
+    const results = [];
+    for (const model of options.models) {
+      const projectPath = path.join(buildRoot, model);
+      if (fs.existsSync(projectPath)) throw new Error(`机型构建目录已存在，为避免覆盖：${projectPath}`);
+      copyProject(projectPath, model);
+      results.push(runBuild(idfPath, projectPath, model, options.dryRun));
+    }
+    console.log(JSON.stringify({ buildRoot, buildRootKept: !shouldCleanup, results }, null, 2));
+    if (results.some((result) => result.status === 'failed')) process.exitCode = 1;
+  } finally {
+    if (shouldCleanup) {
+      try {
+        fs.rmSync(buildRoot, { recursive: true, force: true });
+      } catch (error) {
+        console.error(`无法清理自动创建的隔离目录：${buildRoot}：${error.message}`);
+        process.exitCode = process.exitCode || 1;
+      }
+    }
   }
-  console.log(JSON.stringify({ buildRoot, results }, null, 2));
-  if (results.some((result) => result.status === 'failed')) process.exitCode = 1;
 }
 
 try {

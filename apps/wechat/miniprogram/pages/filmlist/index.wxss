@@ -8,10 +8,10 @@
 .list-row { display: flex; align-items: center; gap: 14rpx; min-height: 94rpx; padding: 14rpx 0; border-bottom: 2rpx solid #d5d5d1; }
 .list-row:last-child { border-bottom: 0; }
 .file-row.cur { margin-left: -22rpx; margin-right: -22rpx; padding-left: 22rpx; padding-right: 22rpx; background: #f0f1ec; box-shadow: inset 6rpx 0 #4d73ad; }
-.lr-thumb { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 76rpx; height: 76rpx; color: #656761; background: #f2f2ee; border: 2rpx solid #c3c4bb; font: 18rpx ui-monospace, SFMono-Regular, Menlo, monospace; text-align: center; }
+.lr-thumb { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 76rpx; height: 76rpx; color: #656761; background: #f4f4f0; border: 2rpx solid #c3c4bb; font: 18rpx ui-monospace, SFMono-Regular, Menlo, monospace; text-align: center; }
 .lr-thumb.cur { color: #fffefa; background: #20211f; border-color: #20211f; }
 .cur-badge { position: absolute; margin-top: -86rpx; margin-left: 70rpx; width: 84rpx; padding: 4rpx 0; color: #fffefa; background: #4d73ad; font-size: 16rpx; }
-.lr-img { flex-shrink: 0; width: 76rpx; height: 76rpx; background: #f2f2ee; }
+.lr-img { flex-shrink: 0; width: 76rpx; height: 76rpx; background: #f4f4f0; }
 .lr-info { flex: 1; min-width: 0; }
 .lr-name { overflow: hidden; font-size: 24rpx; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .lr-meta { margin-top: 5rpx; overflow: hidden; color: #656761; font: 20rpx ui-monospace, SFMono-Regular, Menlo, monospace; text-overflow: ellipsis; white-space: nowrap; }
@@ -21,7 +21,7 @@
 .cta > text:first-child { font-size: 29rpx; font-weight: 600; }
 .cta-hint { margin-top: 8rpx; font-size: 21rpx; }
 .batch-cards { width: 100%; height: 126rpx; margin-bottom: 18rpx; white-space: nowrap; }
-.b-card { position: relative; display: inline-block; width: 92rpx; height: 112rpx; margin-right: 12rpx; padding: 6rpx; background: #f2f2ee; border: 2rpx solid #d5d5d1; vertical-align: top; }
+.b-card { position: relative; display: inline-block; width: 92rpx; height: 112rpx; margin-right: 12rpx; padding: 6rpx; background: #f4f4f0; border: 2rpx solid #d5d5d1; vertical-align: top; }
 .b-card.active { border-color: #4d73ad; box-shadow: 0 0 0 4rpx rgba(77, 117, 182, .15); }
 .b-card.done { border-color: #55765e; opacity: .66; }
 .bc-photo { width: 100%; height: 100%; }

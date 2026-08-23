@@ -13,7 +13,7 @@
 .color-bar { display: flex; align-items: center; gap: 18rpx; width: 100%; max-width: 668rpx; margin: 0 auto 18rpx; padding: 14rpx 18rpx; overflow-x: auto; background: #fffefa; border: 2rpx solid #d5d5d1; }
 .color-item { flex-shrink: 0; width: 44rpx; height: 44rpx; border: 2rpx solid transparent; border-radius: 50%; }
 .color-item.active { box-shadow: 0 0 0 4rpx #4d73ad; }
-.color-custom { display: flex; align-items: center; justify-content: center; color: #656761; background: #f2f2ee !important; border-color: #b6b7b2; }
+.color-custom { display: flex; align-items: center; justify-content: center; color: #656761; background: #f4f4f0 !important; border-color: #b6b7b2; }
 .custom-plus { font-size: 28rpx; }
 .button-row .btn-primary:first-child { color: #20211f; background: #fffefa; border-color: #20211f; }
 .button-row .btn-send { color: #20211f; background: #b7d6c0; border-color: #4f775d; }

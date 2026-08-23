@@ -212,10 +212,9 @@ function frameSetupImage(canvasId, fill) {
     var canvas = document.getElementById(canvasId);
     var img = frameOriginalImage;
 
-    // 竖屏设备（Max）：横图旋转 90°，竖图直接显示；横向设备：竖图旋转
-    frameCanvasRotation = isPortraitDevice()
-        ? (img.width > img.height ? 1 : 0)
-        : (img.height > img.width ? 1 : 0);
+    // 相纸按用户的手持方向始终是竖版。照片保持原始方向，用户可以
+    // 继续通过构图手势调整位置；旋转只留给转换器的显式操作。
+    frameCanvasRotation = 0;
 
     var effectiveWidth = frameCanvasRotation === 1 ? getCanvasHeight() : getCanvasWidth();
     var effectiveHeight = frameCanvasRotation === 1 ? getCanvasWidth() : getCanvasHeight();
@@ -443,7 +442,8 @@ function frameUpdateTransferStatus(prefix, message, progress) {
 }
 
 function frameApplyDragOffset(deltaX, deltaY) {
-    var cssRotated = !isPortraitDevice();
+    // 视觉 canvas 已经是竖版，不再由 CSS 旋转，因此拖动坐标直接映射。
+    var cssRotated = false;
     if (frameCanvasRotation === 1) {
         if (cssRotated) {
             frameOffsetX += deltaX;

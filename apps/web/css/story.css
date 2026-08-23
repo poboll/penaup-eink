@@ -8,7 +8,7 @@
 }
 
 :root {
-  --paper: #f8f8f4;
+  --paper: #fafaf7;
   --paper-bright: #fffefa;
   --ink: #171816;
   --quiet: #717269;
@@ -33,7 +33,7 @@ body {
     radial-gradient(circle at 92% 4%, rgba(223, 181, 46, .045), transparent 25%),
     repeating-linear-gradient(90deg, rgba(118, 99, 70, .018) 0 1px, transparent 1px 22px),
     repeating-linear-gradient(0deg, rgba(84, 70, 48, .014) 0 1px, transparent 1px 7px),
-    linear-gradient(180deg, #fffefa 0%, var(--paper) 54%, #f2f2ee 100%);
+    linear-gradient(180deg, #fffefa 0%, var(--paper) 54%, #f4f4f0 100%);
   font: 400 16px/1.65 var(--sans);
 }
 body::before { content: ""; position: fixed; z-index: 10; inset: 0; pointer-events: none; opacity: .09; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E"); background-size: 180px 180px; mix-blend-mode: multiply; }
@@ -203,7 +203,7 @@ a { color: inherit; }
 }
 
 :root {
-  --paper: #f8f8f4;
+  --paper: #fafaf7;
   --paper-bright: #fffefa;
   --line: #e1dbd1;
   --quiet: #717269;
@@ -216,7 +216,7 @@ body {
     radial-gradient(circle at 92% 4%, rgba(212, 169, 47, .06), transparent 25%),
     repeating-linear-gradient(90deg, rgba(118, 99, 70, .018) 0 1px, transparent 1px 22px),
     repeating-linear-gradient(0deg, rgba(84, 70, 48, .014) 0 1px, transparent 1px 7px),
-    linear-gradient(180deg, #fffefa 0%, var(--paper) 52%, #f2f2ee 100%);
+    linear-gradient(180deg, #fffefa 0%, var(--paper) 52%, #f4f4f0 100%);
   font-size: 17px;
 }
 
@@ -283,7 +283,7 @@ body {
     radial-gradient(circle at 94% 2%, rgba(212, 169, 47, .055), transparent 25%),
     repeating-linear-gradient(90deg, rgba(118, 99, 70, .018) 0 1px, transparent 1px 22px),
     repeating-linear-gradient(0deg, rgba(84, 70, 48, .014) 0 1px, transparent 1px 7px),
-    linear-gradient(180deg, #fffefa 0%, #f8f8f4 54%, #f2f2ee 100%);
+    linear-gradient(180deg, #fffefa 0%, #fafaf7 54%, #f4f4f0 100%);
 }
 
 .feature-section {
@@ -444,7 +444,7 @@ body {
  * fiber directions. The color-study panel remains the only intentionally
  * dense ink field on the story page. */
 :root {
-  --paper: #fdfbf6;
+  --paper: #fafaf7;
   --paper-bright: #fffefa;
 }
 
@@ -454,7 +454,7 @@ body {
     radial-gradient(circle at 94% 2%, rgba(212, 169, 47, .038), transparent 24%),
     repeating-linear-gradient(112deg, rgba(118, 99, 70, .012) 0 1px, transparent 1px 19px),
     repeating-linear-gradient(18deg, rgba(84, 70, 48, .009) 0 1px, transparent 1px 13px),
-    linear-gradient(180deg, #fffefa 0%, var(--paper) 55%, #faf6ee 100%);
+    linear-gradient(180deg, #fffefa 0%, var(--paper) 55%, #f4f4f0 100%);
 }
 
 body::before {

@@ -21,7 +21,7 @@ test('all web surfaces load one final pale paper finish layer', async () => {
   assert.match(story, /href="css\/penaup-paper-finish\.css"/);
   assert.match(studio, /href="\.\.\/css\/penaup-paper-finish\.css"/);
   assert.match(device, /href="\.\.\/css\/penaup-paper-finish\.css"/);
-  assert.match(finish, /--penaup-paper-base:\s*#f8f8f4/);
+  assert.match(finish, /--penaup-paper-base:\s*#fafaf7/);
   assert.match(finish, /repeating-linear-gradient\(106deg/);
   assert.match(finish, /body \.story-shell \.color-mode\[aria-pressed="true"\]/);
   assert.match(finish, /body \.story-shell \.color-mode \{[\s\S]*?background:\s*transparent/);
@@ -39,10 +39,10 @@ test('mini program keeps the Pro visual paper and pale navigation surface', asyn
     read('../wechat/miniprogram/pages/home/index.wxss')
   ]);
 
-  assert.match(app, /"backgroundColor": "#F8F8F4"/);
-  assert.match(app, /"navigationBarBackgroundColor": "#F8F8F4"/);
+  assert.match(app, /"backgroundColor": "#FAFAF7"/);
+  assert.match(app, /"navigationBarBackgroundColor": "#FAFAF7"/);
   assert.match(app, /"backgroundColor": "#FFFEFA"/);
-  assert.match(paper, /background-color: #f8f8f4/);
+  assert.match(paper, /background-color: #fafaf7/);
   assert.match(template, /3\.68″/);
   assert.match(template, /528 × 792/);
   assert.match(home, /background: rgba\(255, 255, 252, \.88\)/);
@@ -51,7 +51,7 @@ test('mini program keeps the Pro visual paper and pale navigation surface', asyn
 test('Runtime admin console shares the pale paper finish and touch-safe actions', async () => {
   const adminStyle = await fs.readFile(path.join(root, '..', '..', 'server/admin/dist/style.css'), 'utf8');
 
-  assert.match(adminStyle, /--paper:\s*#f8f8f4/);
+  assert.match(adminStyle, /--paper:\s*#fafaf7/);
   assert.match(adminStyle, /--surface:\s*#fffefa/);
   assert.match(adminStyle, /2026-08-24 Penaup paper finish/);
   assert.match(adminStyle, /\.btn\s*\{[\s\S]*?min-height:\s*44px/);

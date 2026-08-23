@@ -3,7 +3,7 @@
 @import "./styles/paper-surface.wxss";
 
 page {
-  background-color: #f8f8f4;
+  background-color: #fafaf7;
   color: #20211f;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", sans-serif;
   line-height: 1.55;
@@ -116,7 +116,7 @@ button { margin: 0; font-family: inherit; }
 .r-img,
 .m-ic,
 .device-icon,
-.status-icon { background: #f2f2ee; border: 2rpx solid #c3c4bb; }
+.status-icon { background: #f4f4f0; border: 2rpx solid #c3c4bb; }
 
 .dev-name,
 .m-name,
@@ -146,7 +146,7 @@ button { margin: 0; font-family: inherit; }
   box-shadow: none;
 }
 
-.m-card .m-ic { background: #f2f2ee; }
+.m-card .m-ic { background: #f4f4f0; }
 .m-card .m-sub { color: #656761; }
 .m-card.c-yellow::after { background: #c49a24; color: #20211f; }
 .cc-emo { opacity: .15; filter: grayscale(1); }
@@ -155,7 +155,7 @@ button { margin: 0; font-family: inherit; }
 .adv-a { color: #4d73ad; }
 
 .recent .r-img,
-.tpl .t-ic { background: #f2f2ee; }
+.tpl .t-ic { background: #f4f4f0; }
 .pill { color: #20211f; background: #c49a24; }
 .clear-recent { color: #b65347; background: transparent; }
 
@@ -195,7 +195,7 @@ input::placeholder, textarea::placeholder { color: #a5a69e; }
 }
 .status-connected .status-title, .status-connected .status-sub { color: #fffefa; }
 .status-disconnected { background: #fffefa; border-color: #d5d5d1; }
-.status-icon, .status-icon.scanning { background: #f2f2ee; color: #4d73ad; }
+.status-icon, .status-icon.scanning { background: #f4f4f0; color: #4d73ad; }
 .device-icon, .device-icon.pro { background: #4d73ad; border-color: #4d73ad; box-shadow: none; }
 .device-icon.max { background: #55765e; border-color: #55765e; }
 .battery-fill { background: #c49a24; }
@@ -340,13 +340,13 @@ input::placeholder, textarea::placeholder { color: #a5a69e; }
 /* Final Penaup paper pass: near-white grass paper, quiet keylines and one
  * readable action rhythm across every mini-program page. */
 page {
-  background-color: #f8f8f4;
+  background-color: #fafaf7;
   background-image:
     radial-gradient(circle at 8% -12%, rgba(255, 255, 252, .99), transparent 34%),
     radial-gradient(circle at 94% 4%, rgba(196, 154, 36, .028), transparent 24%),
     repeating-linear-gradient(104deg, rgba(70, 70, 65, .011) 0 1px, transparent 1px 18px),
     repeating-linear-gradient(16deg, rgba(70, 70, 65, .008) 0 1px, transparent 1px 13px),
-    linear-gradient(180deg, #fffefa 0%, #f8f8f4 58%, #f0f0eb 100%);
+    linear-gradient(180deg, #fffefa 0%, #fafaf7 58%, #f4f4f0 100%);
 }
 
 .btn-primary,
@@ -430,6 +430,6 @@ page {
 
 @media (prefers-reduced-motion: reduce) {
   page {
-    background-image: linear-gradient(180deg, #fffefa 0%, #f8f8f4 58%, #f0f0eb 100%);
+    background-image: linear-gradient(180deg, #fffefa 0%, #fafaf7 58%, #f4f4f0 100%);
   }
 }

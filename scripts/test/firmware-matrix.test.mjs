@@ -8,6 +8,12 @@ import test from 'node:test';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const script = path.join(root, 'scripts', 'build-firmware-matrix.mjs');
 
+function outputBuildRoot(output) {
+  const match = output.match(/隔离构建根目录：([^\n]+)/);
+  assert.ok(match, 'matrix output should include its build root');
+  return match[1].trim();
+}
+
 test('firmware matrix dry-run is isolated and does not change source config', () => {
   const configPath = path.join(root, 'firmware', 'penaup', 'components', 'film_sys', 'inc', 'sys_cfg.h');
   const before = fs.readFileSync(configPath, 'utf8');
@@ -17,6 +23,18 @@ test('firmware matrix dry-run is isolated and does not change source config', ()
   assert.match(output, /隔离构建根目录/);
   assert.match(output, /PENAUP_PRO/);
   assert.match(output, /\"status\": \"planned\"/);
+  assert.equal(fs.existsSync(outputBuildRoot(output)), false);
+});
+
+test('firmware matrix can keep an auto-created root for artifact review', () => {
+  const output = execFileSync(process.execPath, [script, '--models=pro', '--dry-run', '--keep-build-root'], { cwd: root }).toString('utf8');
+  const buildRoot = outputBuildRoot(output);
+  try {
+    assert.equal(fs.existsSync(buildRoot), true);
+    assert.match(output, /\"buildRootKept\": true/);
+  } finally {
+    fs.rmSync(buildRoot, { recursive: true, force: true });
+  }
 });
 
 test('firmware matrix excludes repository build evidence from isolated copies', () => {

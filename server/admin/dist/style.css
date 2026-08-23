@@ -164,9 +164,9 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
 /* 2026-08-24 Penaup paper finish: keep the Runtime console in the same
  * near-white grass-paper family as the public story and creation tools. */
 :root {
-  --paper: #f8f8f4;
+  --paper: #fafaf7;
   --surface: #fffefa;
-  --surface-soft: #f0f0eb;
+  --surface-soft: #f4f4f0;
   --line: #d8d8d2;
   --line-d: #b9bab2;
   --radius: 7px;
@@ -187,7 +187,7 @@ body {
     radial-gradient(circle at 94% 4%, rgba(196, 154, 36, .028), transparent 24%),
     repeating-linear-gradient(104deg, rgba(70, 70, 65, .011) 0 1px, transparent 1px 18px),
     repeating-linear-gradient(16deg, rgba(70, 70, 65, .008) 0 1px, transparent 1px 13px),
-    linear-gradient(180deg, #fffefa 0%, var(--paper) 58%, #f0f0eb 100%);
+    linear-gradient(180deg, #fffefa 0%, var(--paper) 58%, #f4f4f0 100%);
 }
 
 body::before {

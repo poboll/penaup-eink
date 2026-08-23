@@ -292,7 +292,7 @@
 /* 空态、片单、预览 */
 .empty-state { padding: 42rpx 18rpx; color: #656761; font-size: 23rpx; text-align: center; }
 .preview-modal { width: 620rpx; max-width: calc(100vw - 72rpx); padding: 26rpx; background: #fffefa; border: 2rpx solid #d5d5d1; text-align: center; }
-.preview-img { width: 100%; height: 670rpx; background: #f2f2ee; }
+.preview-img { width: 100%; height: 670rpx; background: #f4f4f0; }
 .preview-name { margin: 18rpx 0; color: #20211f; font-size: 24rpx; }
 .preview-close { padding: 16rpx; color: #4d73ad; border-top: 2rpx solid #d5d5d1; font-size: 24rpx; }
 

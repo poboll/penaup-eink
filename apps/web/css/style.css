@@ -1,8 +1,8 @@
 /* Copyright (c) 2026 poboll · Penaup paper interface */
 :root {
-    --paper: #f8f8f4;
-    --paper-raised: #fffdf8;
-    --paper-deep: #ece7dc;
+    --paper: #fafaf7;
+    --paper-raised: #fffefa;
+    --paper-deep: #f4f4f0;
     --ink: #171816;
     --ink-soft: #676963;
     --line: #dfd9cf;
@@ -30,7 +30,7 @@ body {
         radial-gradient(circle at 92% 5%, rgba(223, 181, 46, .04), transparent 25%),
         repeating-linear-gradient(90deg, rgba(118, 99, 70, .016) 0 1px, transparent 1px 22px),
         repeating-linear-gradient(0deg, rgba(84, 70, 48, .012) 0 1px, transparent 1px 7px),
-        linear-gradient(180deg, #fffefa 0%, var(--paper) 55%, #f2f2ee 100%);
+        linear-gradient(180deg, #fffefa 0%, var(--paper) 55%, #f4f4f0 100%);
     font: 400 15px/1.6 var(--sans);
     overflow: hidden;
 }
@@ -465,7 +465,7 @@ input[type="range"] { accent-color: var(--blue); }
 }
 .polaroid-inner { position: relative; display: grid; min-height: 0; aspect-ratio: 2 / 3; place-items: center; overflow: hidden; border: 1px solid var(--line); background: var(--paper-deep); }
 .polaroid-inner::after { content: "PENAUP / E6 SIX-COLOR"; position: absolute; right: 12px; bottom: -48px; color: var(--ink-soft); font: 9px var(--mono); }
-.polaroid-inner canvas { position: absolute; top: 50%; left: 50%; display: block; width: 792px; height: 528px; max-width: none; max-height: none; object-fit: contain; cursor: grab; touch-action: none; transform-origin: center center; }
+.polaroid-inner canvas { position: absolute; top: 50%; left: 50%; display: block; width: 528px; height: 792px; max-width: none; max-height: none; object-fit: contain; cursor: grab; touch-action: none; transform-origin: center center; }
 .polaroid-inner canvas:active { cursor: grabbing; }
 .placeholder-content { display: grid; place-items: center; min-height: 180px; color: var(--ink-soft); text-align: center; }
 .placeholder-content h2 { margin: 10px 0 4px; font-size: 30px; }

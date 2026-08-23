@@ -107,10 +107,12 @@ function setRenderingMode(mode) {
     if (originalImage) updateImage();
 }
 
-// 拖动偏移换算：横屏设备画布被 CSS rotate(90deg) 显示，竖屏设备（Max）不旋转。
-// 两种显示方式下 canvasRotation 对应的坐标映射不同，需分别换算，使拖动方向与视觉一致。
+// 拖动偏移换算：视觉相纸已经按用户手持方向绘制；只有显式点击
+// “旋转90度”时才改变内容方向，拖动坐标因此直接跟随画面。
 function applyDragOffset(deltaX, deltaY) {
-    var cssRotated = !isPortraitDevice(); // 画布是否被 CSS 旋转 90° 显示
+    // 转换器也直接操作视觉相纸；只有用户点击“旋转90度”时才改变
+    // 画布内部内容方向。
+    var cssRotated = false;
     if (canvasRotation === 1) {
         if (cssRotated) {
             offsetX = startOffsetX + deltaX;
@@ -364,10 +366,8 @@ function handleFileUpload(event) {
             var imgWidth = img.width;
             var imgHeight = img.height;
 
-            // 竖屏设备（Max）：横图旋转 90°，竖图直接显示；横向设备：竖图旋转
-            canvasRotation = isPortraitDevice()
-                ? (imgWidth > imgHeight ? 1 : 0)
-                : (imgHeight > imgWidth ? 1 : 0);
+            // 视觉相纸保持竖向，上传图片不因设备的历史协议方向自动旋转。
+            canvasRotation = 0;
 
             let effectiveWidth = canvasWidth;
             let effectiveHeight = canvasHeight;

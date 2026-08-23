@@ -31,10 +31,11 @@ function escapeHtml(value) {
     });
 }
 
-// 物理协议屏幕是否竖向；STD/Pro 的视觉相纸会在预览中另行旋转。
+// 当前创作画布是否竖向。协议方向仍由 film-core 的 Profile 负责，
+// 页面不再把 Pro 横向 canvas 用 CSS 旋转后假装成竖向相纸。
 function isPortraitDevice() {
     var cfg = getDeviceConfig();
-    return cfg.screenHeight > cfg.screenWidth;
+    return (cfg.canvasHeight || cfg.screenHeight) > (cfg.canvasWidth || cfg.screenWidth);
 }
 
 function setDeviceType(type) {
@@ -48,13 +49,14 @@ function setDeviceType(type) {
 }
 
 function onDeviceTypeChanged() {
-    // 更新所有 canvas 尺寸
+    // 所有创作 canvas 都使用用户看到的视觉相纸尺寸；写入时由
+    // film-core.canvasPixelIndex() 转换到历史协议方向。
     var cfg = getDeviceConfig();
     var canvases = document.querySelectorAll('canvas[id]');
     for (var i = 0; i < canvases.length; i++) {
         if (canvases[i].closest && canvases[i].closest('.weread-polaroid-inner')) continue;
-        canvases[i].width = cfg.screenWidth;
-        canvases[i].height = cfg.screenHeight;
+        canvases[i].width = cfg.canvasWidth || cfg.screenWidth;
+        canvases[i].height = cfg.canvasHeight || cfg.screenHeight;
     }
     // 更新设备类型信息显示
     var badge = document.getElementById('device-type-badge');
@@ -72,28 +74,28 @@ function onDeviceTypeChanged() {
 }
 
 function getCanvasWidth() {
-    var w = getDeviceConfig().screenWidth;
+    var cfg = getDeviceConfig();
+    var w = cfg.canvasWidth || cfg.screenWidth;
     console.log('[DEBUG] getCanvasWidth() = ' + w + ' | deviceType=' + currentDeviceType);
     return w;
 }
 
 function getCanvasHeight() {
-    var h = getDeviceConfig().screenHeight;
+    var cfg = getDeviceConfig();
+    var h = cfg.canvasHeight || cfg.screenHeight;
     console.log('[DEBUG] getCanvasHeight() = ' + h + ' | deviceType=' + currentDeviceType);
     return h;
 }
 
-// Keep the logical film bitmap centered inside the physical preview frame.
-// STD/Pro are rotated for the portrait preview; Max is already portrait.
+// Keep the visual film canvas centered inside the physical preview frame.
+// The canvas is already portrait for STD/Pro, so the preview transform only
+// scales it and never applies a second 90-degree rotation.
 function fitPolaroidCanvas(container, canvas) {
     if (!container || !canvas) return;
 
     var profile = getDeviceConfig();
-    var logicalWidth = profile.screenWidth;
-    var logicalHeight = profile.screenHeight;
-    var visualWidth = profile.canvasWidth || logicalWidth;
-    var visualHeight = profile.canvasHeight || logicalHeight;
-    var needsRotation = logicalWidth !== visualWidth || logicalHeight !== visualHeight;
+    var visualWidth = profile.canvasWidth || profile.screenWidth;
+    var visualHeight = profile.canvasHeight || profile.screenHeight;
 
     container.style.aspectRatio = visualWidth + ' / ' + visualHeight;
     container.style.minHeight = '0';
@@ -106,11 +108,11 @@ function fitPolaroidCanvas(container, canvas) {
     canvas.style.position = 'absolute';
     canvas.style.left = '50%';
     canvas.style.top = '50%';
-    canvas.style.width = logicalWidth + 'px';
-    canvas.style.height = logicalHeight + 'px';
+    canvas.style.width = visualWidth + 'px';
+    canvas.style.height = visualHeight + 'px';
     canvas.style.maxWidth = 'none';
     canvas.style.maxHeight = 'none';
-    canvas.style.transform = 'translate(-50%, -50%)' + (needsRotation ? ' rotate(90deg)' : '') + ' scale(' + scale + ')';
+    canvas.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
     canvas.dataset.displayScale = String(scale);
 }
 

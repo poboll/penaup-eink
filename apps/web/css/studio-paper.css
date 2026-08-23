@@ -9,10 +9,10 @@
 }
 
 :root {
-    --paper: #f8f8f4;
-    --paper-bright: #fffef9;
-    --paper-raised: #fdfbf6;
-    --paper-shadow: #ece6da;
+    --paper: #fafaf7;
+    --paper-bright: #fffefa;
+    --paper-raised: #fffefa;
+    --paper-shadow: #e9e9e5;
     --ink: #262521;
     --ink-soft: #67645c;
     --ink-faint: #969087;
@@ -41,7 +41,7 @@ body {
         radial-gradient(circle at 92% 6%, rgba(212, 169, 47, .055), transparent 28%),
         repeating-linear-gradient(90deg, rgba(118, 99, 70, .018) 0 1px, transparent 1px 22px),
         repeating-linear-gradient(0deg, rgba(84, 70, 48, .014) 0 1px, transparent 1px 7px),
-        linear-gradient(180deg, #fffefa 0%, var(--paper) 48%, #f2f2ee 100%);
+        linear-gradient(180deg, #fffefa 0%, var(--paper) 48%, #f4f4f0 100%);
     font-family: var(--font-body);
     font-size: 16px;
 }
@@ -792,10 +792,10 @@ button.primary-button i, button.secondary-button i, a.primary-button i, a.second
 /* 2026-08-23 wallpaper lab: pale rice paper, a quiet editorial grid, and
  * one touch-safe control language across desktop and phone. */
 :root {
-    --paper: #f8f8f4;
-    --paper-bright: #fffef9;
-    --paper-raised: #fdfbf6;
-    --paper-shadow: #ece6da;
+    --paper: #fafaf7;
+    --paper-bright: #fffefa;
+    --paper-raised: #fffefa;
+    --paper-shadow: #e9e9e5;
     --ink: #292722;
     --ink-soft: #6f6a60;
     --ink-faint: #9b9489;
@@ -805,7 +805,7 @@ button.primary-button i, button.secondary-button i, a.primary-button i, a.second
     --yellow: #d4a52e;
     --red: #ad5145;
     --green: #55765e;
-    --paper-deep: #eae3d7;
+    --paper-deep: #f4f4f0;
 }
 
 body {
@@ -814,7 +814,7 @@ body {
         radial-gradient(circle at 93% 3%, rgba(212, 165, 46, .055), transparent 26%),
         repeating-linear-gradient(90deg, rgba(118, 99, 70, .018) 0 1px, transparent 1px 22px),
         repeating-linear-gradient(0deg, rgba(84, 70, 48, .014) 0 1px, transparent 1px 7px),
-        linear-gradient(180deg, #fffefa 0%, var(--paper) 52%, #f2f2ee 100%);
+        linear-gradient(180deg, #fffefa 0%, var(--paper) 52%, #f4f4f0 100%);
 }
 
 body::before {
@@ -1650,7 +1650,7 @@ body {
         radial-gradient(circle at 93% 3%, rgba(212, 165, 46, .05), transparent 25%),
         repeating-linear-gradient(90deg, rgba(118, 99, 70, .018) 0 1px, transparent 1px 22px),
         repeating-linear-gradient(0deg, rgba(84, 70, 48, .014) 0 1px, transparent 1px 7px),
-        linear-gradient(180deg, #fffefa 0%, #f8f8f4 54%, #f2f2ee 100%);
+        linear-gradient(180deg, #fffefa 0%, #fafaf7 54%, #f4f4f0 100%);
 }
 
 body::before {
@@ -1818,10 +1818,10 @@ body::before {
  * previews, but give the page a physical fiber direction instead of a flat
  * beige fill. */
 :root {
-    --paper: #fdfbf6;
+    --paper: #fafaf7;
     --paper-bright: #fffefa;
-    --paper-raised: #fefcf8;
-    --paper-shadow: #eee9df;
+    --paper-raised: #fffefa;
+    --paper-shadow: #e9e9e5;
 }
 
 body {
@@ -1830,7 +1830,7 @@ body {
         radial-gradient(circle at 94% 2%, rgba(212, 165, 46, .038), transparent 24%),
         repeating-linear-gradient(112deg, rgba(118, 99, 70, .012) 0 1px, transparent 1px 19px),
         repeating-linear-gradient(18deg, rgba(84, 70, 48, .009) 0 1px, transparent 1px 13px),
-        linear-gradient(180deg, #fffefa 0%, var(--paper) 55%, #faf6ee 100%);
+        linear-gradient(180deg, #fffefa 0%, var(--paper) 55%, #f4f4f0 100%);
 }
 
 body::before {

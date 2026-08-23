@@ -12,21 +12,23 @@
  */
 
 :root {
-    --penaup-paper-base: #f8f8f4;
-    --penaup-paper-ivory: #f8f8f4;
+    --penaup-paper-base: #fafaf7;
+    --penaup-paper-ivory: #fafaf7;
     --penaup-paper-white: #fffefa;
-    --penaup-paper-rice: #f2f2ee;
-    --penaup-paper-shadow: #e9e9e4;
-    --paper: #f8f8f4;
+    --penaup-paper-rice: #f4f4f0;
+    --penaup-paper-shadow: #e8e8e2;
+    --paper: #fafaf7;
     --paper-bright: #fffefa;
     --paper-raised: #fffefa;
+    --paper-deep: #f4f4f0;
     --penaup-paper-ink: #20211f;
     --penaup-paper-muted: #686a63;
-    --penaup-paper-line: rgba(32, 33, 31, .19);
+    --penaup-paper-line: rgba(32, 33, 31, .15);
     --penaup-paper-sage: #b7d6c0;
     --penaup-paper-sage-ink: #4f775d;
     --penaup-paper-radius: 7px 8px 6px 7px;
     --penaup-paper-ease: cubic-bezier(.22, .75, .25, 1);
+    --penaup-control-height: 48px;
 }
 
 html {
@@ -37,21 +39,24 @@ body {
     background-color: var(--penaup-paper-base);
     background-image:
         radial-gradient(circle at 7% -12%, rgba(255, 255, 252, .99), transparent 34%),
-        radial-gradient(circle at 93% 3%, rgba(196, 154, 36, .028), transparent 24%),
-        repeating-linear-gradient(106deg, rgba(70, 70, 65, .011) 0 1px, transparent 1px 18px),
-        repeating-linear-gradient(17deg, rgba(70, 70, 65, .008) 0 1px, transparent 1px 13px),
-        linear-gradient(180deg, #fffefa 0%, var(--penaup-paper-base) 57%, #f0f0eb 100%);
+        radial-gradient(circle at 93% 3%, rgba(196, 154, 36, .022), transparent 24%),
+        repeating-linear-gradient(106deg, rgba(70, 70, 65, .007) 0 1px, transparent 1px 20px),
+        repeating-linear-gradient(17deg, rgba(70, 70, 65, .005) 0 1px, transparent 1px 15px),
+        linear-gradient(180deg, #fffefa 0%, var(--penaup-paper-base) 58%, #f4f4f0 100%);
+    background-attachment: fixed;
 }
 
 /* One restrained grain layer gives the background a tactile grass-paper read
  * while remaining CSS-only and cheap to paint on a phone. */
 body::before {
-    opacity: .055;
+    z-index: 0;
+    opacity: .03;
 }
 
 body::after {
-    opacity: .095;
-    background-size: 220px 220px;
+    z-index: 0;
+    opacity: .055;
+    background-size: 240px 240px;
 }
 
 /* Shared action geometry. The selectors are deliberately explicit so icon
@@ -92,9 +97,11 @@ body .button-danger,
 body .nav-cta,
 body .frame-action-btn,
 body .frame-send-btn {
-    min-height: 50px;
+    min-height: var(--penaup-control-height);
     padding-inline: 17px;
     font-size: 15px;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
 body .button-primary,
@@ -183,6 +190,116 @@ body .frame-send-btn:disabled {
     opacity: .82;
 }
 
+/* One final alignment contract. The reference paper lab uses small, calm
+ * controls with a consistent baseline; avoid inheriting different heights
+ * from the old story, studio and device sheets. */
+body .button,
+body .primary-button,
+body .secondary-button,
+body .button-primary,
+body .button-quiet,
+body .button-danger,
+body .nav-cta,
+body .device-tool-link,
+body .frame-action-btn,
+body .frame-send-btn,
+body .network-header,
+body .mode-button,
+body .weread-period,
+body .weread-scene,
+body .weread-render,
+body .rendering-mode-button {
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    font-weight: 600;
+}
+
+body .button i,
+body .primary-button i,
+body .secondary-button i,
+body .frame-action-btn i,
+body .frame-send-btn i {
+    flex: 0 0 auto;
+    line-height: 1;
+}
+
+body :where(input, select, textarea) {
+    box-sizing: border-box;
+    min-height: var(--penaup-control-height);
+    border-radius: 7px;
+}
+
+body .frame-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: stretch;
+}
+
+body .frame-tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+    white-space: normal;
+}
+
+body .frame-tab > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+body .frame-hint-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+body .frame-hint-row .frame-hint {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+}
+
+body .frame-reset-btn {
+    width: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    flex: 0 0 44px;
+}
+
+body .frame-action-btn,
+body .frame-send-btn {
+    width: 100%;
+}
+
+body .polaroid-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body .polaroid-inner:not(.weread-polaroid-inner) {
+    width: min(100%, 528px, 42dvh);
+    height: auto;
+    max-width: 100%;
+    aspect-ratio: 2 / 3;
+    margin-inline: auto;
+}
+
+body .weread-polaroid-inner {
+    width: min(100%, 440px);
+    height: auto;
+    max-width: 100%;
+    aspect-ratio: 2 / 3;
+    margin-inline: auto;
+}
+
+body .polaroid-inner canvas,
+body .weread-polaroid-inner canvas {
+    transform-origin: center center;
+}
+
 /* Keep the dark six-colour study dark. The generic paper layer must not turn
  * its unselected controls into white-on-white buttons. */
 body .story-shell .color-mode {
@@ -261,7 +378,7 @@ body .weread-polaroid {
 body .polaroid-inner,
 body .weread-polaroid-inner {
     aspect-ratio: 2 / 3;
-    background-color: #f0f0eb;
+    background-color: #f4f4f0;
 }
 
 body .weread-polaroid-inner canvas {
@@ -359,6 +476,19 @@ body .device-tool-link:focus-visible {
         align-self: stretch;
     }
 
+    body .hero-actions > *,
+    body .quote-btn-group > *,
+    body .conversion-actions > *,
+    body .network-btn-row > *,
+    body .button-row > *,
+    body .action-controls > *,
+    body .button-group > *,
+    body .weread-connect-row > *,
+    body .weread-demo-row > *,
+    body .weread-actions > * {
+        min-height: 54px;
+    }
+
     body .weread-layout {
         grid-template-columns: 1fr;
     }
@@ -422,6 +552,10 @@ body .device-tool-link:focus-visible {
     body .frame-tab {
         min-height: 58px;
         font-size: 14px;
+    }
+
+    body .polaroid-inner:not(.weread-polaroid-inner) {
+        width: min(100%, 38.7dvh);
     }
 
     body .weread-controls,

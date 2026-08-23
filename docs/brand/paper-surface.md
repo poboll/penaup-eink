@@ -6,7 +6,7 @@
 
 ## 视觉规则
 
-- 页面底色以接近白色的 `#F8F8F4` 为中心，顶部使用 `#FFFEFA` 的纸面高光，预览底/纸影落到很浅的 `#F2F2EE`；
+- 页面底色以更接近白色的 `#FAFAF7` 为中心，顶部使用 `#FFFEFA` 的纸面高光，预览底/纸影落到很浅的 `#F4F4F0`；
 - 纹理由低对比的斜向纸纤维和 CSS 噪点组成，不使用高对比横纵网格，不加载外部图片、不依赖第三方纹理包；参考页的灰感被压浅，保持接近白纸的阅读亮度；
 - 纸面纹理的透明度保持在低位，正文与按钮的对比度优先于“看起来像纸”；
 - 相纸预览单独增加细纤维层，显影扫描线只在生成/显影期间出现；
@@ -18,9 +18,9 @@
 | Token | 值 | 用途 |
 | --- | --- | --- |
 | `--penaup-paper-white` | `#FFFEFA` | 纸面高光、主要卡片 |
-| `--penaup-paper-ivory` | `#F8F8F4` | 页面主背景 |
-| `--penaup-paper-rice` | `#F2F2EE` | 纸面阴影与预览底 |
-| `--penaup-paper-shadow` | `#E9E9E4` | 纸片错位阴影 |
+| `--penaup-paper-ivory` | `#FAFAF7` | 页面主背景 |
+| `--penaup-paper-rice` | `#F4F4F0` | 纸面阴影与预览底 |
+| `--penaup-paper-shadow` | `#E8E8E2` | 纸片错位阴影 |
 | `--penaup-paper-ink` | `#20211F` | 正文与主要操作 |
 | `--penaup-paper-blue` | `#4D73AD` | 进行中、链接、状态 |
 | `--penaup-paper-yellow` | `#C49A24` | 显影、提醒、重点 |
