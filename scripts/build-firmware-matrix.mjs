@@ -26,7 +26,7 @@ function usage() {
   --help                显示帮助
 
 脚本会把 firmware/penaup 复制到隔离目录，分别写入 sdkconfig_<model> 和
-sys_cfg.h 机型宏；不会修改仓库内的源码、sdkconfig 或 build/。`;
+sys_cfg.h 机型宏；不会修改仓库内的源码、sdkconfig 或任何 build* 构建产物。`;
 }
 
 function parseArgs(argv) {
@@ -89,7 +89,10 @@ function copyProject(destination, model) {
       const relative = path.relative(sourceRoot, sourcePath);
       if (!relative) return true;
       const first = relative.split(path.sep)[0];
-      if (first === 'build' || first === 'sdkconfig' || first === '.git') return false;
+      // ESP-IDF leaves build/ and the local build_gate_* evidence directories
+      // beside the source. Copying either into every isolated model would
+      // waste hundreds of megabytes and can exhaust a small CI/VPS volume.
+      if (first === 'build' || first.startsWith('build_gate_') || first === 'sdkconfig' || first === '.git') return false;
       return !/^sdkconfig(?:\.old)?$/.test(path.basename(relative));
     }
   });

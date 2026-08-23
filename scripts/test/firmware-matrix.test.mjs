@@ -19,6 +19,17 @@ test('firmware matrix dry-run is isolated and does not change source config', ()
   assert.match(output, /\"status\": \"planned\"/);
 });
 
+test('firmware matrix excludes repository build evidence from isolated copies', () => {
+  const buildRoot = fs.mkdtempSync(path.join(fs.realpathSync('/tmp'), 'penaup-firmware-copy-'));
+  try {
+    execFileSync(process.execPath, [script, `--build-root=${buildRoot}`, '--models=pro', '--dry-run'], { cwd: root });
+    assert.equal(fs.existsSync(path.join(buildRoot, 'pro', 'build')), false);
+    assert.equal(fs.existsSync(path.join(buildRoot, 'pro', 'build_gate_pro')), false);
+  } finally {
+    fs.rmSync(buildRoot, { recursive: true, force: true });
+  }
+});
+
 test('firmware matrix rejects an unknown model before building', () => {
   assert.throws(
     () => execFileSync(process.execPath, [script, '--models=ultra', '--dry-run'], { cwd: root, stdio: 'pipe' }),
