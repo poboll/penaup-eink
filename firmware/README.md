@@ -9,6 +9,8 @@
 3. 确认屏幕驱动、输入和 SD/电池/LED 引脚与机型一致；
 4. 构建后检查设备广播名和 BLE 兼容行为。
 
+仓库根目录的 `npm run firmware:build:matrix` 会在系统临时目录复制源码，自动配对三套 `sdkconfig_*` 与机型宏，适合发布前做干净构建；它不会修改本目录的 `sdkconfig` 或 `sys_cfg.h`。
+
 ```bash
 cd firmware/penaup
 cp sdkconfig_pro sdkconfig

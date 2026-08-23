@@ -1,0 +1,48 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import test from 'node:test';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const script = path.join(root, 'scripts', 'build-firmware-matrix.mjs');
+
+test('firmware matrix dry-run is isolated and does not change source config', () => {
+  const configPath = path.join(root, 'firmware', 'penaup', 'components', 'film_sys', 'inc', 'sys_cfg.h');
+  const before = fs.readFileSync(configPath, 'utf8');
+  const output = execFileSync(process.execPath, [script, '--models=pro', '--dry-run'], { cwd: root }).toString('utf8');
+  const after = fs.readFileSync(configPath, 'utf8');
+  assert.equal(after, before);
+  assert.match(output, /隔离构建根目录/);
+  assert.match(output, /PENAUP_PRO/);
+  assert.match(output, /\"status\": \"planned\"/);
+});
+
+test('firmware matrix rejects an unknown model before building', () => {
+  assert.throws(
+    () => execFileSync(process.execPath, [script, '--models=ultra', '--dry-run'], { cwd: root, stdio: 'pipe' }),
+    /status: 2|机型必须是/
+  );
+});
+
+test('firmware matrix refuses repository and non-empty output roots', () => {
+  const sourceRoot = path.join(root, 'firmware', 'penaup');
+  assert.throws(
+    () => execFileSync(process.execPath, [script, `--build-root=${sourceRoot}`, '--models=pro', '--dry-run'], { cwd: root, stdio: 'pipe' }),
+    (error) => /仓库之外/.test(String(error.stderr || ''))
+  );
+
+  const externalRoot = fs.mkdtempSync(path.join(fs.realpathSync('/tmp'), 'penaup-firmware-guard-'));
+  const sentinel = path.join(externalRoot, 'keep.txt');
+  fs.writeFileSync(sentinel, 'keep');
+  try {
+    assert.throws(
+      () => execFileSync(process.execPath, [script, `--build-root=${externalRoot}`, '--models=pro', '--dry-run'], { cwd: root, stdio: 'pipe' }),
+      (error) => /必须为空/.test(String(error.stderr || ''))
+    );
+    assert.equal(fs.readFileSync(sentinel, 'utf8'), 'keep');
+  } finally {
+    fs.rmSync(externalRoot, { recursive: true, force: true });
+  }
+});

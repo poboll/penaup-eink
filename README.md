@@ -95,7 +95,16 @@ idf.py build
 idf.py flash monitor
 ```
 
-发布前分别使用 `sdkconfig_std`、`sdkconfig_pro`、`sdkconfig_max` 构建 STD、Pro、Max。本机最近一次 ESP-IDF 5.5.2 构建证据与剩余硬件门禁见 [`docs/ops/verification-matrix.md`](docs/ops/verification-matrix.md)。
+发布前推荐使用隔离构建矩阵脚本，一次生成三套互不污染的构建目录；它不会修改仓库内的机型宏或 `sdkconfig`：
+
+```bash
+source /Users/Apple/.espressif/frameworks/esp-idf-v5.5.2/export.sh
+npm run firmware:build:matrix
+# 只验证 Pro：npm run firmware:build:matrix -- --models=pro
+# 先检查计划：npm run firmware:build:matrix -- --dry-run
+```
+
+脚本会输出临时构建根目录和每个 `penaup.bin` 的大小；`flash`、`monitor` 和实体刷新仍必须在确认端口与硬件型号后手动执行。本机最近一次 ESP-IDF 5.5.2 构建证据与剩余硬件门禁见 [`docs/ops/verification-matrix.md`](docs/ops/verification-matrix.md)。
 
 ## 运行时架构
 

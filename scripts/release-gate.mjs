@@ -159,6 +159,7 @@ const requiredPaths = [
   , 'firmware/penaup/releases/README.md'
   , 'scripts/create-firmware-manifest.mjs'
   , 'scripts/sign-firmware-manifest.mjs'
+  , 'scripts/build-firmware-matrix.mjs'
 ];
 requirePaths(requiredPaths);
 

@@ -21,6 +21,7 @@
     "audit": "npm --prefix server audit --omit=dev --registry=https://registry.npmjs.org",
     "release:gate": "npm run check && npm test && npm run audit && node scripts/release-gate.mjs --strict-external",
     "film-core:sync": "npm --prefix server run film-core:sync",
-    "migrate:fastapi": "npm --prefix server run migrate:fastapi --"
+    "migrate:fastapi": "npm --prefix server run migrate:fastapi --",
+    "firmware:build:matrix": "node scripts/build-firmware-matrix.mjs"
   }
 }
