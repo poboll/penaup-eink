@@ -21,9 +21,14 @@
         expand_less: '⌃',
         fit_screen: '↔',
         format_quote: '“',
+        auto_awesome: '✦',
+        download: '↓',
+        expand_more: '⌄',
         image: '▧',
+        hourglass_top: '⌛',
         link: '↗',
         link_off: '×',
+        menu_book: '▣',
         movie: '▣',
         palette: '◌',
         photo_camera: '◉',
@@ -34,14 +39,19 @@
         sd_card: '▧',
         send: '↗',
         settings: '⚙',
+        save_alt: '⇩',
         system_update: '⇩',
         touch_app: '☝',
+        visibility: '◉',
         wifi: '⌁'
     };
 
     function decorate(root) {
         var scope = root || document;
-        scope.querySelectorAll('.material-icons:not([data-icon])').forEach(function (node) {
+        var nodes = [];
+        if (scope.nodeType === 1 && scope.matches && scope.matches('.material-icons:not([data-icon])')) nodes.push(scope);
+        scope.querySelectorAll('.material-icons:not([data-icon])').forEach(function (node) { nodes.push(node); });
+        nodes.forEach(function (node) {
             var name = (node.textContent || '').trim();
             node.dataset.icon = name;
             node.dataset.symbol = glyphs[name] || '·';

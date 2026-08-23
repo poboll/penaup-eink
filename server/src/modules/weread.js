@@ -136,6 +136,11 @@ function weekRangeLabel(date) {
   return `本周 · ${String(startChina.getUTCMonth() + 1).padStart(2, '0')}月${String(startChina.getUTCDate()).padStart(2, '0')}日—${String(endChina.getUTCMonth() + 1).padStart(2, '0')}月${String(endChina.getUTCDate()).padStart(2, '0')}日`;
 }
 
+function weekRangeLabelFromStart(value, fallbackDate = new Date()) {
+  const start = value ? dateFromChinaDateKey(value) : null;
+  return weekRangeLabel(start || fallbackDate);
+}
+
 function timestampMilliseconds(value) {
   const number = numericPart(value);
   if (number === null || number <= 0) return 0;
@@ -177,27 +182,34 @@ function normalizeDailyReading(input, month) {
     const key = cleanText(rawKey, 32);
     const digits = key.replace(/\D/g, '');
     let day = 0;
+    let sortKey = 0;
     if (DATE_RE.test(key)) {
       const date = dateFromChinaDateKey(key);
       const dateMonth = date ? `${date.getUTCFullYear()}${String(date.getUTCMonth() + 1).padStart(2, '0')}` : '';
       if (!monthPrefix || dateMonth === monthPrefix) day = date?.getUTCDate() || 0;
+      sortKey = date?.getTime() || 0;
     } else if (/^\d{8}$/.test(digits) && (!monthPrefix || digits.slice(0, 6) === monthPrefix)) {
       day = Number(digits.slice(6, 8));
+      sortKey = Date.UTC(Number(digits.slice(0, 4)), Number(digits.slice(4, 6)) - 1, day);
     } else if (/^\d{1,2}$/.test(key)) {
       day = Number(key);
+      sortKey = day;
     } else if (/^\d{10}$|^\d{13}$/.test(digits)) {
-      const date = chinaDate(new Date(Number(digits) * (digits.length === 10 ? 1000 : 1)));
+      const timestamp = Number(digits) * (digits.length === 10 ? 1000 : 1);
+      const date = chinaDate(new Date(timestamp));
       const dateMonth = `${date.getUTCFullYear()}${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
       if (!monthPrefix || dateMonth === monthPrefix) day = date.getUTCDate();
+      sortKey = timestamp;
     }
     const readingMinutes = durationToMinutes(value);
     if (Number.isInteger(day) && day >= 1 && day <= 31 && readingMinutes > 0) {
-      byDay.set(day, Math.max(byDay.get(day) || 0, readingMinutes));
+      const previous = byDay.get(day);
+      if (!previous || readingMinutes > previous.readingMinutes) byDay.set(day, { readingMinutes, sortKey });
     }
   });
   return [...byDay.entries()]
-    .map(([day, readingMinutes]) => ({ day, readingMinutes }))
-    .sort((left, right) => left.day - right.day)
+    .sort((left, right) => (left[1].sortKey - right[1].sortKey) || (left[0] - right[0]))
+    .map(([day, reading]) => ({ day, readingMinutes: reading.readingMinutes }))
     .slice(0, 31);
 }
 
@@ -240,14 +252,16 @@ export function normalizeWereadSnapshot(payload, mode = 'monthly', now = new Dat
     profile: 'PENAUP_PRO',
     screen: { width: 792, height: 528, panel: 'E6 3.68 inch' },
     periodKey,
-    periodLabel: selectedMode === 'weekly' ? weekRangeLabel(now) : monthRangeLabel(requestedMonth),
+    periodLabel: selectedMode === 'weekly' ? weekRangeLabelFromStart(requestedWeek, now) : monthRangeLabel(requestedMonth),
     readingDays,
     readingMinutes,
     bookCount,
     noteCount,
     topBookDetails,
     topBooks: topBookDetails.map((book) => book.title),
-    dailyReading: normalizeDailyReading(root.readTimes || root.dailyReadTimes, requestedMonth),
+    // A week can cross two calendar months. Do not apply the monthly filter to
+    // weekly data or the first/last day can disappear from the wallpaper.
+    dailyReading: normalizeDailyReading(root.readTimes || root.dailyReadTimes, selectedMode === 'monthly' ? requestedMonth : ''),
     quote: selectedMode === 'weekly' ? '从这周读过的书里，挑一句话留给今天。' : '从这个月读过的书里，挑一句话留给今天。',
     enrichment: 'none',
     fetchedAt: new Date().toISOString()
@@ -339,10 +353,18 @@ export function normalizeWereadReadingCard(bookInfo, highlights, reviews, progre
   };
 }
 
-function validGatewayUrl(value) {
+function allowedGatewayHosts(value) {
+  const values = Array.isArray(value) ? value : String(value || '').split(',');
+  return new Set(values.map((item) => cleanText(item, 255).toLowerCase()).filter(Boolean));
+}
+
+function validGatewayUrl(value, allowedHosts) {
   try {
     const url = new URL(value || DEFAULT_GATEWAY_URL);
     if (url.protocol !== 'https:') throw new Error('https_required');
+    if (url.username || url.password || url.search || url.hash) throw new Error('gateway_url_must_not_contain_credentials_or_query');
+    const hostname = url.hostname.toLowerCase();
+    if (allowedHosts.size && !allowedHosts.has(hostname)) throw new Error('gateway_host_not_allowed');
     return url.toString();
   } catch (error) {
     throw errorWithCode('weread_gateway_invalid', '微信读书服务地址配置无效。', error);
@@ -354,7 +376,8 @@ function isReturnedHtml(value) {
 }
 
 export function createWereadService({ config = {}, fetchImpl = globalThis.fetch } = {}) {
-  const gatewayUrl = validGatewayUrl(config.wereadGatewayUrl || DEFAULT_GATEWAY_URL);
+  const gatewayAllowedHosts = allowedGatewayHosts(config.wereadGatewayAllowedHosts || 'i.weread.qq.com');
+  const gatewayUrl = validGatewayUrl(config.wereadGatewayUrl || DEFAULT_GATEWAY_URL, gatewayAllowedHosts);
   const skillVersion = cleanText(config.wereadSkillVersion || DEFAULT_SKILL_VERSION, 32) || DEFAULT_SKILL_VERSION;
   const timeoutMs = Math.max(3000, Math.min(60000, Number(config.wereadTimeoutMs || DEFAULT_TIMEOUT_MS)));
 

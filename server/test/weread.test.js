@@ -6,6 +6,7 @@ import test from 'node:test';
 
 import { buildApp } from '../src/app.js';
 import {
+  createWereadService,
   normalizeWereadReadingCard,
   normalizeWereadShelf,
   normalizeWereadSnapshot
@@ -87,6 +88,36 @@ test('normalizes date-key variants and keeps shelf fields bounded', () => {
   assert.equal(shelf.books[0].coverUrl, '');
   assert.equal(shelf.books[1].mediaType, '有声书');
   assert.equal(shelf.ebooks, 1);
+});
+
+test('keeps a selected cross-month week label and reading order', () => {
+  const snapshot = normalizeWereadSnapshot({
+    errcode: 0,
+    readTimes: { '2026-08-31': 1800, '2026-09-01': 3600 }
+  }, 'weekly', new Date('2026-09-05T00:00:00.000Z'), { weekStart: '2026-08-31' });
+
+  assert.equal(snapshot.periodKey, '2026-08-31');
+  assert.equal(snapshot.periodLabel, '本周 · 08月31日—09月06日');
+  assert.deepEqual(snapshot.dailyReading, [
+    { day: 31, readingMinutes: 30 },
+    { day: 1, readingMinutes: 60 }
+  ]);
+});
+
+test('does not allow a custom WeRead gateway to receive a key without explicit host approval', () => {
+  assert.throws(
+    () => createWereadService({ config: { wereadGatewayUrl: 'https://mirror.example/gateway' }, fetchImpl: async () => {} }),
+    (error) => error.code === 'weread_gateway_invalid'
+  );
+
+  const service = createWereadService({
+    config: {
+      wereadGatewayUrl: 'https://mirror.example/gateway',
+      wereadGatewayAllowedHosts: 'mirror.example'
+    },
+    fetchImpl: async () => ({ ok: true, status: 200, text: async () => JSON.stringify({ errcode: 0 }) })
+  });
+  assert.equal(service.gatewayUrl, 'https://mirror.example/gateway');
 });
 
 test('normalizes a reading card without exposing upstream response fields', () => {

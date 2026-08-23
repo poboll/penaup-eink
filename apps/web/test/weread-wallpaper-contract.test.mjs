@@ -31,6 +31,8 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.match(styles, /--paper:\s*#fbf8f0/);
   assert.match(styles, /prefers-reduced-motion/);
   assert.match(responsiveStyles, /\.weread-phase-trail/);
+  assert.match(responsiveStyles, /\.weread-key-row \.text-button/);
+  assert.match(responsiveStyles, /min-width:\s*44px/);
   assert.match(responsiveStyles, /@media \(max-width: 420px\)/);
 });
 

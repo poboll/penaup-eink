@@ -54,6 +54,7 @@ export function createConfig(overrides = {}) {
     aiApiKey: overrides.aiApiKey ?? process.env.PENAUP_AI_API_KEY ?? '',
     aiTimeoutMs: overrides.aiTimeoutMs || integerFromEnv('PENAUP_AI_TIMEOUT_MS', 20000, 3000, 60000),
     wereadGatewayUrl: overrides.wereadGatewayUrl ?? process.env.PENAUP_WEREAD_GATEWAY_URL ?? 'https://i.weread.qq.com/api/agent/gateway',
+    wereadGatewayAllowedHosts: overrides.wereadGatewayAllowedHosts ?? process.env.PENAUP_WEREAD_GATEWAY_ALLOWED_HOSTS ?? 'i.weread.qq.com',
     wereadSkillVersion: overrides.wereadSkillVersion ?? process.env.PENAUP_WEREAD_SKILL_VERSION ?? '1.0.4',
     wereadTimeoutMs: overrides.wereadTimeoutMs || integerFromEnv('PENAUP_WEREAD_TIMEOUT_MS', 15000, 3000, 60000),
     logLevel: overrides.logLevel || process.env.PENAUP_LOG_LEVEL || 'info'

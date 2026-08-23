@@ -120,6 +120,14 @@ a.secondary-button {
     overflow-wrap: anywhere;
 }
 
+/* Text actions still need a comfortable hit area on touch devices. */
+.weread-key-row .text-button {
+    min-width: 44px;
+    padding-right: 4px;
+    padding-left: 4px;
+    text-align: center;
+}
+
 @media (max-width: 1024px) {
     .weread-layout {
         gap: 28px;

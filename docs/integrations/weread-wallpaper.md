@@ -69,11 +69,12 @@ Body: { "mode": "weekly" | "monthly", "month": "YYYY-MM"?, "week_start": "YYYY-M
 
 ```text
 PENAUP_WEREAD_GATEWAY_URL=https://i.weread.qq.com/api/agent/gateway
+PENAUP_WEREAD_GATEWAY_ALLOWED_HOSTS=i.weread.qq.com
 PENAUP_WEREAD_SKILL_VERSION=1.0.4
 PENAUP_WEREAD_TIMEOUT_MS=15000
 ```
 
-gateway 必须是 HTTPS 地址；不要把 Skill Key 放进 `.env`、Git、部署模板或客户端构建产物。
+gateway 必须是 HTTPS 地址，默认只允许 `i.weread.qq.com`；如果部署到经过审核的自有转发域名，必须同时把该域名加入 `PENAUP_WEREAD_GATEWAY_ALLOWED_HOSTS`，否则服务会拒绝启动。不要把 Skill Key 放进 `.env`、Git、部署模板或客户端构建产物。
 
 ## 字体与生成
 

@@ -42,6 +42,7 @@ npm start
 | `PENAUP_MQTT_URL` | 空 | MQTT broker URL，例如 `mqtt://127.0.0.1:1883` |
 | `PENAUP_MQTT_TOPIC_PREFIX` | `penaup/device` | 设备状态和命令 topic 前缀 |
 | `PENAUP_WEREAD_GATEWAY_URL` | 微信读书 HTTPS gateway | 微信读书临时转发地址；必须是 HTTPS |
+| `PENAUP_WEREAD_GATEWAY_ALLOWED_HOSTS` | `i.weread.qq.com` | gateway 主机白名单；自有转发域名必须显式加入 |
 | `PENAUP_WEREAD_SKILL_VERSION` | `1.0.4` | 上游 Skill 版本，不是用户 Key |
 | `PENAUP_WEREAD_TIMEOUT_MS` | `15000` | 微信读书请求超时，范围 3000–60000ms |
 
