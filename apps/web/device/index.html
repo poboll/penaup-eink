@@ -96,7 +96,7 @@
                 <div class="network-grid">
                     <form id="network-form" class="paper-card network-card">
                         <div class="card-topline"><span class="mono-label">NETWORK CONFIG</span><span id="network-form-state" class="capability-pill">未连接</span></div>
-                        <label class="field"><span>Wi-Fi 开关</span><span class="switch-row"><input id="wifi-enabled" type="checkbox" disabled><span class="switch-visual" aria-hidden="true"></span><small>允许设备联网与下载 film</small></span></label>
+                        <label class="field"><span>Wi-Fi 开关</span><span class="switch-row"><input id="wifi-enabled" type="checkbox" aria-label="允许设备联网与下载 film" disabled><span class="switch-visual" aria-hidden="true"></span><small>允许设备联网与下载 film</small></span></label>
                         <label class="field"><span>SSID</span><input id="wifi-ssid" type="text" maxlength="63" autocomplete="off" placeholder="例如 home-2.4G" disabled></label>
                         <label class="field"><span>密码</span><input id="wifi-password" type="password" maxlength="63" autocomplete="off" placeholder="仅在需要修改时填写" disabled></label>
                         <label class="field"><span>film API 地址</span><input id="film-api-url" type="url" maxlength="127" inputmode="url" placeholder="http://服务器:8787" disabled></label>
@@ -143,8 +143,8 @@
                     <form id="ota-form" class="paper-card ota-card">
                         <div class="card-topline"><span class="mono-label">BLE OTA / 0x10 → 0x11 → 0x13</span><span id="ota-lock-state" class="capability-pill locked">正式包未就绪</span></div>
                         <div class="file-pair">
-                            <label class="file-field"><span>发布清单 manifest.json</span><input id="manifest-input" type="file" accept="application/json,.json" disabled><small id="manifest-name">尚未选择</small></label>
-                            <label class="file-field"><span>固件镜像 .bin</span><input id="firmware-input" type="file" accept=".bin,application/octet-stream" disabled><small id="firmware-name">尚未选择</small></label>
+                            <label class="file-field"><span>发布清单 manifest.json</span><input id="manifest-input" type="file" aria-label="选择发布清单 manifest.json" accept="application/json,.json" disabled><small id="manifest-name">尚未选择</small></label>
+                            <label class="file-field"><span>固件镜像 .bin</span><input id="firmware-input" type="file" aria-label="选择固件镜像 .bin" accept=".bin,application/octet-stream" disabled><small id="firmware-name">尚未选择</small></label>
                         </div>
                         <div id="ota-validation" class="validation-note" role="status" aria-live="polite">暂无已签名发布包。选择文件后，页面只会先做本地校验。</div>
                         <div class="ota-meter" aria-hidden="true"><span id="ota-progress-bar"></span></div>
