@@ -34,6 +34,9 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.match(responsiveStyles, /\.weread-key-row \.text-button/);
   assert.match(responsiveStyles, /min-width:\s*44px/);
   assert.match(responsiveStyles, /@media \(max-width: 420px\)/);
+  const convert = await read('js/convert.js');
+  assert.match(convert, /\.polaroid-inner:not\(\.weread-polaroid-inner\)/);
+  assert.match(styles, /\.weread-polaroid-inner canvas\s*\{[\s\S]*?top:\s*0;[\s\S]*?left:\s*0;/);
 });
 
 test('BLE transfer exposes an uncertain-device result instead of false success', async () => {

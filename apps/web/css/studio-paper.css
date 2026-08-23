@@ -565,6 +565,8 @@ button.primary-button i, button.secondary-button i, a.primary-button i, a.second
 
 .weread-polaroid-inner canvas {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     transform: none;
