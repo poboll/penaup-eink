@@ -2,23 +2,41 @@
 
 > Copyright (c) 2026 poboll · `LicenseRef-Poboll-NonCommercial`
 
-花生片 Penaup 可以把微信读书的一份周报或月报排成 Pro 版电子纸屏保。它不是把阅读数据做成手机截图，而是先取回最小统计摘要，再在浏览器本地排版、六色显影并生成 `.film`。
+花生片 Penaup 可以把微信读书的书架、周报或月报排成 Pro 版电子纸屏保。它不是把阅读数据做成手机截图，而是先取回最小统计摘要，再在浏览器本地排版、六色显影并生成 `.film`。
 
 ## 用户流程
 
 ```text
-输入临时 Skill Key → 选择本周 / 本月 → 服务端临时转发
-→ 浏览器本地排版 → 六色显影 → 下载 PNG / .film 或发送到 Pro
+输入临时 Skill Key → 连接书架 → 选择本周 / 本月与场景
+→ 浏览器本地排版 → 选择叠色 / 网点 / 抖动 → 六色显影
+→ 下载 PNG / .film 或发送到 Pro
 ```
 
 固定输出契约为 `PENAUP_PRO`、`792 × 528`、`E6 3.68 inch`。物理屏幕仍然只有六种基础墨水；叠色、抖动和相邻像素共同形成更多色彩观感，页面文案使用“最多 48 种色彩观感”，不把它描述成 48 种原生墨水。
 
+## 四种壁纸场景
+
+- **本周小票**：阅读分钟、阅读天数、书名和一段摘录排成一张周阅读小票；
+- **本月日历**：把每天的阅读分钟放进周一开始的月历，并用短线串起阅读线程；
+- **书架标本**：把归一化书架书名排成三层书脊，只显示服务端允许的最小字段；
+- **我的读书卡**：选择一本书，补充简介、进度和最多两条最近划线/批注。
+
+四种场景都在浏览器中使用仓库内的 `apps/web/fonts/huiwen-mincho.woff2` 排版。它是将用户提供的汇文明朝体字体转换成网页可加载格式后的资源；原始 OTF 不进入 Git，字体的再分发权利仍需在公开发布前单独核对。
+
 ## HTTP 接口
+
+```text
+POST /api/v1/integrations/weread/connect
+POST /api/v1/integrations/weread/bookshelf
+POST /api/v1/integrations/weread/reading-card
+```
+
+`connect` 只返回书架总数、电子书和有声书数量；`bookshelf` 返回有限数量的书名、作者、完成状态、最近阅读时间和安全的 HTTPS 封面地址；`reading-card` 根据书籍编号取回简介、进度以及最多两条划线/批注。所有返回都是归一化字段，不把微信读书原始 JSON 交给网页。
 
 ```text
 POST /api/v1/integrations/weread/snapshot
 Header: X-Penaup-WeRead-Key: <临时 Skill Key>
-Body: { "mode": "weekly" | "monthly", "month": "YYYY-MM"? }
+Body: { "mode": "weekly" | "monthly", "month": "YYYY-MM"?, "week_start": "YYYY-MM-DD"?, "enrich": true? }
 ```
 
 服务端向微信读书 gateway 发起一次 `POST`，请求体使用：
@@ -31,11 +49,11 @@ Body: { "mode": "weekly" | "monthly", "month": "YYYY-MM"? }
 }
 ```
 
-月报可额外传 `month`，服务端会转换为上游需要的 `baseTime`。返回值只包含屏保需要的字段：阅读分钟、阅读天数、读过的书数、笔记数、最多八本书、每日阅读柱状数据和时间范围标签；不会把微信读书原始响应转发给页面。
+月报可额外传 `month`，周报可传周一 `week_start`，服务端会转换为上游需要的 `baseTime`。`enrich: true` 时服务端还会读取书架，并对最多五本书补充进度和最新划线；任何补充请求失败只会把 `enrichment` 标记为 `partial`，不会把统计摘要伪装成完整成功。返回值只包含屏保需要的字段：阅读分钟、阅读天数、读过的书数、笔记数、最多十二本书、每日阅读柱状数据和时间范围标签；不会把微信读书原始响应转发给页面。
 
 ## Key 与隐私边界
 
-- Key 只从 `X-Penaup-WeRead-Key` 请求头读取，不接受 URL 参数，不写 SQLite，不写 local server 日志，也不进入响应正文。
+- Key 只从 `X-Penaup-WeRead-Key` 请求头读取，不接受 URL 参数，不写 SQLite，不写 local server 日志，也不进入响应正文。连接、书架、快照和读书卡路由都检查来源并使用独立的每 IP 20 次/分钟限流。
 - 默认请求和响应均为 `no-store`；上游请求使用 HTTPS，超时默认 15 秒。
 - 页面默认只在内存中保留 Key；勾选“在这台浏览器记住 Key”才会写入浏览器 `localStorage`。共享电脑不要勾选，使用后可以点击“清除”。
 - 生产反向代理必须继续脱敏 `X-Penaup-WeRead-Key`，并限制该路由的请求体、频率和来源。微信读书账号数据不会进入 MQTT、SSE、相册或媒体目录。

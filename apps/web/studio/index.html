@@ -431,45 +431,99 @@
                         <div id="frame-quote-result" role="status" aria-live="polite"></div>
                     </div>
 
-                    <!-- 微信读书屏保 -->
+                    <!-- 微信读书壁纸实验室 -->
                     <div id="frame-weread" class="frame-tab-content weread-tab-content">
-                        <div class="weread-layout">
-                            <section class="weread-controls" aria-labelledby="weread-title">
-                                <p class="section-kicker">READING / PENAUP PRO</p>
+                        <div class="weread-lab-intro">
+                            <div>
+                                <p class="section-kicker">READING WALLPAPER LAB / PENAUP PRO</p>
                                 <h2 id="weread-title">把读过的书，<em>留成一张屏保。</em></h2>
-                                <p class="weread-lede">从微信读书取回一份周报或月报，排成 3.68 英寸 E6 Pro 的一张纸。Key 只在本次请求中使用；默认不保存，离开页面即忘。</p>
+                                <p class="weread-lede">从微信读书取回一段真实的阅读轨迹，排成一张 3.68 英寸 E6 Pro 的纸。先连接，再选一种你想每天看见的样子。</p>
+                            </div>
+                            <div class="weread-pro-spec" aria-label="花生片 Pro 屏幕规格">
+                                <span class="weread-live-dot" aria-hidden="true"></span>
+                                <span>E6 / 3.68 INCH</span>
+                                <strong>792 × 528</strong>
+                            </div>
+                        </div>
+                        <ol class="weread-story-rail" aria-label="壁纸生成流程">
+                            <li class="is-current" data-weread-stage="connect"><span>01</span><b>连接</b></li>
+                            <li data-weread-stage="choose"><span>02</span><b>选纸</b></li>
+                            <li data-weread-stage="develop"><span>03</span><b>显影</b></li>
+                            <li data-weread-stage="keep"><span>04</span><b>留下</b></li>
+                        </ol>
+                        <div class="weread-layout">
+                            <section class="weread-controls" aria-labelledby="weread-controls-title">
+                                <div class="weread-section-title"><span>01</span><div><strong id="weread-controls-title">先接上你的阅读</strong><small>临时取回 · 不入库</small></div></div>
                                 <div class="weread-key-field">
                                     <label for="weread-skill-key">微信读书 Skill Key</label>
-                                    <input id="weread-skill-key" type="password" inputmode="text" autocomplete="off" spellcheck="false" placeholder="wrk-…" aria-describedby="weread-key-help">
-                                    <p id="weread-key-help">只发给 Penaup 的临时转发接口，不写入 URL、数据库或日志。</p>
+                                    <div class="weread-key-input-row">
+                                        <input id="weread-skill-key" type="password" inputmode="text" autocomplete="off" spellcheck="false" placeholder="wrk-…" aria-describedby="weread-key-help">
+                                        <button type="button" class="icon-button" id="weread-toggle-key" title="显示或隐藏 Key" aria-label="显示或隐藏 Key">◉</button>
+                                    </div>
+                                    <p id="weread-key-help">只通过 HTTPS 临时转发；不写入 URL、数据库、日志或设备。</p>
                                 </div>
                                 <div class="weread-key-row">
                                     <label class="weread-check"><input type="checkbox" id="weread-remember-key"><span>在这台浏览器记住 Key</span></label>
                                     <button type="button" class="text-button" id="weread-clear-key">清除</button>
                                 </div>
+                                <div class="weread-connect-row">
+                                    <button type="button" class="secondary-button" id="weread-connect"><i class="material-icons">menu_book</i>连接书架</button>
+                                    <span id="weread-source-summary" class="weread-source-summary" hidden>还没有连接</span>
+                                </div>
+
+                                <fieldset class="weread-scene-fieldset">
+                                    <legend>选择一张纸的样子</legend>
+                                    <div class="weread-scene-list" role="group" aria-label="壁纸场景">
+                                        <button type="button" class="weread-scene is-active" data-weread-scene="weekly_receipt" aria-pressed="true"><span class="scene-index">A</span><span><strong>本周小票</strong><small>把一周的阅读打印出来</small></span></button>
+                                        <button type="button" class="weread-scene" data-weread-scene="monthly_calendar" aria-pressed="false"><span class="scene-index">B</span><span><strong>本月日历</strong><small>每天读的书连成一条线</small></span></button>
+                                        <button type="button" class="weread-scene" data-weread-scene="bookshelf" aria-pressed="false"><span class="scene-index">C</span><span><strong>书架标本</strong><small>让书脊在纸上排成一面墙</small></span></button>
+                                        <button type="button" class="weread-scene" data-weread-scene="reading_card" aria-pressed="false"><span class="scene-index">D</span><span><strong>我的读书卡</strong><small>为一本正在读的书留一页</small></span></button>
+                                    </div>
+                                </fieldset>
+
                                 <fieldset class="weread-periods">
                                     <legend>选择阅读时间</legend>
                                     <div class="weread-period-list" role="group" aria-label="阅读时间范围">
                                         <button type="button" class="weread-period is-active" data-weread-mode="weekly" aria-pressed="true">本周读书</button>
                                         <button type="button" class="weread-period" data-weread-mode="monthly" aria-pressed="false">本月读书</button>
                                     </div>
+                                    <label class="weread-month-field" for="weread-month"><span>月报月份</span><input id="weread-month" type="month" aria-label="月报月份"></label>
                                 </fieldset>
-                                <button type="button" class="primary-button weread-fetch-button" id="weread-fetch"><i class="material-icons">auto_awesome</i>取回阅读记录</button>
+
+                                <div id="weread-book-field" class="weread-book-field" hidden>
+                                    <label for="weread-book-select">为读书卡选择一本书</label>
+                                    <select id="weread-book-select" aria-describedby="weread-book-help"><option value="">取回记录后选择</option></select>
+                                    <p id="weread-book-help">会补充简介、进度和最近的划线；没有书摘也可以生成。</p>
+                                </div>
+
+                                <fieldset class="weread-render-fieldset">
+                                    <legend>显影方式</legend>
+                                    <div class="weread-render-list" role="group" aria-label="选择六色显影方式">
+                                        <button type="button" class="weread-render is-active" data-weread-render="layer" aria-pressed="true"><strong>叠色</strong><small>柔和层次</small></button>
+                                        <button type="button" class="weread-render" data-weread-render="dots" aria-pressed="false"><strong>网点</strong><small>纸面颗粒</small></button>
+                                        <button type="button" class="weread-render" data-weread-render="dither" aria-pressed="false"><strong>抖动</strong><small>细节优先</small></button>
+                                    </div>
+                                    <p id="weread-render-note" class="weread-render-note">六种基础墨水通过叠色计算更多层次。</p>
+                                </fieldset>
+
+                                <button type="button" class="primary-button weread-fetch-button" id="weread-fetch"><i class="material-icons">auto_awesome</i>取回并显影</button>
                                 <div id="weread-status" class="weread-status" role="status" aria-live="polite">还没有取回记录。你的阅读只会变成这一张纸。</div>
                                 <div id="weread-stats" class="weread-stats" hidden></div>
+                                <p id="weread-enrichment-note" class="weread-enrichment-note" hidden></p>
                             </section>
                             <section class="weread-preview-panel" aria-labelledby="weread-preview-title">
                                 <div class="weread-preview-head">
-                                    <div><p class="preview-kicker">E6 / 3.68 INCH</p><h3 id="weread-preview-title">Pro 屏保预览</h3></div>
-                                    <span class="weread-size-tag">792 × 528</span>
+                                    <div><p class="preview-kicker">PAPER / LOCAL DEVELOPING</p><h3 id="weread-preview-title">一页还未显影</h3></div>
+                                    <span class="weread-size-tag">PRO · 792 × 528</span>
                                 </div>
                                 <div class="polaroid-frame weread-polaroid">
                                     <div class="polaroid-inner weread-polaroid-inner">
                                         <canvas id="weread-canvas" width="792" height="528" role="img" aria-label="微信读书 3.68 英寸电子纸屏保预览"></canvas>
-                                        <div id="weread-empty" class="weread-empty" aria-hidden="true"><span class="weread-empty-mark">◌</span><strong>一页还未显影</strong><span>取回记录后，这里会出现你的阅读轨迹。</span></div>
+                                        <div id="weread-empty" class="weread-empty"><span class="weread-empty-mark">◌</span><strong>纸面在等一段阅读</strong><span>连接书架并取回记录后，这里会出现你的阅读轨迹。</span></div>
                                     </div>
                                 </div>
-                                <div id="weread-preview-meta" class="weread-preview-meta">预览会使用汇文明朝体与 Penaup 六色显影。</div>
+                                <div id="weread-preview-meta" class="weread-preview-meta">汇文明朝体、纸面纹理和本地六色显影会在这里相遇。</div>
+                                <div class="weread-output-note"><span class="weread-output-mark" aria-hidden="true">6 × 8</span><span>六种物理墨水 · 最多 48 种色彩观感<br>画面停住后不需要持续点亮</span></div>
                                 <div class="weread-actions">
                                     <button type="button" class="secondary-button" id="weread-download-png" disabled><i class="material-icons">download</i>下载 PNG</button>
                                     <button type="button" class="primary-button" id="weread-download-film" disabled><i class="material-icons">save_alt</i>下载 .film</button>

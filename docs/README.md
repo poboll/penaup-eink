@@ -17,6 +17,7 @@
 11. [设备工具与固件升级](device-tool/firmware-updates.md)：浏览器 BLE 维护、OTA 门禁和 Web Serial 边界。
 12. [运行时需求](architecture/runtime-requirements.md) 与 [技术设计](architecture/runtime-design.md)：Node 单体、SQLite、SSE 和 MQTT 边界。
 13. [微信读书屏保整合](integrations/weread-wallpaper.md)：Key 边界、3.68 英寸 Pro 输出和本地六色显影。
+14. [壁纸实验室设计](plans/2026-08-23-weread-wallpaper-lab-design.md)：四种故事场景、类纸视觉、显影方式与验收标准。
 
 ## 文档分区
 

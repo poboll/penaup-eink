@@ -932,6 +932,58 @@ paths:
         '200': { description: provider 返回的安全结果 }
         '413': { description: 请求体过大 }
         '503': { description: provider 未配置或不可用 }
+  /api/v1/integrations/weread/connect:
+    post:
+      tags: [integrations]
+      security:
+        - WereadSkillKey: []
+      summary: 验证微信读书 Key 并读取书架数量
+      description: 只返回电子书、有声书和总条目数量，不返回书名或原始响应。
+      parameters:
+        - $ref: '#/components/parameters/WereadSkillKey'
+      responses:
+        '200': { description: Key 有效，返回书架数量 }
+        '401': { description: 微信读书 Key 被拒绝 }
+        '429': { description: 频率限制 }
+        '502': { description: 微信读书返回异常 }
+  /api/v1/integrations/weread/bookshelf:
+    post:
+      tags: [integrations]
+      security:
+        - WereadSkillKey: []
+      summary: 读取微信读书书架最小字段
+      description: 返回有限数量的书名、作者、进度和安全的 HTTPS 封面地址；响应禁止缓存。
+      parameters:
+        - $ref: '#/components/parameters/WereadSkillKey'
+      responses:
+        '200': { description: 书架最小字段 }
+        '401': { description: 微信读书 Key 被拒绝 }
+        '429': { description: 频率限制 }
+        '502': { description: 微信读书返回异常 }
+  /api/v1/integrations/weread/reading-card:
+    post:
+      tags: [integrations]
+      security:
+        - WereadSkillKey: []
+      summary: 读取一本书的读书卡最小字段
+      parameters:
+        - $ref: '#/components/parameters/WereadSkillKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [book_id]
+              additionalProperties: false
+              properties:
+                book_id: { type: string, minLength: 1, maxLength: 128, pattern: '^[A-Za-z0-9:_-]+$' }
+      responses:
+        '200': { description: 读书卡最小字段 }
+        '400': { description: 书籍编号无效 }
+        '401': { description: 微信读书 Key 被拒绝 }
+        '429': { description: 频率限制 }
+        '502': { description: 微信读书返回异常 }
   /api/v1/integrations/weread/snapshot:
     post:
       tags: [integrations]
@@ -1143,6 +1195,14 @@ components:
           type: string
           pattern: '^\d{4}-(0[1-9]|1[0-2])$'
           description: 月报月份；不传时由微信读书返回当前月份。
+        week_start:
+          type: string
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: 周报周一；不传时使用当前中国时区周一。
+        enrich:
+          type: boolean
+          default: false
+          description: 是否读取书架和最多五本书的进度/划线补充字段。
     WereadSnapshotResponse:
       type: object
       required: [ok, data]
@@ -1152,7 +1212,7 @@ components:
           $ref: '#/components/schemas/WereadSnapshot'
     WereadSnapshot:
       type: object
-      required: [source, mode, profile, screen, periodKey, periodLabel, readingDays, readingMinutes, bookCount, noteCount, topBookDetails, dailyReading]
+      required: [source, mode, profile, screen, periodKey, periodLabel, readingDays, readingMinutes, bookCount, noteCount, topBookDetails, dailyReading, enrichment]
       properties:
         source: { type: string, const: weread }
         mode: { type: string, enum: [weekly, monthly] }
@@ -1172,11 +1232,11 @@ components:
         noteCount: { type: integer, minimum: 0 }
         topBooks:
           type: array
-          maxItems: 8
+          maxItems: 12
           items: { type: string }
         topBookDetails:
           type: array
-          maxItems: 8
+          maxItems: 12
           items:
             type: object
             required: [title, author, readingMinutes, progress]
@@ -1198,6 +1258,7 @@ components:
               day: { type: integer, minimum: 1, maximum: 31 }
               readingMinutes: { type: integer, minimum: 0 }
         quote: { type: string }
+        enrichment: { type: string, enum: [none, partial, complete] }
         fetchedAt: { type: string, format: date-time }
     HealthResponse:
       type: object

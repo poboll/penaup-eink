@@ -216,7 +216,7 @@ export async function buildApp(options = {}) {
 
   await auth.register(app);
   registerHttpRoutes(app, { config, database, events, mqtt: runtime.mqtt, auth, ai, queue, scheduler: runtime.scheduler, emit });
-  registerWereadRoutes(app, { service: runtime.weread });
+  registerWereadRoutes(app, { service: runtime.weread, config });
   registerLegacyAdminRoutes(app, { config, database, auth, emit });
   runtime.scheduler.start();
 
