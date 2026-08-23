@@ -19,13 +19,14 @@ OTA_LEN (0x10) → OTA_DATA (0x11 × N) → OTA_STOP (0x13)
 
 `/device/` 设备工具会依次检查：
 
-1. 清单 schema、产品名、`published` 状态、型号和 `ble-v1` 协议；
+1. 与 `manifest.schema.json` 对齐的清单结构、字段类型、版本、产品名、`published` 状态、型号和 `ble-v1` 协议；浏览器端使用 [`apps/web/js/firmware-manifest.js`](../../apps/web/js/firmware-manifest.js) 做同一轮严格检查；
 2. `.bin` 文件名、实际长度和清单中的长度；
 3. 浏览器本地计算的 SHA-256；
 4. 清单中的 Ed25519 签名、`key_id` 和签名消息；
 5. 当前设备重新广播后，至少成功回读一次电量响应。
 
 第 5 步之前，页面只能显示“固件已写入，等待重新广播与状态确认”，不能显示“升级成功”。传输中断、设备断开或回读超时都进入 `device_state_uncertain`，用户可以重新连接并确认。
+`OTA_LEN` 一旦被设备接受就代表设备侧 OTA 会话已经开始；即使浏览器还没有确认第一个 `OTA_DATA` 分块，后续断开也按待确认处理，不会轻率地提示“没有开始”。
 
 ## 发布包格式
 

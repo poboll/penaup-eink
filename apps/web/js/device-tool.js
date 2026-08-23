@@ -11,13 +11,15 @@
 
     var P = global.PenaupBleProtocol;
     var G = global.PenaupReconnectGuard;
-    if (!P || !G) return;
+    var M = global.PenaupFirmwareManifest;
+    if (!P || !G || !M) return;
 
     var state = {
         device: null,
         server: null,
         service: null,
         characteristic: null,
+        notificationCharacteristic: null,
         profile: P.PROFILES.PENAUP_STD,
         connected: false,
         phase: 'idle',
@@ -38,6 +40,7 @@
             firmwareFile: null,
             manifest: null,
             valid: false,
+            started: false,
             bytesSent: 0
         }
     };
@@ -300,6 +303,10 @@
     }
 
     async function attachCharacteristic() {
+        if (state.notificationCharacteristic && state.notificationCharacteristic.removeEventListener) {
+            state.notificationCharacteristic.removeEventListener('characteristicvaluechanged', onNotification);
+        }
+        state.notificationCharacteristic = null;
         state.server = await state.device.gatt.connect();
         state.service = await state.server.getPrimaryService(P.SERVICE_UUID);
         state.characteristic = await state.service.getCharacteristic(P.CHARACTERISTIC_UUID);
@@ -307,6 +314,7 @@
         if (state.characteristic.properties.notify || state.characteristic.properties.indicate) {
             await state.characteristic.startNotifications();
             state.characteristic.addEventListener('characteristicvaluechanged', onNotification);
+            state.notificationCharacteristic = state.characteristic;
         }
         state.connected = true;
         updateDeviceIdentity();
@@ -446,6 +454,10 @@
 
     function onDisconnected() {
         rejectWaiters(new Error('BLE 会话已断开，设备回读已取消'));
+        if (state.notificationCharacteristic && state.notificationCharacteristic.removeEventListener) {
+            state.notificationCharacteristic.removeEventListener('characteristicvaluechanged', onNotification);
+        }
+        state.notificationCharacteristic = null;
         state.connected = false;
         state.server = null;
         state.service = null;
@@ -686,16 +698,13 @@
             if (manifestFile.size > 256 * 1024) throw new Error('manifest 文件过大');
             var manifest = JSON.parse(await manifestFile.text());
             state.ota.manifest = manifest;
-            var errors = [];
-            if (manifest.schema !== 'penaup-firmware-manifest/v1') errors.push('清单 schema 不匹配');
-            if (manifest.product !== 'penaup') errors.push('不是 Penaup 固件');
-            if (manifest.release_status !== 'published') errors.push('清单仍是草稿，未发布');
-            if (!Array.isArray(manifest.models) || manifest.models.indexOf(state.profile.key) === -1) errors.push('固件型号与当前设备不匹配');
-            if (manifest.protocol !== 'ble-v1') errors.push('BLE OTA 协议版本不匹配');
-            if (manifest.filename !== firmwareFile.name) errors.push('清单文件名与镜像不匹配');
-            if (!Number.isSafeInteger(firmwareFile.size) || firmwareFile.size < 1 || firmwareFile.size > MAX_OTA_IMAGE_BYTES) errors.push('镜像长度超过 OTA 分区可接受范围');
-            if (Number(manifest.size) !== firmwareFile.size) errors.push('清单长度与镜像不匹配');
-            if (!/^[a-f0-9]{64}$/i.test(String(manifest.sha256 || ''))) errors.push('SHA-256 格式无效');
+            var shape = M.validate(manifest, {
+                profileKey: state.profile.key,
+                firmwareName: firmwareFile.name,
+                firmwareSize: firmwareFile.size,
+                maxImageBytes: MAX_OTA_IMAGE_BYTES
+            });
+            var errors = shape.errors.slice();
             if (!/^[a-zA-Z0-9._-]+\.bin$/.test(firmwareFile.name)) errors.push('镜像文件名不安全');
             var digest = await global.crypto.subtle.digest('SHA-256', await firmwareFile.arrayBuffer());
             var actualHash = bytesToHex(digest);
@@ -733,6 +742,7 @@
         state.busy = true;
         beginReconnectExpectation();
         state.operation = '固件升级';
+        state.ota.started = false;
         state.ota.bytesSent = 0;
         setConnectedControls();
         setPhase('transferring', '正在写入固件', 'BLE 会按 192 B 数据分块写入；请保持设备和页面靠近。');
@@ -745,6 +755,10 @@
                 (bytes.length >>> 8) & 0xFF,
                 bytes.length & 0xFF
             ]);
+            // OTA_LEN starts the device-side update session. Any later
+            // disconnect is therefore uncertain even when no data chunk has
+            // been acknowledged by the browser yet.
+            state.ota.started = true;
             for (var offset = 0; offset < bytes.length; offset += P.CHUNK_SIZE) {
                 var chunk = bytes.slice(offset, Math.min(offset + P.CHUNK_SIZE, bytes.length));
                 await writePacket(P.createPacket(COMMANDS.OTA_DATA, chunk), P.DATA_DELAY);
@@ -761,7 +775,7 @@
         } catch (error) {
             state.ota.valid = false;
             setConnectedControls();
-            if (state.ota.bytesSent > 0) {
+            if (state.ota.started || state.ota.bytesSent > 0) {
                 setPhase('device_state_uncertain', '固件传输中断，状态待确认', '不要断电；让设备重新广播后重新获取状态，并确认当前固件版本。');
                 log('error', 'OTA 在 ' + state.ota.bytesSent + ' B 处中断：' + (error.message || 'write_failed'));
                 showMessage('固件传输中断，设备状态待确认。', 'error', 9000);

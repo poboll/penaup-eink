@@ -157,6 +157,7 @@ const requiredPaths = [
   , 'apps/wechat/miniprogram/test/weread-page-contract.test.js'
   , 'firmware/penaup/releases/manifest.schema.json'
   , 'firmware/penaup/releases/README.md'
+  , 'apps/web/js/firmware-manifest.js'
   , 'scripts/create-firmware-manifest.mjs'
   , 'scripts/sign-firmware-manifest.mjs'
   , 'scripts/build-firmware-matrix.mjs'
@@ -195,6 +196,8 @@ const webStudioSurface = read('apps/web/studio/index.html');
 const webStudioBleSurface = read('apps/web/js/bluetooth.js');
 const webWereadSurface = read('apps/web/js/weread-wallpaper.js');
 const webDeviceSurface = read('apps/web/device/index.html');
+const webDeviceToolSurface = read('apps/web/js/device-tool.js');
+const webFirmwareManifestSurface = read('apps/web/js/firmware-manifest.js');
 const wechatSettingsSurface = read('apps/wechat/miniprogram/pages/settings/index.js');
 const webProductSurface = `${webStorySurface}\n${webStudioSurface}\n${webDeviceSurface}`;
 assertEqual('shared rendering mode count', COLOR_RENDERING_MODE_DEFINITIONS.length, 3);
@@ -242,6 +245,9 @@ else pass('Studio Wi-Fi password log redaction');
 assertMatch('Device tool exposes BLE maintenance path', webDeviceSurface, /0x3B[\s\S]*0x22[\s\S]*0x10/);
 assertMatch('Device tool preserves uncertain state copy', webDeviceSurface, /状态待确认/);
 assertMatch('Device tool loads reconnect confirmation guard', webDeviceSurface, /device-reconnect-guard\.js/);
+assertMatch('Device tool loads strict firmware manifest validator', webDeviceSurface, /firmware-manifest\.js/);
+assertMatch('Device tool binds manifest to current file and model', webDeviceToolSurface, /M\.validate\(manifest, \{[\s\S]*profileKey:[\s\S]*firmwareName:[\s\S]*firmwareSize:/);
+assertMatch('Firmware manifest validator keeps Ed25519 signature shape strict', webFirmwareManifestSurface, /hasOnlySignatureKeys\(signature\)[\s\S]*base64ByteLength\(signature\.value\) !== 64/);
 assertMatch('Device tool does not claim a release binary', webDeviceSurface, /没有真实的正式发布包/);
 assertMatch('Device tool documents Web Serial boundary', webDeviceSurface, /Web Serial/);
 assertMatch('Device tool serves docs link', read('server/src/app.js'), /prefix: '\/docs\/'/);

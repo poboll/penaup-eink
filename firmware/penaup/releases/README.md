@@ -10,6 +10,7 @@ penaup-pro-v1.0.0.manifest.json
 ```
 
 清单必须符合 [manifest.schema.json](./manifest.schema.json)，并由发布流程补充 `published` 状态、Ed25519 签名和受网页固定的 `poboll` 公钥。只有型号、BLE 协议、文件长度、SHA-256 和签名都通过，浏览器设备工具才会开启刷写按钮。
+网页还会用 `apps/web/js/firmware-manifest.js` 重新执行字段类型、版本、机型、文件名和签名形状校验；不能只依赖发布人本地的 JSON Schema 检查。
 
 本目录不把本地构建结果伪装成正式发布包。生成草稿清单：
 

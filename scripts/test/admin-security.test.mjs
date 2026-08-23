@@ -62,5 +62,7 @@ test('device maintenance keeps OTA image and release-key gates', () => {
   const source = fs.readFileSync(path.join(root, 'apps', 'web', 'js', 'device-tool.js'), 'utf8');
   assert.match(source, /MAX_OTA_IMAGE_BYTES = 1536 \* 1024/);
   assert.match(source, /signature\.key_id !== PINNED_FIRMWARE_KEY_ID/);
+  assert.match(source, /M\.validate\(manifest/);
+  assert.match(source, /state\.ota\.started \|\| state\.ota\.bytesSent > 0/);
   assert.match(source, /services: \[P\.SERVICE_UUID\]/);
 });
