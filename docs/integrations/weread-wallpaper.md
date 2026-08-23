@@ -77,6 +77,12 @@ gateway 必须是 HTTPS 地址；不要把 Skill Key 放进 `.env`、Git、部�
 
 浏览器先生成普通画布预览，再复用 `PenaupImageWorker` 的 `PENAUP_PRO` 配置生成 `.film`。Worker 不可用时可以看预览，但下载和发送按钮不会伪造一个未经显影的 `.film`。
 
+Canvas 会在首次绘制前等待 `Huiwen Mincho` WebFont 加载，避免首张屏保因为字体竞态回退到系统字体。BLE 写入完成后页面使用“等待电子纸刷新确认”状态；写入进度不等同于设备已经刷新成功。
+
+## 外部流程参考
+
+本轮视觉与流程研究参考了 [Sodamax778/expert-eureka](https://github.com/Sodamax778/expert-eureka) 在 2026-08-23 可见的“阅读数据归一化 → 固定模板 → 本地导出”流程，以及它的浅色纸面方向。Penaup 没有复制该仓库的代码、素材或运行时依赖；当时的浅克隆未发现可见 `LICENSE` 文件，因此外部项目不作为本仓库的版权来源。公开发布前仍应重新核对上游仓库的许可证和变更。
+
 ## 失败与恢复
 
 | 情况 | 页面行为 |

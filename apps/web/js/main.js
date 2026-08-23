@@ -83,6 +83,19 @@ function initApp() {
     initNavigation();
     initBluetooth();
     initConvertTool();
+    initDeepLink();
+}
+
+// 从产品故事页直达特定创作方式；不改变默认入口，保留普通工作台路径。
+function initDeepLink() {
+    var params = new URLSearchParams(window.location.search);
+    var requestedMode = params.get('mode') || (window.location.hash === '#weread' ? 'weread' : '');
+    if (requestedMode !== 'weread') return;
+
+    var frameNav = document.querySelector('.nav-item[data-page="frame-page"]');
+    var wereadTab = document.querySelector('.frame-tab[data-frame-tab="frame-weread"]');
+    if (frameNav) frameNav.click();
+    if (wereadTab) wereadTab.click();
 }
 
 // 页面加载完成后初始化

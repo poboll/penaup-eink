@@ -253,3 +253,167 @@ body::before {
     font-size: 16px;
   }
 }
+
+/* 2026-08 Penaup paper story pass: the whole narrative stays on a pale rice
+ * paper surface; dark ink is reserved for the actual color-study object. */
+body {
+  background:
+    radial-gradient(circle at 8% -12%, rgba(255, 253, 247, .98), transparent 33%),
+    radial-gradient(circle at 94% 2%, rgba(212, 169, 47, .07), transparent 25%),
+    repeating-linear-gradient(0deg, rgba(84, 70, 48, .012) 0 1px, transparent 1px 6px),
+    linear-gradient(180deg, #fefcf7 0%, #f8f4eb 54%, #f1e9dd 100%);
+}
+
+.feature-section {
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 88% 8%, rgba(212, 169, 47, .06), transparent 28%),
+    linear-gradient(180deg, rgba(255, 253, 247, .36), rgba(248, 244, 235, .12));
+}
+
+.feature-section .section-kicker { color: var(--blue); }
+.feature-section h2 em { color: var(--red); }
+.feature-section .section-intro,
+.feature-section .feature p,
+.color-story-copy p { color: var(--quiet); }
+
+.color-story {
+  border-color: var(--line);
+}
+
+.color-story-copy .color-clarifier {
+  color: var(--quiet) !important;
+}
+
+.color-equation {
+  color: var(--ink);
+}
+
+.color-equation span {
+  border-color: var(--line);
+  background: rgba(255, 253, 247, .48);
+}
+
+.color-lab {
+  box-shadow: 14px 14px 0 rgba(75, 61, 42, .11);
+}
+
+.power-note {
+  background: rgba(23, 24, 22, .035);
+}
+
+.power-note p { color: var(--quiet); }
+.power-note strong { color: var(--ink); }
+
+.features {
+  background: var(--line);
+}
+
+.feature {
+  color: var(--ink);
+  background: rgba(255, 253, 247, .55);
+}
+
+.feature p { color: var(--quiet) !important; }
+
+.reading-section {
+  display: grid;
+  grid-template-columns: minmax(0, .86fr) minmax(320px, 1.14fr);
+  gap: clamp(36px, 7vw, 110px);
+  align-items: center;
+  background: rgba(255, 253, 247, .22);
+}
+
+.reading-copy .button { margin-top: 28px; }
+
+.reading-ticket {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(22px, 3vw, 34px);
+  border: 1px solid var(--ink);
+  background: var(--paper-bright);
+  box-shadow: 14px 14px 0 rgba(75, 61, 42, .08);
+  transform: rotate(1.2deg);
+  transition: transform .55s var(--ease), box-shadow .55s var(--ease);
+}
+
+.reading-ticket:hover {
+  box-shadow: 18px 18px 0 rgba(75, 61, 42, .1);
+  transform: rotate(0deg) translateY(-4px);
+}
+
+.reading-ticket::before,
+.reading-ticket::after {
+  position: absolute;
+  top: 43%;
+  width: 18px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+  content: "";
+}
+
+.reading-ticket::before { left: -10px; }
+.reading-ticket::after { right: -10px; }
+
+.reading-ticket-head,
+.reading-ticket-meta,
+.reading-ticket-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--quiet);
+  font: 10px/1.35 var(--mono);
+  letter-spacing: .08em;
+}
+
+.reading-ticket-head strong { color: var(--blue); font-weight: 600; }
+.reading-ticket-rule { height: 1px; margin: 18px 0 25px; background: var(--line); }
+
+.reading-ticket-title {
+  max-width: 460px;
+  color: var(--ink);
+  font: 400 clamp(30px, 4vw, 54px)/1.08 var(--serif);
+}
+
+.reading-ticket-title em { color: var(--blue); font-style: normal; }
+.reading-ticket-meta { margin-top: 30px; font-size: 11px; }
+
+.reading-ticket-books {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 7px;
+  margin: 22px 0 26px;
+}
+
+.reading-ticket-books i {
+  display: block;
+  height: 72px;
+  border: 1px solid rgba(23, 24, 22, .18);
+  background: var(--book-color, var(--blue));
+  box-shadow: inset 7px 0 0 rgba(255, 253, 247, .22);
+}
+
+.reading-ticket-books i:nth-child(1) { --book-color: var(--ink); }
+.reading-ticket-books i:nth-child(2) { --book-color: var(--red); }
+.reading-ticket-books i:nth-child(3) { --book-color: var(--yellow); }
+.reading-ticket-books i:nth-child(4) { --book-color: var(--green); }
+.reading-ticket-books i:nth-child(5) { --book-color: var(--blue); }
+.reading-ticket-books i:nth-child(6) { --book-color: #c8bca8; }
+.reading-ticket-foot { padding-top: 15px; border-top: 1px solid var(--line); letter-spacing: .02em; }
+
+@media (max-width: 860px) {
+  .reading-section { grid-template-columns: 1fr; }
+  .reading-ticket { max-width: 650px; }
+}
+
+@media (max-width: 560px) {
+  .nav-links a:nth-child(3) { display: none; }
+  .reading-section { gap: 34px; }
+  .reading-ticket { padding: 20px; box-shadow: 8px 8px 0 rgba(75, 61, 42, .08); }
+  .reading-ticket-title { font-size: 34px; }
+  .reading-ticket-books { gap: 4px; }
+  .reading-ticket-books i { height: 58px; }
+  .reading-ticket-head, .reading-ticket-meta, .reading-ticket-foot { font-size: 9px; }
+}

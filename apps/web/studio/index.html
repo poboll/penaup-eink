@@ -511,11 +511,12 @@
                                 <div id="weread-stats" class="weread-stats" hidden></div>
                                 <p id="weread-enrichment-note" class="weread-enrichment-note" hidden></p>
                             </section>
-                            <section class="weread-preview-panel" aria-labelledby="weread-preview-title">
+                            <section id="weread-preview-panel" class="weread-preview-panel" aria-labelledby="weread-preview-title" aria-busy="false">
                                 <div class="weread-preview-head">
                                     <div><p class="preview-kicker">PAPER / LOCAL DEVELOPING</p><h3 id="weread-preview-title">一页还未显影</h3></div>
                                     <span class="weread-size-tag">PRO · 792 × 528</span>
                                 </div>
+                                <div id="weread-phase-indicator" class="weread-phase-indicator" data-phase="idle" role="status" aria-live="polite"><span class="weread-phase-dot" aria-hidden="true"></span><strong id="weread-phase-label">纸面在等一段阅读</strong><span>本地排版 · E6 Pro</span></div>
                                 <div class="polaroid-frame weread-polaroid">
                                     <div class="polaroid-inner weread-polaroid-inner">
                                         <canvas id="weread-canvas" width="792" height="528" role="img" aria-label="微信读书 3.68 英寸电子纸屏保预览"></canvas>

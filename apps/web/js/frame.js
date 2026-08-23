@@ -361,7 +361,7 @@ async function frameUploadViaBle(fileName, fileData, prefix) {
     var expectedSize = getFilmFileTotalSize();
     if (fileData.length !== expectedSize) {
         showMessage('文件大小不符合要求(应为' + expectedSize + '字节)', 'error');
-        return;
+        return { ok: false, code: 'film_size_mismatch' };
     }
 
     var container = document.getElementById(prefix + 'container');
@@ -395,9 +395,11 @@ async function frameUploadViaBle(fileName, fileData, prefix) {
         await sendBleFileStop();
         frameUpdateTransferStatus(prefix, '已写入，等待电子纸刷新确认', 100);
         showMessage('文件已发送，设备刷新结果待确认', 'info');
+        return { ok: true, state: 'device_state_uncertain' };
     } catch (error) {
         frameUpdateTransferStatus(prefix, '传输失败，可重新发送: ' + error.message, 0);
         showMessage('传输失败: ' + error.message, 'error');
+        return { ok: false, code: 'transfer_failed', error: error };
     }
 }
 

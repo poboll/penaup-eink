@@ -95,7 +95,7 @@ idf.py build
 idf.py flash monitor
 ```
 
-发布前分别使用 `sdkconfig_std`、`sdkconfig_pro`、`sdkconfig_max` 构建 STD、Pro、Max。当前机器若缺少 ESP-IDF/`idf.py`，只能记录为待验证门，不能声称三机型构建通过。
+发布前分别使用 `sdkconfig_std`、`sdkconfig_pro`、`sdkconfig_max` 构建 STD、Pro、Max。本机最近一次 ESP-IDF 5.5.2 构建证据与剩余硬件门禁见 [`docs/ops/verification-matrix.md`](docs/ops/verification-matrix.md)。
 
 ## 运行时架构
 

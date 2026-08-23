@@ -33,8 +33,20 @@
         film: null,
         renderRevision: 0
     };
+    var wallpaperFontPromise = null;
 
     function byId(id) { return document.getElementById(id); }
+
+    function ensureWallpaperFonts() {
+        if (wallpaperFontPromise) return wallpaperFontPromise;
+        if (!document.fonts || typeof document.fonts.load !== 'function') return Promise.resolve();
+        wallpaperFontPromise = Promise.all([
+            document.fonts.load('400 34px "Huiwen Mincho"'),
+            document.fonts.load('400 22px "Huiwen Mincho"'),
+            document.fonts.load('400 18px "Huiwen Mincho"')
+        ]).then(function () {}).catch(function () {});
+        return wallpaperFontPromise;
+    }
 
     function safeText(value, fallback) {
         var text = String(value == null ? '' : value).replace(/[\u0000-\u001f\u007f]/g, '').trim();
@@ -384,6 +396,16 @@
         if (!status) return;
         status.textContent = message;
         status.className = 'weread-status' + (type ? ' is-' + type : '');
+        status.dataset.state = type || 'idle';
+    }
+
+    function setDevelopmentPhase(phase, label) {
+        var indicator = byId('weread-phase-indicator');
+        var phaseLabel = byId('weread-phase-label');
+        var panel = byId('weread-preview-panel');
+        if (indicator) indicator.dataset.phase = phase || 'idle';
+        if (phaseLabel) phaseLabel.textContent = label || '纸面待命';
+        if (panel) panel.setAttribute('aria-busy', ['fetching', 'typesetting', 'developing', 'transferring'].indexOf(phase) >= 0 ? 'true' : 'false');
     }
 
     function setOutputButtons(options) {
@@ -426,6 +448,9 @@
         var canvas = byId('weread-canvas');
         if (!canvas || !snapshot) return false;
         var revision = ++state.renderRevision;
+        setDevelopmentPhase('typesetting', '汇文明朝体正在落版');
+        await ensureWallpaperFonts();
+        if (revision !== state.renderRevision) return false;
         canvas.width = WIDTH;
         canvas.height = HEIGHT;
         var ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -441,14 +466,17 @@
         if (empty) empty.hidden = true;
         var title = byId('weread-preview-title');
         if (title) title.textContent = sceneTitle();
+        canvas.setAttribute('aria-label', '微信读书 ' + sceneTitle() + ' · 花生片 Pro 3.68 英寸电子纸屏保预览');
         var imageData = ctx.getImageData(0, 0, WIDTH, HEIGHT);
         var worker = window.PenaupImageWorker;
         var settings = renderingSettings();
         if (!worker || !worker.supported) {
             var unsupportedMeta = byId('weread-preview-meta');
             if (unsupportedMeta) unsupportedMeta.textContent = snapshot.periodLabel + ' · 预览已完成，但本机显影 Worker 未就绪，暂不能生成 .film。';
+            setDevelopmentPhase('preview', '普通预览已完成');
             return false;
         }
+        setDevelopmentPhase('developing', '六色显影正在扫描纸面');
         try {
             var result = await worker.process({
                 data: imageData.data.slice().buffer,
@@ -467,6 +495,7 @@
             if (meta) meta.textContent = snapshot.periodLabel + ' · ' + sceneTitle() + ' · ' + (state.renderMode === 'layer' ? '叠色层次' : state.renderMode === 'dots' ? '有序网点' : '误差抖动') + ' · 汇文明朝体本地显影。';
             setOutputButtons({ preview: true, film: true });
             updateStage('keep');
+            setDevelopmentPhase('done', '六色显影已完成');
             return true;
         } catch (error) {
             if (error && error.name === 'AbortError') return false;
@@ -474,6 +503,7 @@
             setOutputButtons({ preview: true, film: false });
             var failedMeta = byId('weread-preview-meta');
             if (failedMeta) failedMeta.textContent = snapshot.periodLabel + ' · 普通预览完成，但六色显影失败，请重新尝试。';
+            setDevelopmentPhase('failed', '显影失败，可保留预览后重试');
             return false;
         }
     }
@@ -608,14 +638,17 @@
         }
         saveKeyIfNeeded();
         if (button) { button.disabled = true; button.classList.add('is-busy'); button.textContent = '正在连接书架'; }
+        setDevelopmentPhase('fetching', '正在确认微信读书书架');
         setStatus('正在确认 Skill，并只读取书架数量。');
         try {
             var summary = await requestWeread('/api/v1/integrations/weread/connect', {}, key);
             var source = byId('weread-source-summary');
             if (source) { source.hidden = false; source.textContent = summary.ebooks + ' 本电子书 · ' + summary.audiobooks + ' 个有声内容'; }
             updateStage('choose');
+            setDevelopmentPhase('idle', '书架已连接，选择一张纸');
             setStatus('书架已连接。现在挑一张纸，再取回对应的阅读记录。', 'success');
         } catch (error) {
+            setDevelopmentPhase('failed', '书架连接失败，可检查 Key 后重试');
             setStatus(friendlyError(error, '书架连接失败，请检查 Key 后重试。'), 'error');
         } finally {
             if (button) { button.disabled = false; button.classList.remove('is-busy'); button.innerHTML = '<i class="material-icons">menu_book</i>连接书架'; }
@@ -637,6 +670,7 @@
         setOutputButtons({ preview: false, film: false });
         if (button) { button.disabled = true; button.classList.add('is-busy'); button.innerHTML = '<i class="material-icons">hourglass_top</i>正在取回并显影'; }
         updateStage('develop');
+        setDevelopmentPhase('fetching', '正在取回阅读轨迹');
         setStatus('正在取回阅读记录；下一步会在本地纸面上显影。');
         try {
             var body = { mode: state.mode, enrich: true };
@@ -657,6 +691,7 @@
             if (state.film) setStatus('阅读记录已经显影。先看一眼，再决定下载或送到 Pro。', 'success');
             else setStatus('阅读记录已取回，但六色显影模块暂未就绪；普通预览仍会保留。', 'error');
         } catch (error) {
+            setDevelopmentPhase('failed', '阅读数据未取回，原有草稿仍保留');
             setStatus(friendlyError(error), 'error');
         } finally {
             if (button) { button.disabled = false; button.classList.remove('is-busy'); button.innerHTML = '<i class="material-icons">auto_awesome</i>取回并显影'; }
@@ -712,8 +747,18 @@
             var film = await buildFilm();
             var container = byId('weread-transfer-container');
             if (container) container.hidden = false;
-            frameUploadViaBle('weread-' + state.scene + '.film', film, 'weread-transfer-');
+            setDevelopmentPhase('transferring', '正在通过 BLE 写入 Pro');
+            setStatus('film 已准备好，正在写入花生片 Pro；刷新结果还需要设备回读确认。');
+            var result = await frameUploadViaBle('weread-' + state.scene + '.film', film, 'weread-transfer-');
+            if (result && result.ok) {
+                setDevelopmentPhase('pending', '已写入，等待电子纸刷新确认');
+                setStatus('已写入花生片 Pro；设备刷新结果待确认，不把写入进度当作完成。', 'pending');
+            } else {
+                setDevelopmentPhase('failed', '写入失败，可从当前显影结果重试');
+                setStatus('写入没有完成；当前显影结果仍保留，可以重新发送。', 'error');
+            }
         } catch (error) {
+            setDevelopmentPhase('failed', 'film 生成失败，可保留当前预览');
             setStatus('生成 film 失败，请先完成本地显影。', 'error');
         }
     }
@@ -730,6 +775,7 @@
             }
         } catch (error) {}
         setRenderNote();
+        setDevelopmentPhase('idle', '纸面在等一段阅读');
         syncSceneUi();
         document.querySelectorAll('[data-weread-scene]').forEach(function (button) {
             button.addEventListener('click', function () {
