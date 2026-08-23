@@ -15,6 +15,10 @@
     min-width: 0;
 }
 
+#page-content {
+    scroll-padding-block: 24px 88px;
+}
+
 .frame-tab,
 .weread-scene,
 .weread-render,
@@ -128,6 +132,32 @@ a.secondary-button {
     text-align: center;
 }
 
+/* Keep the editorial metadata quiet, but make every instruction and choice
+ * readable without zooming. */
+.weread-section-title small,
+.weread-key-session,
+.weread-scene small,
+.weread-render small,
+.weread-demo-row > span {
+    font-size: 13px;
+}
+
+.weread-period-list > *,
+.weread-scene-list > *,
+.weread-render-list > * {
+    width: 100%;
+    min-width: 0;
+}
+
+.weread-key-field p,
+.weread-book-field p,
+.weread-render-note,
+.weread-enrichment-note,
+.weread-preview-meta,
+.weread-output-note {
+    font-size: 14px;
+}
+
 @media (max-width: 1024px) {
     .weread-layout {
         gap: 28px;
@@ -163,6 +193,10 @@ a.secondary-button {
 
     .weread-controls {
         padding: 22px 18px;
+    }
+
+    #page-content {
+        scroll-padding-bottom: calc(176px + env(safe-area-inset-bottom));
     }
 
     .weread-demo-row {
@@ -219,7 +253,7 @@ a.secondary-button {
 
     .weread-key-session {
         max-width: 28ch;
-        font-size: 12px;
+        font-size: 13px;
         line-height: 1.5;
     }
 
@@ -272,8 +306,17 @@ a.secondary-button {
 
     .weread-output-note {
         align-items: flex-start;
-        font-size: 12px;
+        font-size: 13px;
     }
+}
+
+/* The navigation is part of the paper frame, not a translucent overlay. An
+ * opaque surface keeps the last row of controls legible while the editor
+ * scrolls behind it on short desktop windows and phones. */
+.bottom-nav {
+    z-index: 40;
+    background: var(--paper-bright);
+    backdrop-filter: none;
 }
 
 /* Desktop and tablet navigation belongs to the paper flow. A fixed bar at
@@ -288,7 +331,8 @@ a.secondary-button {
 
     #page-content {
         min-height: 0;
-        padding-bottom: 44px;
+        padding-bottom: 72px;
+        scroll-padding-bottom: 72px;
     }
 
     .bottom-nav {
