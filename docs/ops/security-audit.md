@@ -33,6 +33,8 @@
 - 模板颜色只接受十六进制颜色；图层坐标、控件属性和参数 key 不再直接拼接为未转义 HTML。
 - Web OTA 仅接受匹配 Penaup BLE Service UUID 的设备；镜像不得超过 1536 KiB，签名 key_id 必须匹配固定发布密钥，且必须通过 SHA-256 与 Ed25519 校验。
 - OTA、重启、恢复出厂和网络清除都要求设备重新广播并回读确认，不把 BLE 写入成功误报为完成。
+- 备份脚本与 systemd timer 使用 `penaup` 受限用户、`ProtectSystem=strict` 和明确的可写目录；本机 fixture 已验证 SQLite、媒体归档和恢复回滚。
+- FastAPI 迁移 fixture 覆盖设备、模板、片单、设置和推送关系，并确认源库只读且导入前后表计数不变。
 
 ## 当前残余风险
 

@@ -1,0 +1,21 @@
+[Unit]
+Description=Penaup SQLite and media backup
+Documentation=https://github.com/poboll/penaup-eink/tree/codex/penaup-eink-rebuild/deploy
+After=local-fs.target
+RequiresMountsFor=/var/lib/penaup/data /var/backups/penaup
+
+[Service]
+Type=oneshot
+User=penaup
+Group=penaup
+WorkingDirectory=/opt/penaup-eink
+Environment=PENAUP_DATA_DIR=/var/lib/penaup/data
+Environment=PENAUP_BACKUP_DIR=/var/backups/penaup
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/opt/penaup-eink/deploy/backup.sh
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/penaup/data /var/backups/penaup
+UMask=0077

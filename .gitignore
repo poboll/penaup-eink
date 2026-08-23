@@ -31,6 +31,7 @@ apps/wechat/project.private.config.json
 # ESP-IDF build/configuration output
 firmware/penaup/build/
 firmware/penaup/build_gate_*/
+firmware/penaup/build_verify_*/
 firmware/penaup/sdkconfig
 firmware/penaup/sdkconfig.old
 

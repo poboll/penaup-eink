@@ -132,6 +132,11 @@ const requiredPaths = [
   'deploy/mqtt/penaup.acl.example',
   'deploy/backup.sh',
   'deploy/restore.sh',
+  'deploy/penaup.service',
+  'deploy/penaup-backup.service',
+  'deploy/penaup-backup.timer',
+  'deploy/Caddyfile',
+  'deploy/.env.example',
   'docs/api/openapi.yaml',
   'docs/api/ios-integration.md',
   'docs/api/transfer-state.md',
@@ -323,6 +328,13 @@ for (const [model, flash, psram] of sdkconfigs) {
 
 const mqttConfig = read('deploy/mqtt/mosquitto.conf.example');
 const mqttAcl = read('deploy/mqtt/penaup.acl.example');
+const backupService = read('deploy/penaup-backup.service');
+const backupTimer = read('deploy/penaup-backup.timer');
+assertMatch('backup service uses the restricted runtime user', backupService, /^User=penaup$/m);
+assertMatch('backup service writes only data and backup roots', backupService, /^ReadWritePaths=\/var\/lib\/penaup\/data \/var\/backups\/penaup$/m);
+assertMatch('backup service uses the repository backup script', backupService, /ExecStart=\/opt\/penaup-eink\/deploy\/backup\.sh/);
+assertMatch('backup timer is persistent', backupTimer, /^Persistent=true$/m);
+assertMatch('backup timer has a daily UTC schedule', backupTimer, /^OnCalendar=\*-\*-\* 03:20:00 UTC$/m);
 assertMatch('MQTT bridge pins MQTT 5', read('server/src/mqtt.js'), /protocolVersion:\s*5/);
 assertMatch('MQTT disables anonymous access', mqttConfig, /listener_allow_anonymous false/);
 if (/per_listener_settings\s+true/.test(mqttConfig)) fail('MQTT avoids deprecated listener setting', 'per_listener_settings is deprecated in Mosquitto 2.x');

@@ -173,7 +173,7 @@ export async function buildApp(options = {}) {
     if (origin && allowed.includes(origin)) {
       reply.header('Access-Control-Allow-Origin', origin);
       reply.header('Access-Control-Allow-Credentials', 'true');
-      reply.header('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-CSRF-Token');
+      reply.header('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-CSRF-Token, X-Penaup-WeRead-Key');
       reply.header('Access-Control-Allow-Methods', 'GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS');
     }
     return reply.code(204).send();

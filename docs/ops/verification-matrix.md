@@ -9,13 +9,15 @@
 | 领域 | 本机状态 | 证据 |
 | --- | --- | --- |
 | Node 运行时 | PASS | `node --version` = `v24.19.0`；根包和 `server` 都限制 `24.x` |
-| JavaScript / 契约 | PASS | Node 24 环境下 100 个 JavaScript 文件语法通过；严格契约门禁为 `218 passed / 0 pending / 0 failed` |
-| 自动化测试 | PASS | `npm test`：server 39、film-core 7、微信 16、Web/发布工具 11 全部通过 |
+| JavaScript / 契约 | PASS | Node 24 环境下 100 个 JavaScript 文件语法通过；严格契约门禁为 `228 passed / 0 pending / 0 failed` |
+| 自动化测试 | PASS | `npm test`：server 42、film-core 7、微信 16、Web/发布工具 11 全部通过 |
 | 依赖安全 | PASS | `npm run audit`：官方 registry 生产依赖 `0 vulnerabilities` |
 | 安装可重复性 | PASS | 根目录和 `server/` 的 `npm ci --dry-run` 均通过；原生 `better-sqlite3` 安装脚本仍需在部署机按 Node 24 审批 |
 | 运行时探针 | PASS | 8787 实例的 `/`、`/studio/`、`/health`、`/readyz` 均返回 200 |
 | Caddy 配置 | PASS | `PENAUP_DOMAIN=penaup.example.com caddy validate --config deploy/Caddyfile --adapter caddyfile` |
 | Mosquitto 配置语法 | PASS（配置） | `mosquitto --test-config -c deploy/mqtt/mosquitto.conf.example` 退出码为 0 并报告配置有效；本机缺少 `/var/lib/mosquitto/` 时有非致命持久化目录提示，未启动公网 broker |
+| 备份/恢复演练 | PASS（本机 fixture） | `bash -n deploy/backup.sh deploy/restore.sh`；`node --test server/test/backup.test.js` 通过，验证 SQLite 一致性备份、媒体归档、恢复和 `--force` 回滚目录；生产 timer 尚未在 Linux systemd 主机启动 |
+| FastAPI 关系迁移 fixture | PASS（本机 fixture） | `node --test server/test/migration.test.js` 5 passed，验证用户、设备、模板、片单、设置、推送关系、越界媒体路径和源库不变；真实旧库仍未找到 |
 | 微信开发者工具登录 | PARTIAL | CLI `islogin` 返回 `login: true`；打开当前项目被微信返回 code 10：登录用户不是该小程序开发者 |
 | ESP-IDF 三机型构建 | PASS（代码构建） | ESP-IDF 5.5.2 + Python 3.14.2 已导出；提交 `267920c` 的隔离干净构建中，STD/Pro/Max 均 `idf.py build` 通过，应用分区余量分别为 13%/12%/14%；实体刷写、刷新和功耗仍 pending |
 | 旧 FastAPI 正式导入 | PENDING | 本机未找到旧 `filmhub.db`；不能用当前 Penaup 目标库冒充旧源库 |
@@ -28,10 +30,10 @@
 ```text
 npm run check
 JavaScript syntax OK: 100 files
-Contract gate: 218 passed, 0 pending, 0 failed
+Contract gate: 228 passed, 0 pending, 0 failed
 
 npm test
-server 39 passed · film-core 7 passed · 微信 16 passed · Web/release 11 passed
+server 42 passed · film-core 7 passed · 微信 16 passed · Web/release 11 passed
 
 npm run audit
 found 0 vulnerabilities
@@ -81,7 +83,7 @@ users=0 devices=3 albums=0 photos=0 media_imported=0 warnings=0
 dry_run_target_entries=legacy-data
 ```
 
-这只证明迁移器能安全处理一个没有旧 FastAPI 业务表的 SQLite 副本；正式导入前仍必须拿到真实旧库和媒体目录，先运行：
+这只证明迁移器能安全处理一个没有旧 FastAPI 业务表的 SQLite 副本；另有 fixture 覆盖用户、设备、模板、片单、片单项目、设置和推送关系，且导入前后源库表计数不变。正式导入前仍必须拿到真实旧库和媒体目录，先运行：
 
 ```bash
 npm run migrate:fastapi -- \

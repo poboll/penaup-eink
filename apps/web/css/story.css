@@ -439,3 +439,24 @@ body {
   .reading-ticket-books i { height: 58px; }
   .reading-ticket-head, .reading-ticket-meta, .reading-ticket-foot { font-size: 9px; }
 }
+
+/* 2026-08-23 shared paper finish: a near-white rice surface with two quiet
+ * fiber directions. The color-study panel remains the only intentionally
+ * dense ink field on the story page. */
+:root {
+  --paper: #fdfbf6;
+  --paper-bright: #fffefa;
+}
+
+body {
+  background:
+    radial-gradient(circle at 8% -12%, rgba(255, 255, 252, .99), transparent 33%),
+    radial-gradient(circle at 94% 2%, rgba(212, 169, 47, .038), transparent 24%),
+    repeating-linear-gradient(112deg, rgba(118, 99, 70, .012) 0 1px, transparent 1px 19px),
+    repeating-linear-gradient(18deg, rgba(84, 70, 48, .009) 0 1px, transparent 1px 13px),
+    linear-gradient(180deg, #fffefa 0%, var(--paper) 55%, #faf6ee 100%);
+}
+
+body::before {
+  opacity: .06;
+}

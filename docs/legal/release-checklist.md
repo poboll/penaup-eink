@@ -3,8 +3,8 @@
 ## 本机验证记录（2026-08-23）
 
 - Node.js `v24.19.0` 已确认；根包与服务端均限制在 `24.x`。
-- `npm test`：server 39、film-core 7、微信 16、Web/发布工具 11，全部通过。
-- `npm run check`：100 个 JavaScript 文件语法通过；在已导出 ESP-IDF 5.5.2 + Python 3.14.2 的严格环境中，契约门禁为 `218 passed / 0 pending / 0 failed`。隔离源码副本已完成 STD/Pro/Max 三机型构建，应用分区余量为 13%/12%/14%。构建不等于实体刷写验收，完整证据见 [`docs/ops/verification-matrix.md`](../ops/verification-matrix.md)。
+- `npm test`：server 42、film-core 7、微信 16、Web/发布工具 11，全部通过。
+- `npm run check`：100 个 JavaScript 文件语法通过；在已导出 ESP-IDF 5.5.2 + Python 3.14.2 的严格环境中，契约门禁为 `228 passed / 0 pending / 0 failed`。隔离源码副本已完成 STD/Pro/Max 三机型构建，应用分区余量为 13%/12%/14%。构建不等于实体刷写验收，完整证据见 [`docs/ops/verification-matrix.md`](../ops/verification-matrix.md)。
 - `npm run audit`：官方 registry 的生产依赖 `0 vulnerabilities`；`git diff --check` 通过。
 - 根目录和 `server/` 的 `npm ci --dry-run` 均通过；`better-sqlite3` 的原生安装脚本需在部署机按 Node 24 的脚本审批策略执行。
 - 8787 实例当前 `/`、`/studio/`、`/health`、`/readyz` 均返回 200；Caddy `validate` 通过；Mosquitto `--test-config` 退出码为 0 并报告模板配置有效，本机仅出现缺少 `/var/lib/mosquitto/` 的非致命持久化提示，没有启动公网 broker。
@@ -19,12 +19,13 @@
 - [ ] 图片、摄影、字体、图标、SDK、数据手册和 npm 依赖清单有作者/来源/版本/许可；
 - [ ] 新增 `poboll` 内容使用 `LICENSE` 的非商业许可，产品和仓库没有宣称商业授权；
 - [ ] 根目录 `npm run check`、`npm test` 和官方 registry `npm run audit` 均通过；
-- [x] `npm run check:contracts` 与本机严格发布门禁通过（`218 passed / 0 pending / 0 failed`）；公网部署、微信 AppID 权限和实体硬件门禁仍需在对应环境完成；
+- [x] `npm run check:contracts` 与本机严格发布门禁通过（`228 passed / 0 pending / 0 failed`）；公网部署、微信 AppID 权限和实体硬件门禁仍需在对应环境完成；
 - [ ] 原图 EXIF 清理、文件魔数、路径穿越、用户归属和 512 MiB 配额测试通过；
 - [ ] 生产环境关闭 dev code，配置真实邮件 provider、HttpOnly Secure Cookie、Caddy TLS、CORS allowlist 和限流；
 - [ ] 生产环境设置 `PENAUP_TRUST_PROXY=1` 仅在 Caddy 为唯一可信反代时启用，并验证 API `429` 的 `Retry-After`；设备心跳不因用户 API 限流中断；
 - [ ] `/health` 与 `/readyz` 已接入部署探针，并验证 SQLite/媒体目录不可写时会阻止就绪；
-- [ ] SQLite 与媒体每日备份，至少演练一次恢复并记录 RPO/RTO；
+- [x] 本机 fixture 已完成 SQLite 与媒体备份、恢复和 `--force` 回滚演练；
+- [ ] Linux systemd 已启用 `penaup-backup.timer`，并完成生产备份恢复演练与 RPO/RTO 记录；
 - [ ] 三机型 film 尺寸、BLE 192B 分块和三端协议常量一致；
 - [ ] Web/小程序/iOS 对 `device_state_uncertain` 不显示成功；
 - [ ] `/studio/` 不包含直接 `.bin` OTA 上传入口；Web 固件升级只从 `/device/` 进入，并在重新广播与状态回读前保持待确认；

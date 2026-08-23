@@ -9,7 +9,7 @@
 ```text
 输入临时 Skill Key → 连接书架 → 选择本周 / 本月与场景
 （或先用示例数据预览）→ 浏览器本地排版 → 选择叠色 / 网点 / 抖动 → 六色显影
-→ 下载 PNG / .film 或发送到 Pro
+→ 下载 PNG / JPG / .film 或发送到 Pro
 ```
 
 网页入口是 `/studio/?mode=weread`；微信小程序入口是 `apps/wechat/miniprogram/pages/weread/index`。两端共享 `PENAUP_PRO`、`792 × 528`、三种显影方式和 `device_state_uncertain` 传输语义，但小程序使用自己的 Canvas 2D 和临时文件路径，不把 PNG 或 `.film` 长期转成 base64 存储。小程序的服务地址可以保存在本机设置中，Skill Key 只在当前页面内存中使用。
@@ -80,7 +80,7 @@ gateway 必须是 HTTPS 地址，默认只允许 `i.weread.qq.com`；如果部�
 
 屏保排版优先使用 `apps/web/fonts/huiwen-mincho.woff2`（汇文明朝体的 Web 子集），正文和技术标签使用系统无衬线/等宽字体。该字体由本机 `/Users/Apple/Downloads/Huiwenmingchaoti/汇文明朝体.otf` 生成，仓库只提交 Web 所需子集，不提交原始 OTF；字体授权和再分发边界仍要在发布前逐项复核，见 [权利与来源说明](../legal/provenance.md)。
 
-浏览器会明确展示“取回 → 排版 → 显影 → 留下”四个阶段：先生成普通画布预览，再复用 `PenaupImageWorker` 的 `PENAUP_PRO` 配置生成 `.film`。Worker 不可用时可以看预览，但下载和发送按钮不会伪造一个未经显影的 `.film`。PNG / `.film` 下载会短暂进入“准备下载”状态；BLE 写入后保持“待确认”，不会把写入进度当成刷新成功。
+浏览器会明确展示“取回 → 排版 → 显影 → 留下”四个阶段：先生成普通画布预览，再复用 `PenaupImageWorker` 的 `PENAUP_PRO` 配置生成 `.film`。Worker 不可用时可以看预览，但下载和发送按钮不会伪造一个未经显影的 `.film`。PNG / JPG / `.film` 下载会短暂进入“准备下载”状态；BLE 写入后保持“待确认”，不会把写入进度当成刷新成功。
 
 Canvas 会在首次绘制前等待 `Huiwen Mincho` WebFont 加载，避免首张屏保因为字体竞态回退到系统字体。BLE 写入完成后页面使用“等待电子纸刷新确认”状态；写入进度不等同于设备已经刷新成功。
 
@@ -96,6 +96,6 @@ Canvas 会在首次绘制前等待 `Huiwen Mincho` WebFont 加载，避免首张
 | Key 被拒绝 | 显示 Key 失效，不显示上游原文 |
 | 上游超时/不可用 | 显示可重试状态，不保存阅读数据 |
 | 本地显影失败 | 保留已取回摘要，禁止下载/发送伪造文件 |
-| Pro 未连接 | 保留 PNG 与 `.film` 下载，发送按钮提示先连接 Pro |
+| Pro 未连接 | 保留 PNG、JPG 与 `.film` 下载，发送按钮提示先连接 Pro |
 
 所有生成状态都属于当前页面草稿；离开页面后服务端不会自动保留阅读摘要。

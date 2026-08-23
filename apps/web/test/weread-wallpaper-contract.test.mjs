@@ -21,6 +21,7 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.match(html, /canvas id="weread-canvas" width="792" height="528"/);
   assert.match(html, /id="weread-phase-indicator"/);
   assert.match(html, /id="weread-demo"/);
+  assert.match(html, /id="weread-download-jpg"/);
   assert.match(html, /data-weread-phase-step="typesetting"/);
   assert.match(script, /document\.fonts\.load/);
   assert.match(script, /PENAUP_PRO/);
@@ -28,6 +29,7 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.match(script, /loadDemoSnapshot/);
   assert.match(script, /setDevelopmentPhase\('pending'/);
   assert.match(script, /X-Penaup-WeRead-Key/);
+  assert.match(script, /downloadJpg/);
   assert.doesNotMatch(script, /localStorage\.(?:getItem|setItem|removeItem)/);
   assert.match(html, /当前页面临时使用/);
   assert.match(styles, /font-family:\s*"Huiwen Mincho"/);
@@ -40,6 +42,7 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.match(responsiveStyles, /@media \(max-width: 420px\)/);
   assert.match(responsiveStyles, /@media \(min-width: 721px\)[\s\S]*?\.container[\s\S]*?height:\s*100vh/);
   assert.match(responsiveStyles, /@media \(min-width: 721px\)[\s\S]*?\.bottom-nav[\s\S]*?position:\s*static/);
+  assert.match(styles, /\.weread-preview-panel\s*\{[\s\S]*?position:\s*static/);
   const convert = await read('js/convert.js');
   assert.match(convert, /\.polaroid-inner:not\(\.weread-polaroid-inner\)/);
   assert.match(styles, /\.weread-polaroid-inner canvas\s*\{[\s\S]*?top:\s*0;[\s\S]*?left:\s*0;/);

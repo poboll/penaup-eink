@@ -261,3 +261,47 @@ test('WeRead lab rejects a cross-origin request before using the key', async () 
     await fs.rm(root, { recursive: true, force: true });
   }
 });
+
+test('WeRead CORS preflight advertises the temporary key header only for an allowed origin', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'penaup-weread-preflight-'));
+  const app = await buildApp({
+    config: {
+      dataDir: root,
+      databasePath: path.join(root, 'penaup.db'),
+      mediaDir: path.join(root, 'media'),
+      mqttUrl: '',
+      allowedOrigins: 'https://studio.penaup.example'
+    },
+    logger: false
+  });
+  try {
+    const allowed = await app.inject({
+      method: 'OPTIONS',
+      url: '/api/v1/integrations/weread/snapshot',
+      headers: {
+        origin: 'https://studio.penaup.example',
+        'access-control-request-method': 'POST',
+        'access-control-request-headers': 'x-penaup-weread-key, content-type'
+      }
+    });
+    assert.equal(allowed.statusCode, 204);
+    assert.equal(allowed.headers['access-control-allow-origin'], 'https://studio.penaup.example');
+    assert.match(allowed.headers['access-control-allow-headers'], /X-Penaup-WeRead-Key/);
+
+    const denied = await app.inject({
+      method: 'OPTIONS',
+      url: '/api/v1/integrations/weread/snapshot',
+      headers: {
+        origin: 'https://attacker.example',
+        'access-control-request-method': 'POST',
+        'access-control-request-headers': 'x-penaup-weread-key'
+      }
+    });
+    assert.equal(denied.statusCode, 204);
+    assert.equal(denied.headers['access-control-allow-origin'], undefined);
+    assert.equal(denied.headers['access-control-allow-headers'], undefined);
+  } finally {
+    await app.close();
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});

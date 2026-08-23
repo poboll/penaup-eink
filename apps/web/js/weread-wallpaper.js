@@ -454,11 +454,13 @@
 
     function setOutputButtons(options) {
         var png = byId('weread-download-png');
+        var jpg = byId('weread-download-jpg');
         var film = byId('weread-download-film');
         var send = byId('weread-send');
         var hasPreview = Boolean(options && options.preview);
         var hasFilm = Boolean(options && options.film);
         if (png) png.disabled = !hasPreview;
+        if (jpg) jpg.disabled = !hasPreview;
         if (film) film.disabled = !hasFilm;
         if (send) send.disabled = !hasFilm;
     }
@@ -789,6 +791,22 @@
         }, 'image/png');
     }
 
+    function downloadJpg() {
+        var canvas = byId('weread-canvas');
+        if (!canvas || !state.snapshot) return;
+        setDevelopmentPhase('downloading', '正在准备 JPG 下载');
+        canvas.toBlob(function (blob) {
+            if (blob) {
+                downloadBlob(blob, 'penaup-weread-' + state.scene + '-' + state.snapshot.periodKey + '.jpg');
+                setDevelopmentPhase('done', 'JPG 已准备好，可以继续发送');
+                setStatus('JPG 已下载；适合做桌面或阅读器屏保，六色 .film 仍可单独写入 Pro。', 'success');
+            } else {
+                setDevelopmentPhase('failed', 'JPG 下载失败，可重新尝试');
+                setStatus('JPG 暂时没有生成成功，请重新尝试。', 'error');
+            }
+        }, 'image/jpeg', .92);
+    }
+
     async function buildFilm() {
         if (state.film && window.PenaupFilmCore) return window.PenaupFilmCore.createFilmFile(PROFILE, state.film);
         throw new Error('film_render_unavailable');
@@ -900,6 +918,7 @@
         });
         byId('weread-book-select').addEventListener('change', loadReadingCard);
         byId('weread-download-png').addEventListener('click', downloadPng);
+        byId('weread-download-jpg').addEventListener('click', downloadJpg);
         byId('weread-download-film').addEventListener('click', downloadFilm);
         byId('weread-send').addEventListener('click', sendToDevice);
     }

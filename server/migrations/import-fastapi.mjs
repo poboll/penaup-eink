@@ -107,7 +107,24 @@ function templateStructure(definition, renderConfig) {
 
 function sourcePath(sourceData, value) {
   const file = String(value || '').trim();
-  return file ? (path.isAbsolute(file) ? file : path.join(sourceData, file)) : null;
+  if (!file) return null;
+  const candidate = path.resolve(path.isAbsolute(file) ? file : path.join(sourceData, file));
+  const relative = path.relative(path.resolve(sourceData), candidate);
+  if (relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) return null;
+  return candidate;
+}
+
+async function safeSourcePath(sourceData, value) {
+  const candidate = sourcePath(sourceData, value);
+  if (!candidate || !(await exists(candidate))) return null;
+  try {
+    const [realSourceData, realCandidate] = await Promise.all([fs.realpath(sourceData), fs.realpath(candidate)]);
+    const relative = path.relative(realSourceData, realCandidate);
+    if (relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) return null;
+    return realCandidate;
+  } catch {
+    return null;
+  }
 }
 
 function pathsOverlap(left, right) {
@@ -322,11 +339,12 @@ async function main() {
 
   const photoRows = readRows('photos');
   for (const row of photoRows) {
-    const candidates = [row.original_path, row.preview_path, row.film_path]
-      .map((value) => sourcePath(sourceData, value))
-      .filter(Boolean);
+    const candidates = [row.original_path, row.preview_path, row.film_path];
     const existing = [];
-    for (const candidate of candidates) if (await exists(candidate)) existing.push(candidate);
+    for (const candidate of candidates) {
+      const safeCandidate = await safeSourcePath(sourceData, candidate);
+      if (safeCandidate) existing.push(safeCandidate);
+    }
     const imageSource = existing.find((file) => !isFilmFile(file)) || null;
     const filmSource = existing.find((file) => isFilmFile(file)) || null;
     const sourceFile = imageSource || filmSource;

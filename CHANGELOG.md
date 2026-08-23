@@ -4,12 +4,13 @@
 
 ### Added
 
-- 新增微信读书屏保整合：支持周报/月报摘要、3.68 英寸 Pro（792 × 528）预览、PNG/.film 下载和已连接 Pro 发送。
+- 新增微信读书屏保整合：支持周报/月报摘要、3.68 英寸 Pro（792 × 528）预览、PNG/JPG/.film 下载和已连接 Pro 发送。
 - 新增微信小程序“读书屏保”实验室：四种阅读场景、三种六色显影方式、示例预览、PNG 保存和 Pro BLE 发送；Skill Key 仅走请求头且不写入本机。
 - 新增 `POST /api/v1/integrations/weread/snapshot` 临时转发接口；Key 不落库、不进 URL、响应或日志，支持带中文单位的阅读统计归一化。
 - 新增 `/device/` 浏览器设备工具：BLE 连接、型号/分辨率/电量/Wi-Fi 状态回读、网络配置、网络清除、重启和恢复出厂。
 - 新增 BLE OTA 发布清单 schema、草稿清单生成脚本和固件升级边界文档。
 - 新增响应式设备工具设计：纸白编辑式布局、48px 操作目标、键盘焦点、Reduced Motion 和状态留痕。
+- 新增受限权限的 `penaup-backup.service` / `penaup-backup.timer`，并补齐 FastAPI 关系迁移 fixture，覆盖设备、模板、片单、设置和推送历史。
 
 ### Changed
 
@@ -33,3 +34,4 @@
 - 管理台图片资源收紧为本站 `/api/` 与 `/assets/` 路径，动态 HTML、模板图层字段和颜色参数统一转义/校验；拒绝路径穿越、外部 URL 和主动资源语法。
 - `.film` 上传不再信任 multipart MIME，用户图片与管理台导入会清理图片元数据；设备心跳改用独立 IP 限流，避免普通 API 流量和心跳互相影响。
 - 设备工具进一步限制 BLE OTA：必须匹配 Penaup Service UUID、固定签名 `key_id`、SHA-256、Ed25519 和 1536 KiB 上限；没有正式发布包时继续保持锁定。
+- FastAPI 导入器拒绝越界媒体路径和源目录外符号链接，避免迁移阶段读取非旧库媒体；fixture 继续验证源库只读。

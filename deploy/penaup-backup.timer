@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Penaup backup schedule
+
+[Timer]
+OnCalendar=*-*-* 03:20:00 UTC
+Persistent=true
+RandomizedDelaySec=15m
+Unit=penaup-backup.service
+
+[Install]
+WantedBy=timers.target
