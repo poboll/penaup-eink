@@ -9,17 +9,18 @@
 | 领域 | 本机状态 | 证据 |
 | --- | --- | --- |
 | Node 运行时 | PASS | `node --version` = `v24.19.0`；根包和 `server` 都限制 `24.x` |
-| JavaScript / 契约 | PASS | Node 24 环境下 100 个 JavaScript 文件语法通过；严格契约门禁为 `228 passed / 0 pending / 0 failed` |
-| 自动化测试 | PASS | `npm test`：server 42、film-core 7、微信 16、Web/发布工具 11 全部通过 |
+| JavaScript / 契约 | PASS | Node 24 环境下 102 个 JavaScript 文件语法通过；严格契约门禁为 `229 passed / 0 pending / 0 failed` |
+| 自动化测试 | PASS | `npm test`：server 43、film-core 7、微信 16、Web/发布工具 14 全部通过 |
 | 依赖安全 | PASS | `npm run audit`：官方 registry 生产依赖 `0 vulnerabilities` |
 | 安装可重复性 | PASS | 根目录和 `server/` 的 `npm ci --dry-run` 均通过；原生 `better-sqlite3` 安装脚本仍需在部署机按 Node 24 审批 |
 | 运行时探针 | PASS | 8787 实例的 `/`、`/studio/`、`/health`、`/readyz` 均返回 200 |
+| Web 纸面工作台回归 | PASS | 8787 in-app browser 实测 `/studio/?mode=weread`：深链和创作标签切换都会把内部滚动恢复到 0；390/768/1440px 下读书实验室按钮无横向越界，`body.scrollWidth` 未超过视口 |
 | Caddy 配置 | PASS | `PENAUP_DOMAIN=penaup.example.com caddy validate --config deploy/Caddyfile --adapter caddyfile` |
 | Mosquitto 配置语法 | PASS（配置） | `mosquitto --test-config -c deploy/mqtt/mosquitto.conf.example` 退出码为 0 并报告配置有效；本机缺少 `/var/lib/mosquitto/` 时有非致命持久化目录提示，未启动公网 broker |
 | 备份/恢复演练 | PASS（本机 fixture） | `bash -n deploy/backup.sh deploy/restore.sh`；`node --test server/test/backup.test.js` 通过，验证 SQLite 一致性备份、媒体归档、恢复和 `--force` 回滚目录；生产 timer 尚未在 Linux systemd 主机启动 |
 | FastAPI 关系迁移 fixture | PASS（本机 fixture） | `node --test server/test/migration.test.js` 5 passed，验证用户、设备、模板、片单、设置、推送关系、越界媒体路径和源库不变；真实旧库仍未找到 |
 | 微信开发者工具登录 | PARTIAL | CLI `islogin` 返回 `login: true`；打开当前项目被微信返回 code 10：登录用户不是该小程序开发者 |
-| ESP-IDF 三机型构建 | PASS（代码构建） | ESP-IDF 5.5.2 + Python 3.14.2 已导出；提交 `267920c` 的隔离干净构建中，STD/Pro/Max 均 `idf.py build` 通过，应用分区余量分别为 13%/12%/14%；实体刷写、刷新和功耗仍 pending |
+| ESP-IDF 三机型构建 | PASS（代码构建） | ESP-IDF 5.5.2 + Python 3.14.2 已导出；当前提交 `b2894f7` 的隔离干净构建中，STD/Pro/Max 均 `idf.py build` 通过，应用分区余量分别为 13%/12%/14%；实体刷写、刷新和功耗仍 pending |
 | 旧 FastAPI 正式导入 | PENDING | 本机未找到旧 `filmhub.db`；不能用当前 Penaup 目标库冒充旧源库 |
 | 真实 BLE / OTA / 刷屏 | PENDING | 需要实体 STD、Pro、Max 和重新广播后的状态回读 |
 | 正式邮件、Caddy 公网 TLS、MQTT ACL | PENDING | 需要部署机、真实域名/证书、邮件 provider 和设备账号 |
@@ -29,11 +30,11 @@
 
 ```text
 npm run check
-JavaScript syntax OK: 100 files
-Contract gate: 228 passed, 0 pending, 0 failed
+JavaScript syntax OK: 102 files
+Contract gate: 229 passed, 0 pending, 0 failed
 
 npm test
-server 42 passed · film-core 7 passed · 微信 16 passed · Web/release 11 passed
+server 43 passed · film-core 7 passed · 微信 16 passed · Web/release 14 passed
 
 npm run audit
 found 0 vulnerabilities
@@ -63,7 +64,7 @@ source /Users/Apple/.espressif/frameworks/esp-idf-v5.5.2/export.sh
 npm run release:gate -- --strict-external
 ```
 
-本轮构建证据（临时隔离源码副本，源码提交为当前 `267920c`）：
+本轮构建证据（临时隔离源码副本，源码提交为当前 `b2894f7`）：
 
 | 机型 | `penaup.bin` | 最小应用分区余量 | `idf.py size` 总镜像 | 结果 |
 | --- | ---: | ---: | ---: | --- |
