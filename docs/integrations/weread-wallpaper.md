@@ -59,7 +59,7 @@ Body: { "mode": "weekly" | "monthly", "month": "YYYY-MM"?, "week_start": "YYYY-M
 
 - Key 只从 `X-Penaup-WeRead-Key` 请求头读取，不接受 URL 参数，不写 SQLite，不写 local server 日志，也不进入响应正文。连接、书架、快照和读书卡路由都检查来源并使用独立的每 IP 20 次/分钟限流。
 - 默认请求和响应均为 `no-store`；上游请求使用 HTTPS，超时默认 15 秒。
-- 页面默认只在内存中保留 Key；勾选“在这台浏览器记住 Key”才会写入浏览器 `localStorage`。共享电脑不要勾选，使用后可以点击“清除”。
+- 页面只在当前工作台内存中保留 Key；不会提供“记住 Key”选项，也不会写入 `localStorage`、IndexedDB、Cookie 或 URL。刷新页面即自动清除，使用后也可以点击“清除”。
 - 生产反向代理必须继续脱敏 `X-Penaup-WeRead-Key`，并限制该路由的请求体、频率和来源。微信读书账号数据不会进入 MQTT、SSE、相册或媒体目录。
 - 用户曾经在开发对话中暴露过 Key；上线前应立即在微信读书侧轮换该 Key，并只把新 Key 放在本地输入框或受保护的运行环境里。
 

@@ -1,12 +1,12 @@
 /* Copyright (c) 2026 poboll · Penaup paper interface */
 :root {
-    --paper: #f5f5f0;
-    --paper-raised: #fbfbf8;
-    --paper-deep: #e9eae3;
+    --paper: #fbfaf5;
+    --paper-raised: #fffdf8;
+    --paper-deep: #ece7dc;
     --ink: #171816;
     --ink-soft: #676963;
-    --line: #d8d9d1;
-    --line-strong: #b9bbb1;
+    --line: #dfd9cf;
+    --line-strong: #bdb5a8;
     --blue: #4d73ad;
     --yellow: #dfb52e;
     --red: #ba4a3f;
@@ -25,7 +25,12 @@ html { background: var(--paper); scroll-behavior: smooth; }
 body {
     margin: 0;
     color: var(--ink);
-    background: var(--paper);
+    background:
+        radial-gradient(circle at 9% -12%, rgba(255, 255, 251, .98), transparent 36%),
+        radial-gradient(circle at 92% 5%, rgba(223, 181, 46, .04), transparent 25%),
+        repeating-linear-gradient(90deg, rgba(118, 99, 70, .016) 0 1px, transparent 1px 22px),
+        repeating-linear-gradient(0deg, rgba(84, 70, 48, .012) 0 1px, transparent 1px 7px),
+        linear-gradient(180deg, #fffefa 0%, var(--paper) 55%, #f7f1e7 100%);
     font: 400 15px/1.6 var(--sans);
     overflow: hidden;
 }
@@ -35,8 +40,9 @@ body::before {
     z-index: 60;
     inset: 0;
     pointer-events: none;
-    opacity: .16;
+    opacity: .09;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
     mix-blend-mode: multiply;
 }
 button, input, select, textarea { font: inherit; }

@@ -177,6 +177,21 @@ a.secondary-button {
         text-align: left;
     }
 
+    .weread-connect-row {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+
+    .weread-connect-row .secondary-button,
+    .weread-source-summary {
+        width: 100%;
+    }
+
+    .weread-source-summary {
+        justify-content: flex-start;
+        text-align: left;
+    }
+
     .weread-phase-trail {
         gap: 5px;
     }
@@ -200,6 +215,12 @@ a.secondary-button {
     .weread-connect-row .secondary-button {
         width: 100%;
         min-height: 56px !important;
+    }
+
+    .weread-key-session {
+        max-width: 28ch;
+        font-size: 12px;
+        line-height: 1.5;
     }
 
     .weread-preview-panel {
