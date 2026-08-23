@@ -110,6 +110,7 @@ const requiredPaths = [
   'apps/web/device/index.html',
   'apps/web/css/device-tool.css',
   'apps/web/js/ble-protocol.js',
+  'apps/web/js/device-reconnect-guard.js',
   'apps/web/js/device-tool.js',
   'apps/wechat/project.config.json',
   'firmware/penaup/CMakeLists.txt',
@@ -135,10 +136,14 @@ const requiredPaths = [
   'docs/api/ios-integration.md',
   'docs/api/transfer-state.md',
   'docs/legal/provenance.md'
+  , 'docs/integrations/weread-wallpaper.md'
+  , 'apps/web/fonts/huiwen-mincho.woff2'
+  , 'server/src/modules/weread.js'
   , 'docs/device-tool/firmware-updates.md'
   , 'firmware/penaup/releases/manifest.schema.json'
   , 'firmware/penaup/releases/README.md'
   , 'scripts/create-firmware-manifest.mjs'
+  , 'scripts/sign-firmware-manifest.mjs'
 ];
 requirePaths(requiredPaths);
 
@@ -205,6 +210,7 @@ if (/sendBleCmdString:[^\n]*str=' \+ str/.test(webStudioBleSurface)) fail('Studi
 else pass('Studio Wi-Fi password log redaction');
 assertMatch('Device tool exposes BLE maintenance path', webDeviceSurface, /0x3B[\s\S]*0x22[\s\S]*0x10/);
 assertMatch('Device tool preserves uncertain state copy', webDeviceSurface, /状态待确认/);
+assertMatch('Device tool loads reconnect confirmation guard', webDeviceSurface, /device-reconnect-guard\.js/);
 assertMatch('Device tool does not claim a release binary', webDeviceSurface, /没有真实的正式发布包/);
 assertMatch('Device tool documents Web Serial boundary', webDeviceSurface, /Web Serial/);
 assertMatch('Device tool serves docs link', read('server/src/app.js'), /prefix: '\/docs\/'/);
@@ -215,7 +221,13 @@ else pass('WeChat OTA false success copy');
 const firmwareManifest = json('firmware/penaup/releases/manifest.schema.json');
 assertEqual('firmware manifest schema id', firmwareManifest.$id, 'https://penaup.local/schemas/firmware-manifest-v1.json');
 assertEqual('firmware release directory contains no binary', fs.readdirSync(filePath('firmware/penaup/releases')).some((name) => name.endsWith('.bin')), false);
-const publicRouteSources = ['server/src/app.js', 'server/src/modules/auth.js', 'server/src/transports/http.js']
+const firmwareSigningTool = read('scripts/sign-firmware-manifest.mjs');
+assertMatch('firmware signing tool uses Ed25519', firmwareSigningTool, /crypto\.sign\(null/);
+assertMatch('firmware signing tool reads external private key', firmwareSigningTool, /--private-key/);
+assertMatch('firmware signing tool refuses overwrite', firmwareSigningTool, /flag: 'wx'/);
+if (/writeFile\([^\n]*privateKey|writeFile\([^\n]*privateKeyPath/.test(firmwareSigningTool)) fail('firmware signing key handling', 'private key appears to be written by the signer');
+else pass('firmware signing key handling');
+const publicRouteSources = ['server/src/app.js', 'server/src/modules/auth.js', 'server/src/modules/weread.js', 'server/src/transports/http.js']
   .map((relativePath) => read(relativePath)).join('\n');
 const documentedPublicOperations = documentedOpenApiOperations(read('docs/api/openapi.yaml'));
 const runtimePublicOperations = new Set();

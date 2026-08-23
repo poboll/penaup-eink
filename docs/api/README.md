@@ -75,6 +75,8 @@ GET  /api/v1/ai/providers
 GET  /api/v1/ai/settings
 PUT  /api/v1/ai/settings
 POST /api/v1/ai/generate
+
+POST /api/v1/integrations/weread/snapshot
 ```
 
 用户只能读取自己拥有的设备、媒体、相册、模板、片单和 transfer。浏览器使用 HttpOnly Cookie 时，所有写请求（包括 refresh/logout）都需要 `X-CSRF-Token`；小程序和未来 iOS 使用短期 Bearer access token，并以 refresh token 换新令牌。失败 transfer 可创建新的 retry transfer；`device_state_uncertain` 不允许自动重发，必须先确认设备画面。
@@ -119,6 +121,14 @@ GET /api/v1/device/film/latest.film
 - 原图处理失败时保留草稿/客户端数据，不将失败状态伪装为成功。
 
 完整 transfer 字段和跨端状态约束见 [transfer-state.md](transfer-state.md)；原生客户端的令牌、SSE、BLE 和 Live Activity 接入见 [ios-integration.md](ios-integration.md)。机器可读接口见 [openapi.yaml](openapi.yaml)。
+
+## 微信读书屏保
+
+`POST /api/v1/integrations/weread/snapshot` 使用一次性请求头
+`X-Penaup-WeRead-Key` 临时访问微信读书数据，支持 `weekly` / `monthly`，返回
+`PENAUP_PRO` 的 `792 × 528` 屏保摘要。Key 不进 URL、数据库、响应或 MQTT；路由返回
+`Cache-Control: no-store`。完整字段、字体和隐私边界见
+[微信读书屏保整合](../integrations/weread-wallpaper.md)。
 
 ## 旧管理接口兼容面
 

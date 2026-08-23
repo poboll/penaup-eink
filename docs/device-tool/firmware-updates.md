@@ -41,6 +41,20 @@ node scripts/create-firmware-manifest.mjs \
 
 脚本只生成 `release_status: draft` 和 SHA-256，不负责签名。仓库当前没有真实的正式 `.bin`，也没有把构建目录产物宣称为可发布固件。
 
+签名由仓库内的独立脚本完成，但私钥必须来自仓库之外的受保护路径；脚本不会覆盖输入清单：
+
+```bash
+node scripts/sign-firmware-manifest.mjs \
+  --manifest /tmp/penaup-pro.manifest.json \
+  --private-key /secure/poboll/penaup-release-ed25519.pem \
+  --key-id poboll-release-2026 \
+  --output /tmp/penaup-pro-v1.0.0.manifest.json
+```
+
+它只签署清单声明的 `sha256`，固定消息为 `penaup-firmware-v1:<sha256>`，不会读取或复制
+`.bin`，也不会把私钥、公钥写入仓库。签名环境必须先独立核对清单哈希与目标 app image；
+没有真实固件、受保护私钥和三机型真机验收时，不能把清单标成可发布。
+
 发布系统需要在脱离网页的受控环境中：
 
 - 固定三机型构建配置和 ESP-IDF 版本；

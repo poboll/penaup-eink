@@ -174,3 +174,82 @@ a { color: inherit; }
 @keyframes pigment-bloom { 0%, 100% { transform: scale(.92); opacity: .68; } 46%, 64% { transform: scale(1); opacity: .94; } }
 @keyframes scroll-cue { 0%, 100% { transform: translateY(-2px); opacity: .58; } 50% { transform: translateY(3px); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } .js [data-reveal] { opacity: 1; transform: none; } .color-lab-grid span { transform: none; opacity: .88; } .color-lab-grid::after { display: none; } }
+
+/* 2026-08 Penaup paper pass: lighter rice paper, Huiwen display type and stable touch targets. */
+@font-face {
+  font-family: "Huiwen Mincho";
+  src: url("../fonts/huiwen-mincho.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
+:root {
+  --paper: #f8f4eb;
+  --paper-bright: #fffdf7;
+  --line: #ddd5c8;
+  --quiet: #6d685e;
+  --serif: "Huiwen Mincho", "Songti SC", "STSong", "Noto Serif SC", Georgia, serif;
+}
+
+body {
+  background:
+    radial-gradient(circle at 10% -10%, rgba(255, 253, 247, .96), transparent 34%),
+    radial-gradient(circle at 92% 4%, rgba(212, 169, 47, .08), transparent 25%),
+    linear-gradient(180deg, #fcfaf4 0%, var(--paper) 52%, #f0e9dd 100%);
+  font-size: 17px;
+}
+
+body::before {
+  opacity: .14;
+}
+
+.story-nav {
+  background: rgba(248, 244, 235, .88);
+}
+
+.brand strong {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.brand em {
+  font: 12px var(--mono);
+}
+
+.nav-links {
+  font-size: 11px;
+}
+
+.nav-links a, .button {
+  min-height: 48px;
+}
+
+.hero-lede, .section-intro, .step p, .feature p {
+  font-size: 17px;
+  line-height: 1.72;
+}
+
+.hero h1, .section h2, .step h3, .feature h3, .color-story-copy h3 {
+  font-family: var(--serif);
+}
+
+.hero-proof {
+  background: rgba(255, 253, 247, .78);
+  box-shadow: 8px 8px 0 rgba(75, 61, 42, .05);
+}
+
+.hero-proof-label, .hero-proof-detail {
+  font-size: 10px;
+}
+
+.spec-row span:last-child {
+  font-size: 13px;
+}
+
+@media (max-width: 860px) {
+  .hero-lede, .section-intro, .step p, .feature p {
+    font-size: 16px;
+  }
+}

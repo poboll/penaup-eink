@@ -24,6 +24,7 @@ tags:
   - name: events
   - name: settings
   - name: ai
+  - name: integrations
   - name: device
   - name: health
 paths:
@@ -931,6 +932,39 @@ paths:
         '200': { description: provider 返回的安全结果 }
         '413': { description: 请求体过大 }
         '503': { description: provider 未配置或不可用 }
+  /api/v1/integrations/weread/snapshot:
+    post:
+      tags: [integrations]
+      security:
+        - WereadSkillKey: []
+      summary: 生成微信读书 Pro 屏保摘要
+      description: |
+        使用请求头中的临时 Skill Key 向微信读书取回周报或月报最小摘要。
+        Key 不进入 URL、数据库或响应；响应禁止缓存。
+      parameters:
+        - $ref: '#/components/parameters/WereadSkillKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WereadSnapshotRequest'
+      responses:
+        '200':
+          description: PENAUP_PRO 屏保摘要
+          headers:
+            Cache-Control:
+              schema: { type: string, const: no-store }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WereadSnapshotResponse'
+        '400': { description: Key、mode 或请求体无效 }
+        '401': { description: 微信读书 Key 被拒绝 }
+        '413': { description: 请求体过大 }
+        '429': { description: 频率限制 }
+        '502': { description: 微信读书返回异常 }
+        '504': { description: 微信读书请求超时 }
   /api/v1/device/heartbeat:
     get:
       tags: [device]
@@ -995,6 +1029,10 @@ components:
       type: apiKey
       in: cookie
       name: penaup_session
+    WereadSkillKey:
+      type: apiKey
+      in: header
+      name: X-Penaup-WeRead-Key
   parameters:
     DeviceId:
       name: deviceId
@@ -1066,6 +1104,16 @@ components:
       in: query
       required: false
       schema: { type: string, maxLength: 256 }
+    WereadSkillKey:
+      name: X-Penaup-WeRead-Key
+      in: header
+      required: true
+      description: 临时微信读书 Skill Key；不得写入 URL、数据库、日志或响应。
+      schema:
+        type: string
+        minLength: 20
+        maxLength: 192
+        pattern: '^wrk-[A-Za-z0-9_-]{16,160}$'
     DeviceModelQuery:
       name: model
       in: query
@@ -1082,6 +1130,75 @@ components:
       required: false
       schema: { type: string, enum: [idle, preparing, transferring, refreshing, succeeded, failed, unknown] }
   schemas:
+    WereadSnapshotRequest:
+      type: object
+      required: [mode]
+      additionalProperties: false
+      properties:
+        mode:
+          type: string
+          enum: [weekly, monthly]
+          default: monthly
+        month:
+          type: string
+          pattern: '^\d{4}-(0[1-9]|1[0-2])$'
+          description: 月报月份；不传时由微信读书返回当前月份。
+    WereadSnapshotResponse:
+      type: object
+      required: [ok, data]
+      properties:
+        ok: { const: true }
+        data:
+          $ref: '#/components/schemas/WereadSnapshot'
+    WereadSnapshot:
+      type: object
+      required: [source, mode, profile, screen, periodKey, periodLabel, readingDays, readingMinutes, bookCount, noteCount, topBookDetails, dailyReading]
+      properties:
+        source: { type: string, const: weread }
+        mode: { type: string, enum: [weekly, monthly] }
+        profile: { type: string, const: PENAUP_PRO }
+        screen:
+          type: object
+          required: [width, height, panel]
+          properties:
+            width: { type: integer, const: 792 }
+            height: { type: integer, const: 528 }
+            panel: { type: string, const: E6 3.68 inch }
+        periodKey: { type: string }
+        periodLabel: { type: string }
+        readingDays: { type: integer, minimum: 0 }
+        readingMinutes: { type: integer, minimum: 0 }
+        bookCount: { type: integer, minimum: 0 }
+        noteCount: { type: integer, minimum: 0 }
+        topBooks:
+          type: array
+          maxItems: 8
+          items: { type: string }
+        topBookDetails:
+          type: array
+          maxItems: 8
+          items:
+            type: object
+            required: [title, author, readingMinutes, progress]
+            properties:
+              bookId: { type: string }
+              title: { type: string }
+              author: { type: string }
+              coverUrl: { type: string, format: uri }
+              readingMinutes: { type: integer, minimum: 0 }
+              progress: { type: integer, minimum: 0, maximum: 100 }
+              summary: { type: string }
+        dailyReading:
+          type: array
+          maxItems: 31
+          items:
+            type: object
+            required: [day, readingMinutes]
+            properties:
+              day: { type: integer, minimum: 1, maximum: 31 }
+              readingMinutes: { type: integer, minimum: 0 }
+        quote: { type: string }
+        fetchedAt: { type: string, format: date-time }
     HealthResponse:
       type: object
       required: [ok, data]

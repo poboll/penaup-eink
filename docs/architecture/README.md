@@ -57,6 +57,9 @@ Worker 的浏览器会回退到同步路径，不改变文件格式或颜色索�
 - BLE 在 STOP 后没有刷新回执：进入 `device_state_uncertain`，保留原始 film 和可重试草稿；
 - 未知机型或非法 film：在进入设备队列前拒绝，不让固件收到猜测格式。
 
+运行时的需求和技术设计分别见 [runtime-requirements.md](runtime-requirements.md) 与
+[runtime-design.md](runtime-design.md)；`legacy/fastapi/` 只使用它们作为迁移参考，不是新部署入口。
+
 重要取舍记录见 `docs/adr/`。
 
 ## 浏览器维护边界

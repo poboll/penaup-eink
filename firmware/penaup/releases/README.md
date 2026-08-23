@@ -22,3 +22,18 @@ node scripts/create-firmware-manifest.mjs \
 ```
 
 草稿只用于核对长度和哈希，不能直接刷写。
+
+签名必须在受保护的发布环境中完成。私钥放在仓库之外（或由密钥管理器临时提供），签名脚本只读取它，默认不覆盖任何文件：
+
+```bash
+node scripts/sign-firmware-manifest.mjs \
+  --manifest /tmp/penaup-pro.manifest.json \
+  --private-key /secure/poboll/penaup-release-ed25519.pem \
+  --key-id poboll-release-2026 \
+  --output /tmp/penaup-pro-v1.0.0.manifest.json
+```
+
+脚本把 `draft` 转为 `published`，签署固定消息
+`penaup-firmware-v1:<sha256>`，并使用 `flag: wx` 防止误覆盖输入或既有发布清单。
+它不会读取、复制或生成 `.bin`，也不会把私钥、公钥写入仓库；签名之前应由发布人确认
+清单中的固件 SHA-256 与待发布镜像一致。

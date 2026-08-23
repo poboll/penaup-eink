@@ -15,6 +15,8 @@
 9. [Transfer 状态契约](api/transfer-state.md)：Web、小程序和未来 iOS 共用的状态与 Live Activity 映射。
 10. [品牌与体验](brand/README.md)：花生片的故事线、六色 token 和状态文案。
 11. [设备工具与固件升级](device-tool/firmware-updates.md)：浏览器 BLE 维护、OTA 门禁和 Web Serial 边界。
+12. [运行时需求](architecture/runtime-requirements.md) 与 [技术设计](architecture/runtime-design.md)：Node 单体、SQLite、SSE 和 MQTT 边界。
+13. [微信读书屏保整合](integrations/weread-wallpaper.md)：Key 边界、3.68 英寸 Pro 输出和本地六色显影。
 
 ## 文档分区
 

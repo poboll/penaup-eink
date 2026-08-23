@@ -14,6 +14,7 @@ import { createMqttBridge } from './mqtt.js';
 import { createAuthService } from './modules/auth.js';
 import { createEmailDelivery } from './modules/email.js';
 import { createAiService } from './modules/ai.js';
+import { createWereadService, registerWereadRoutes } from './modules/weread.js';
 import { TaskQueue } from './queue.js';
 import { createRateLimiter } from './rate-limit.js';
 import { createStreamScheduler } from './scheduler.js';
@@ -50,6 +51,12 @@ function bodyTooLarge(input, limit = 96 * 1024) {
   try { return Buffer.byteLength(JSON.stringify(input || {}), 'utf8') > limit; } catch { return true; }
 }
 
+function sameUserId(left, right) {
+  const leftId = Number(left);
+  const rightId = Number(right);
+  return Number.isSafeInteger(leftId) && leftId > 0 && leftId === rightId;
+}
+
 function redactedRequestUrl(value) {
   const raw = String(value || '');
   try {
@@ -73,7 +80,7 @@ const defaultLogger = (config) => ({
       remoteAddress: request.ip
     })
   },
-  redact: ['req.headers.authorization', 'req.headers.cookie']
+    redact: ['req.headers.authorization', 'req.headers.cookie', 'req.headers.x-penaup-weread-key']
 });
 
 async function validateFilmFile(filename) {
@@ -96,13 +103,14 @@ export async function buildApp(options = {}) {
   const emailDelivery = createEmailDelivery({ database, config });
   const auth = createAuthService({ database, config, emailDelivery, logger: app?.log });
   const ai = createAiService({ config, database, fetchImpl: options.fetchImpl });
+  const weread = createWereadService({ config, fetchImpl: options.fetchImpl });
   const queue = options.queue || new TaskQueue({ concurrency: 1, maxSize: 100 });
   const rateLimit = options.rateLimit || createRateLimiter({
     windowMs: config.rateLimitWindowMs,
     max: config.rateLimitMax,
     maxKeys: config.rateLimitMaxKeys
   });
-  const runtime = { config, database, events, mqtt: null, auth, ai, queue, scheduler: null, rateLimit };
+  const runtime = { config, database, events, mqtt: null, auth, ai, weread, queue, scheduler: null, rateLimit };
 
   app.addHook('onRequest', async (request, reply) => {
     const pathname = String(request.url || '').split('?', 1)[0];
@@ -208,6 +216,7 @@ export async function buildApp(options = {}) {
 
   await auth.register(app);
   registerHttpRoutes(app, { config, database, events, mqtt: runtime.mqtt, auth, ai, queue, scheduler: runtime.scheduler, emit });
+  registerWereadRoutes(app, { service: runtime.weread });
   registerLegacyAdminRoutes(app, { config, database, auth, emit });
   runtime.scheduler.start();
 
@@ -324,9 +333,10 @@ export async function buildApp(options = {}) {
     response.write(': penaup connected\n\n');
     const unsubscribe = events.subscribe((event) => {
       if (!request.penaupAdmin) {
-        const eventUserId = event.payload && event.payload.userId;
-        const eventDeviceId = event.payload && (event.payload.deviceId || event.deviceId);
-        const owned = eventUserId === request.penaupUser.id || (eventDeviceId && database.getDevice(eventDeviceId)?.ownerId === request.penaupUser.id);
+        const eventUserId = event.payload && (event.payload.userId ?? event.payload.user_id);
+        const eventDeviceId = event.payload && (event.payload.deviceId || event.payload.device_id || event.deviceId);
+        const owned = sameUserId(eventUserId, request.penaupUser.id)
+          || (eventDeviceId && sameUserId(database.getDevice(eventDeviceId)?.ownerId, request.penaupUser.id));
         if (!owned) return;
       }
       response.write(`event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`);

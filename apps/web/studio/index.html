@@ -6,6 +6,7 @@
     <title>花生片 Penaup · 显影工具</title>
     <link id="style-sheet" rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/penaup-shared.css">
+    <link rel="stylesheet" href="../css/studio-paper.css">
 </head>
 <body>
     <div id="penaup-splash" class="penaup-splash" role="dialog" aria-modal="true" aria-labelledby="splash-title" aria-describedby="splash-caption">
@@ -328,6 +329,10 @@
                             <i class="material-icons">format_quote</i>
                             <span>一言</span>
                         </button>
+                        <button type="button" class="frame-tab" data-frame-tab="frame-weread" role="tab" aria-selected="false" aria-controls="frame-weread">
+                            <i class="material-icons">menu_book</i>
+                            <span>读书</span>
+                        </button>
                     </div>
 
                     <!-- 选图直印 -->
@@ -424,6 +429,59 @@
                             <div id="frame-quote-transfer-progress" class="transfer-progress">0%</div>
                         </div>
                         <div id="frame-quote-result" role="status" aria-live="polite"></div>
+                    </div>
+
+                    <!-- 微信读书屏保 -->
+                    <div id="frame-weread" class="frame-tab-content weread-tab-content">
+                        <div class="weread-layout">
+                            <section class="weread-controls" aria-labelledby="weread-title">
+                                <p class="section-kicker">READING / PENAUP PRO</p>
+                                <h2 id="weread-title">把读过的书，<em>留成一张屏保。</em></h2>
+                                <p class="weread-lede">从微信读书取回一份周报或月报，排成 3.68 英寸 E6 Pro 的一张纸。Key 只在本次请求中使用；默认不保存，离开页面即忘。</p>
+                                <div class="weread-key-field">
+                                    <label for="weread-skill-key">微信读书 Skill Key</label>
+                                    <input id="weread-skill-key" type="password" inputmode="text" autocomplete="off" spellcheck="false" placeholder="wrk-…" aria-describedby="weread-key-help">
+                                    <p id="weread-key-help">只发给 Penaup 的临时转发接口，不写入 URL、数据库或日志。</p>
+                                </div>
+                                <div class="weread-key-row">
+                                    <label class="weread-check"><input type="checkbox" id="weread-remember-key"><span>在这台浏览器记住 Key</span></label>
+                                    <button type="button" class="text-button" id="weread-clear-key">清除</button>
+                                </div>
+                                <fieldset class="weread-periods">
+                                    <legend>选择阅读时间</legend>
+                                    <div class="weread-period-list" role="group" aria-label="阅读时间范围">
+                                        <button type="button" class="weread-period is-active" data-weread-mode="weekly" aria-pressed="true">本周读书</button>
+                                        <button type="button" class="weread-period" data-weread-mode="monthly" aria-pressed="false">本月读书</button>
+                                    </div>
+                                </fieldset>
+                                <button type="button" class="primary-button weread-fetch-button" id="weread-fetch"><i class="material-icons">auto_awesome</i>取回阅读记录</button>
+                                <div id="weread-status" class="weread-status" role="status" aria-live="polite">还没有取回记录。你的阅读只会变成这一张纸。</div>
+                                <div id="weread-stats" class="weread-stats" hidden></div>
+                            </section>
+                            <section class="weread-preview-panel" aria-labelledby="weread-preview-title">
+                                <div class="weread-preview-head">
+                                    <div><p class="preview-kicker">E6 / 3.68 INCH</p><h3 id="weread-preview-title">Pro 屏保预览</h3></div>
+                                    <span class="weread-size-tag">792 × 528</span>
+                                </div>
+                                <div class="polaroid-frame weread-polaroid">
+                                    <div class="polaroid-inner weread-polaroid-inner">
+                                        <canvas id="weread-canvas" width="792" height="528" role="img" aria-label="微信读书 3.68 英寸电子纸屏保预览"></canvas>
+                                        <div id="weread-empty" class="weread-empty" aria-hidden="true"><span class="weread-empty-mark">◌</span><strong>一页还未显影</strong><span>取回记录后，这里会出现你的阅读轨迹。</span></div>
+                                    </div>
+                                </div>
+                                <div id="weread-preview-meta" class="weread-preview-meta">预览会使用汇文明朝体与 Penaup 六色显影。</div>
+                                <div class="weread-actions">
+                                    <button type="button" class="secondary-button" id="weread-download-png" disabled><i class="material-icons">download</i>下载 PNG</button>
+                                    <button type="button" class="primary-button" id="weread-download-film" disabled><i class="material-icons">save_alt</i>下载 .film</button>
+                                    <button type="button" class="secondary-button" id="weread-send" disabled><i class="material-icons">send</i>发送到 Pro</button>
+                                </div>
+                                <div id="weread-transfer-container" class="transfer-container weread-transfer" hidden>
+                                    <div id="weread-transfer-status" class="transfer-status" role="status" aria-live="polite">准备传输…</div>
+                                    <div class="progress-bar"><div id="weread-transfer-progress-bar" class="progress-fill"></div></div>
+                                    <div id="weread-transfer-progress" class="transfer-progress">0%</div>
+                                </div>
+                            </section>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -566,6 +624,7 @@
     <script src="../js/bluetooth.js"></script>
     <script src="../js/convert.js"></script>
     <script src="../js/frame.js"></script>
+    <script src="../js/weread-wallpaper.js"></script>
     <script src="../js/experience.js"></script>
     <script src="../js/icons.js"></script>
     <script src="../js/main.js"></script>

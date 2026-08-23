@@ -27,6 +27,7 @@ npm start
 
 - 产品故事页：`http://127.0.0.1:8787/`
 - 创作工作台：`http://127.0.0.1:8787/studio/`
+- 微信读书屏保：进入工作台的“读书”标签；接口只做一次性摘要转发，不保存 Skill Key
 - Runtime 控制台：`http://127.0.0.1:8787/admin/`（管理令牌由环境变量提供）
 - 存活探针：`GET /health`；就绪探针：`GET /readyz`（SQLite 和媒体目录不可用时返回 `503`）
 
@@ -40,6 +41,9 @@ npm start
 | `PENAUP_ADMIN_TOKEN` | 空 | 仅非 production 的 loopback 开发运行可留空；生产或非回环监听必须设置，否则管理 API 返回 503 |
 | `PENAUP_MQTT_URL` | 空 | MQTT broker URL，例如 `mqtt://127.0.0.1:1883` |
 | `PENAUP_MQTT_TOPIC_PREFIX` | `penaup/device` | 设备状态和命令 topic 前缀 |
+| `PENAUP_WEREAD_GATEWAY_URL` | 微信读书 HTTPS gateway | 微信读书临时转发地址；必须是 HTTPS |
+| `PENAUP_WEREAD_SKILL_VERSION` | `1.0.4` | 上游 Skill 版本，不是用户 Key |
+| `PENAUP_WEREAD_TIMEOUT_MS` | `15000` | 微信读书请求超时，范围 3000–60000ms |
 
 ## 设备兼容接口
 

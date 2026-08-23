@@ -10,7 +10,8 @@
     'use strict';
 
     var P = global.PenaupBleProtocol;
-    if (!P) return;
+    var G = global.PenaupReconnectGuard;
+    if (!P || !G) return;
 
     var state = {
         device: null,
@@ -25,6 +26,7 @@
         queue: Promise.resolve(),
         waiters: {},
         reconnectExpected: false,
+        reconnectObserved: false,
         reconnectTimer: null,
         reconnectAttempts: 0,
         lastRefresh: null,
@@ -116,6 +118,15 @@
         if (dot) dot.className = 'status-dot ' + (kind || '');
     }
 
+    function applyReconnectGate(gate) {
+        state.reconnectExpected = gate.expected;
+        state.reconnectObserved = gate.observed;
+    }
+
+    function beginReconnectExpectation() { applyReconnectGate(G.begin()); }
+    function observeReconnectDisconnect() { applyReconnectGate(G.observe(state.reconnectExpected)); }
+    function clearReconnectExpectation() { applyReconnectGate(G.clear()); }
+
     function updateBrowserCapabilities() {
         var bluetooth = !!global.navigator.bluetooth;
         var serial = !!global.navigator.serial;
@@ -159,6 +170,10 @@
         }
         var reconnect = byId('reconnect-button');
         if (reconnect) reconnect.hidden = !state.reconnectExpected || !state.device;
+        if (reconnect) {
+            reconnect.disabled = !state.reconnectObserved || state.busy;
+            reconnect.textContent = state.reconnectObserved ? '重新连接并确认' : '等待设备重新广播';
+        }
         var otaInputDisabled = !global.navigator.bluetooth;
         ['manifest-input', 'firmware-input'].forEach(function (id) { var input = byId(id); if (input) input.disabled = otaInputDisabled || state.busy; });
         var startOta = byId('start-ota-button');
@@ -219,6 +234,18 @@
         var waiter = queue.shift();
         if (waiter && waiter.timer) global.clearTimeout(waiter.timer);
         if (waiter) waiter.resolve(frame);
+    }
+
+    function rejectWaiters(reason) {
+        var error = reason instanceof Error ? reason : new Error(String(reason || 'BLE 会话已断开'));
+        Object.keys(state.waiters).forEach(function (channel) {
+            var queue = state.waiters[channel] || [];
+            state.waiters[channel] = [];
+            queue.forEach(function (waiter) {
+                if (waiter && waiter.timer) global.clearTimeout(waiter.timer);
+                if (waiter && waiter.reject) waiter.reject(error);
+            });
+        });
     }
 
     function waitForResponse(channel, timeout) {
@@ -332,8 +359,14 @@
         setText('last-refresh', '最近回读 ' + state.lastRefresh.toLocaleTimeString());
         updateStatusCards();
         if (options.confirmation) {
+            if (!G.canConfirm(state.reconnectExpected, state.reconnectObserved)) {
+                setPhase('device_state_uncertain', '仍需重新连接', '设备还没有经历可观察的断开和重新广播；当前回读不能作为重启或升级完成证据。');
+                setConnectionStatus('状态待确认', '先等设备断开并重新广播，再进行回读确认。', 'warn');
+                log('warn', '拒绝在未观察到断开时确认维护操作。');
+                return false;
+            }
             if (critical && isConnected()) {
-                state.reconnectExpected = false;
+                clearReconnectExpectation();
                 state.operation = null;
                 setPhase('succeeded', '设备状态已确认', '设备重新广播并成功回读，维护流程可以结束。');
                 setConnectionStatus('已连接 · 状态已确认', '可以继续设置网络或回到工作台。', 'active');
@@ -359,6 +392,11 @@
     async function connectSelected(options) {
         options = options || {};
         if (!state.device) throw new Error('还没有选择设备');
+        if (options.confirmation && !G.canConfirm(state.reconnectExpected, state.reconnectObserved)) {
+            setPhase('device_state_uncertain', '仍需重新连接', '设备还没有经历可观察的断开和重新广播；当前连接不能被当作维护完成。');
+            setConnectionStatus('等待设备重新广播', '请等设备先断开，再点击“重新连接并确认”。', 'warn');
+            return false;
+        }
         state.busy = true;
         setConnectedControls();
         setPhase('connecting');
@@ -385,7 +423,7 @@
                 optionalServices: [P.SERVICE_UUID]
             });
             state.device.addEventListener('gattserverdisconnected', onDisconnected);
-            state.reconnectExpected = false;
+            clearReconnectExpectation();
             await connectSelected();
             log('info', '已选择 ' + (state.device.name || '花生片设备') + '。');
         } catch (error) {
@@ -402,10 +440,12 @@
     }
 
     function onDisconnected() {
+        rejectWaiters(new Error('BLE 会话已断开，设备回读已取消'));
         state.connected = false;
         state.server = null;
         state.service = null;
         state.characteristic = null;
+        if (state.reconnectExpected) observeReconnectDisconnect();
         setConnectedControls();
         if (state.reconnectExpected) {
             setConnectionStatus('设备已离开连接', '正在等待重新广播；不会把断开本身当作成功。', 'warn');
@@ -420,7 +460,13 @@
     }
 
     async function reconnectExisting() {
-        if (!state.device || state.busy) return;
+        if (!state.device || state.busy) return false;
+        if (!G.canConfirm(state.reconnectExpected, state.reconnectObserved)) {
+            setPhase('device_state_uncertain', '等待设备先断开', '当前连接仍然存在；只有看到设备断开并重新广播后，才允许确认维护结果。');
+            setConnectionStatus('等待设备重新广播', '不要把当前连接上的回读当作重启或升级完成。', 'warn');
+            log('warn', '重新连接按钮尚未满足断开证据门禁。');
+            return false;
+        }
         state.busy = true;
         setConnectedControls();
         try {
@@ -465,7 +511,7 @@
     async function disconnectDevice() {
         if (state.reconnectTimer) global.clearTimeout(state.reconnectTimer);
         state.reconnectTimer = null;
-        state.reconnectExpected = false;
+        clearReconnectExpectation();
         state.operation = null;
         if (state.device && state.device.gatt && state.device.gatt.connected) state.device.gatt.disconnect();
         else onDisconnected();
@@ -564,7 +610,7 @@
     async function maintenanceCommand(channel, label, confirmation) {
         if (!isConnected() || state.busy) return;
         if (!global.confirm(confirmation)) return;
-        state.reconnectExpected = true;
+        beginReconnectExpectation();
         state.operation = label;
         state.busy = true;
         setPhase('device_state_uncertain', label + '命令已发送', '设备将离开当前连接；重新广播并回读后，页面才会显示完成。');
@@ -576,7 +622,7 @@
             showMessage(label + '命令已发送，等待设备回来。', 'warn');
             beginReconnectWatch();
         } catch (error) {
-            state.reconnectExpected = false;
+            clearReconnectExpectation();
             setPhase('failed', label + '没有发送成功', '请确认设备仍在附近，再重新连接后重试。');
             setConnectionStatus('命令发送失败', error.message || 'BLE 写入失败', 'error');
             log('error', label + '失败：' + (error.message || 'command_failed'));
@@ -678,7 +724,7 @@
         var manifest = state.ota.manifest;
         if (!global.confirm('确认给 ' + state.profile.displayName + ' 写入 ' + manifest.version + '？设备会重启，过程中请保持页面打开。')) return;
         state.busy = true;
-        state.reconnectExpected = true;
+        beginReconnectExpectation();
         state.operation = '固件升级';
         state.ota.bytesSent = 0;
         setConnectedControls();
@@ -714,7 +760,7 @@
                 showMessage('固件传输中断，设备状态待确认。', 'error', 9000);
                 beginReconnectWatch();
             } else {
-                state.reconnectExpected = false;
+                clearReconnectExpectation();
                 setPhase('failed', '固件没有写入', '文件仍保留在本地，可以检查连接后重试。');
                 log('error', 'OTA 没有开始：' + (error.message || 'write_failed'));
                 showMessage('固件没有写入：' + (error.message || 'write_failed'), 'error');

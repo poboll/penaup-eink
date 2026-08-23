@@ -1,6 +1,6 @@
 """设备协议 API：心跳（含注册与指令下发）+ film 获取
 
-协议详见 docs/filmhub/design.md §7-§8。
+协议详见 docs/architecture/runtime-design.md §7-§8。
 """
 import datetime as dt
 import hashlib

@@ -304,7 +304,7 @@ Page({
     });
   },
 
-  // 发送初始化命令（与原版ForFilm一致的顺序和间隔）
+  // 发送设备兼容初始化命令（顺序和间隔与历史固件保持一致）
   _sendInitCommands: function () {
     var that = this;
     var step = 500;
