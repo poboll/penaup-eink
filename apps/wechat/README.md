@@ -8,6 +8,8 @@
 
 不要只打开 `miniprogram/` 子目录；`project.config.json` 在本目录。当前 AppID 保留为项目原登记值，提交或预览前请在开发者工具中确认账号、AppID 和合法域名属于花生片项目。
 
+`project.private.config.json` 只用于本机微信开发者工具覆盖项，已加入 Git 忽略规则；请不要把它作为发布配置或提交到仓库。需要共享的项目设置只写入 `project.config.json`。
+
 ## 体验与状态
 
 页面统一使用 `styles/penaup-pages.wxss` 的纸白、墨黑、六色 token。传图流程显示：
@@ -18,6 +20,8 @@
 ```
 
 动效只能表达等待和进度，不能代替 BLE 回调。断联或 STOP 后没有可信刷新回执时，保持 `device_state_uncertain` 语义，保留本地草稿并提供重试。原图和 film 不再长期保存为 base64：Storage 只保存轻量元数据，二进制放在 `wx.env.USER_DATA_PATH/penaup-film-cache/`。
+
+设置页的 OTA 同样遵守这条边界：`OTA_STOP` 后只显示“固件已写入，等待重新连接并回读确认”；重新连接后通过电量回读确认设备仍能运行，才进入 `succeeded`。小程序只持久化文件名、大小和状态，不把固件二进制或密码写入 Storage；确认失败时可重新连接并再次回读。
 
 ## 共享契约
 

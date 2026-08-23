@@ -3,8 +3,8 @@
 ## 本机验证记录（2026-08-23）
 
 - Node.js `v24.19.0` 已确认；根包与服务端均限制在 `24.x`。
-- `npm run test:server`：26 passed；`npm run test:film-core`：7 passed；`npm run test:wechat`：8 passed。
-- 默认 shell 的 `npm run check:contracts`：163 passed，1 pending；加载 ESP-IDF 后执行 `source /Users/Apple/.espressif/frameworks/esp-idf-v5.5.2/export.sh && npm run release:gate -- --strict-external`：164 passed，0 pending，0 failed。
+- `npm run test:server`：26 passed；`npm run test:film-core`：7 passed；`npm run test:wechat`：12 passed。
+- 默认 shell 的 `npm run check:contracts`：187 passed，1 pending；加载 ESP-IDF 后执行 `source /Users/Apple/.espressif/frameworks/esp-idf-v5.5.2/export.sh && npm run release:gate -- --strict-external`：188 passed，0 pending，0 failed。
 - `npm --prefix server run check`、定向 JavaScript 语法检查和 `git diff --check` 已通过。
 - 重启后的 8787 实例已加载当前代码；`/`、`/studio/`、`/health`、`/readyz` 均返回 200，默认限流第 121 次 API 请求返回 `429 + Retry-After: 60`，设备心跳仍返回 200。
 - Playwright 已验证首页在 390/768/1440px 下渲染、Studio 上传、三种显影模式切换、无横向溢出和无页面异常；真实 BLE 设备、键盘/VoiceOver 和 Reduced Motion 仍需发布机做最终验收。
@@ -23,6 +23,7 @@
 - [ ] SQLite 与媒体每日备份，至少演练一次恢复并记录 RPO/RTO；
 - [ ] 三机型 film 尺寸、BLE 192B 分块和三端协议常量一致；
 - [ ] Web/小程序/iOS 对 `device_state_uncertain` 不显示成功；
+- [ ] `/studio/` 不包含直接 `.bin` OTA 上传入口；Web 固件升级只从 `/device/` 进入，并在重新广播与状态回读前保持待确认；
 - [ ] 法律顾问完成最终组合许可和商业发布复核。
 - [ ] `apps/web/device/` 的 BLE 重置、恢复出厂、重启和 OTA 在真实设备上完成断连/重连验收；没有把写入完成冒充为升级成功；
 - [ ] 正式固件清单处于 `published`，型号、长度、SHA-256、Ed25519 签名和网页固定公钥全部可独立复核；仓库不提交未授权的 `.bin` 构建产物；

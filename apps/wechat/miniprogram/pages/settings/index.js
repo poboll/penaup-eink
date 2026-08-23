@@ -1,4 +1,5 @@
 const bleUtils = require('../../utils/ble-utils');
+const otaState = require('../../utils/ota-state');
 const app = getApp();
 
 Page({
@@ -54,15 +55,23 @@ Page({
     otaFileData: null,
     showOtaTransfer: false,
     otaTransferStatus: '',
-    otaTransferProgress: 0
+    otaTransferProgress: 0,
+    otaState: otaState.OTA_STATES.IDLE,
+    otaBytesSent: 0,
+    otaCanRetry: false
   },
 
   _syncTimer: null,
+  _otaSessionKey: 'penaup.ota.session',
+  _otaConfirmRequested: false,
+  _otaConfirmInFlight: false,
+  _otaConfirmTimer: null,
 
   onShow: function () {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 3 });
     }
+    this._restoreOtaSession();
     this._syncFromGlobal();
     this._startSyncTimer();
     this._setupBleListener();
@@ -86,6 +95,7 @@ Page({
     this._stopWifiStatusPoll();
     this._stopDownloadPoll();
     this._stopWifiEnablePoll();
+    this._stopOtaConfirmTimer();
   },
 
   onUnload: function () {
@@ -94,6 +104,105 @@ Page({
     this._stopWifiStatusPoll();
     this._stopDownloadPoll();
     this._stopWifiEnablePoll();
+    this._stopOtaConfirmTimer();
+  },
+
+  _restoreOtaSession: function () {
+    var session = null;
+    try { session = wx.getStorageSync(this._otaSessionKey); } catch (e) { session = null; }
+    if (!session || (!otaState.keepsSession(session.state) && session.state !== otaState.OTA_STATES.SUCCEEDED)) return;
+    this._otaConfirmRequested = false;
+    this.setData({
+      otaFileName: session.fileName || '',
+      otaFileSize: Number(session.fileSize) || 0,
+      otaFileData: null,
+      showOtaTransfer: true,
+      otaTransferStatus: session.status || '固件状态待确认',
+      otaTransferProgress: Number(session.progress) || 0,
+      otaState: session.state,
+      otaBytesSent: Number(session.bytesSent) || 0,
+      otaCanRetry: session.canRetry !== false
+    });
+  },
+
+  _persistOtaSession: function () {
+    if (!this.data.otaState || this.data.otaState === otaState.OTA_STATES.IDLE) return;
+    try {
+      wx.setStorageSync(this._otaSessionKey, {
+        fileName: this.data.otaFileName,
+        fileSize: this.data.otaFileSize,
+        state: this.data.otaState,
+        status: this.data.otaTransferStatus,
+        progress: this.data.otaTransferProgress,
+        bytesSent: this.data.otaBytesSent,
+        canRetry: this.data.otaCanRetry,
+        updatedAt: Date.now()
+      });
+    } catch (e) {}
+  },
+
+  _clearOtaSession: function () {
+    try { wx.removeStorageSync(this._otaSessionKey); } catch (e) {}
+  },
+
+  _stopOtaConfirmTimer: function () {
+    if (this._otaConfirmTimer) {
+      clearTimeout(this._otaConfirmTimer);
+      this._otaConfirmTimer = null;
+    }
+    this._otaConfirmInFlight = false;
+  },
+
+  _requestOtaConfirmation: function () {
+    var that = this;
+    if (!app.globalData.isConnected || this.data.otaState !== otaState.OTA_STATES.DEVICE_STATE_UNCERTAIN || this._otaConfirmRequested) return;
+    this._otaConfirmRequested = true;
+    this._otaConfirmInFlight = true;
+    this.setData({ otaTransferStatus: '已重新连接，正在回读运行状态…' }, function () {
+      that._persistOtaSession();
+    });
+    this.debugLog('请求回读电量，等待 OTA 运行状态确认...', 'info');
+    app.sendBleCmd(bleUtils.BLE_FILM_TRANS_CH_CTRL_PWRREAD, null).then(function () {
+      that._otaConfirmTimer = setTimeout(function () {
+        that._otaConfirmTimer = null;
+        that._otaConfirmInFlight = false;
+        if (that.data.otaState === otaState.OTA_STATES.DEVICE_STATE_UNCERTAIN) {
+          that.setData({ otaTransferStatus: '还没有收到运行状态回读，请保持连接后再次确认' }, function () {
+            that._persistOtaSession();
+          });
+        }
+      }, 2500);
+    }).catch(function (err) {
+      that._otaConfirmInFlight = false;
+      that.setData({ otaTransferStatus: '回读请求没有发出，请重新连接后再次确认' }, function () {
+        that._persistOtaSession();
+      });
+      that.debugLog('OTA 状态回读失败: ' + JSON.stringify(err), 'error');
+    });
+  },
+
+  confirmOtaState: function () {
+    this._otaConfirmRequested = false;
+    this._stopOtaConfirmTimer();
+    this._requestOtaConfirmation();
+  },
+
+  _markOtaConfirmed: function () {
+    if (this.data.otaState !== otaState.OTA_STATES.DEVICE_STATE_UNCERTAIN) return;
+    var that = this;
+    var confirmed = otaState.afterConfirmation();
+    this._stopOtaConfirmTimer();
+    this.setData({
+      otaState: confirmed.state,
+      otaTransferProgress: confirmed.progress,
+      otaTransferStatus: confirmed.status,
+      otaCanRetry: confirmed.canRetry,
+      showOtaTransfer: true
+    }, function () {
+      that._persistOtaSession();
+    });
+    this.debugLog('设备重新连接并回读成功；OTA 运行状态已确认。', 'success');
+    wx.showToast({ title: '状态已确认', icon: 'success' });
   },
 
   // 同步 globalData 状态到页面
@@ -102,14 +211,38 @@ Page({
     var updates = {};
     if (this.data.isConnected !== g.isConnected) {
       updates.isConnected = g.isConnected;
-      // 断开连接时重置 OTA 升级状态
       if (!g.isConnected) {
-        updates.otaFileName = '';
-        updates.otaFileData = null;
-        updates.showOtaTransfer = false;
-        updates.otaTransferStatus = '';
-        updates.otaTransferProgress = 0;
+        this._otaConfirmRequested = false;
+        if (otaState.keepsSession(this.data.otaState)) {
+          var disconnected = otaState.afterDisconnect(this.data.otaState);
+          updates.otaState = disconnected.state;
+          updates.otaTransferStatus = disconnected.status;
+          updates.otaCanRetry = disconnected.canRetry !== false;
+          updates.showOtaTransfer = true;
+          // The binary is intentionally released; only retry metadata is persisted.
+          updates.otaFileData = null;
+        } else {
+          updates.otaFileName = '';
+          updates.otaFileData = null;
+          updates.showOtaTransfer = false;
+          updates.otaTransferStatus = '';
+          updates.otaTransferProgress = 0;
+          updates.otaBytesSent = 0;
+          updates.otaState = otaState.OTA_STATES.IDLE;
+          updates.otaCanRetry = false;
+          this._clearOtaSession();
+        }
+      } else if (this.data.otaState === otaState.OTA_STATES.DEVICE_STATE_UNCERTAIN) {
+        this._otaConfirmRequested = false;
+        updates.otaTransferStatus = '设备已重新连接，等待运行状态回读';
       }
+    }
+    if (this.data.isConnected === g.isConnected && !g.isConnected && otaState.keepsSession(this.data.otaState)) {
+      updates.otaFileData = null;
+    }
+    if (g.isConnected && this.data.otaState === otaState.OTA_STATES.DEVICE_STATE_UNCERTAIN && !this._otaConfirmRequested) {
+      // Run after the current sync has had a chance to render the connected state.
+      setTimeout(function () { this._requestOtaConfirmation(); }.bind(this), 0);
     }
     if (this.data.batteryLevel !== g.batteryLevel) {
       updates.batteryLevel = g.batteryLevel;
@@ -153,7 +286,10 @@ Page({
       updates.fileList = globalList.slice();
     }
     if (Object.keys(updates).length > 0) {
-      this.setData(updates);
+      var that = this;
+      this.setData(updates, function () {
+        if (Object.prototype.hasOwnProperty.call(updates, 'otaState')) that._persistOtaSession();
+      });
     }
   },
 
@@ -204,6 +340,7 @@ Page({
           this.setData({ batteryLevel: level, batteryFillWidth: fillW });
           app.globalData.batteryLevel = level;
           this.debugLog('电池电量: ' + level + '%', 'success');
+          this._markOtaConfirmed();
         }
         break;
 
@@ -799,8 +936,15 @@ Page({
         that.setData({
           otaFileName: file.name,
           otaFileSize: file.size,
-          otaFileData: null
+          otaFileData: null,
+          showOtaTransfer: false,
+          otaTransferStatus: '固件已读取，等待开始',
+          otaTransferProgress: 0,
+          otaState: otaState.OTA_STATES.IDLE,
+          otaBytesSent: 0,
+          otaCanRetry: false
         });
+        that._clearOtaSession();
         that.debugLog('选择固件: ' + file.name + ' (' + file.size + ' 字节)', 'info');
 
         var fs = wx.getFileSystemManager();
@@ -825,16 +969,41 @@ Page({
       wx.showToast({ title: '请先选择固件', icon: 'none' });
       return;
     }
+    if (!app.globalData.isConnected || !this.data.isConnected) {
+      wx.showToast({ title: '请先连接花生片', icon: 'none' });
+      return;
+    }
+    if (this.data.otaState === otaState.OTA_STATES.TRANSFERRING) return;
 
     var otaData = new Uint8Array(fileData);
     var totalSize = otaData.length;
     var chunkSize = bleUtils.BLE_CHUNK_SIZE;
     var totalChunks = Math.ceil(totalSize / chunkSize);
 
+    wx.showModal({
+      title: '确认刷写固件',
+      content: '刷写会让设备重启。请只使用已通过花生片发布门禁的镜像，并保持设备有电、手机靠近。写入后还要重新连接并回读，页面不会提前显示成功。',
+      confirmColor: '#b65347',
+      success: function (res) {
+        if (res.confirm) that._runOtaTransfer(otaData, chunkSize, totalChunks);
+      }
+    });
+  },
+
+  _runOtaTransfer: function (otaData, chunkSize, totalChunks) {
+    var that = this;
+    var totalSize = otaData.length;
+    this._otaWriteStarted = false;
+
     that.setData({
       showOtaTransfer: true,
       otaTransferStatus: '准备升级...',
-      otaTransferProgress: 0
+      otaTransferProgress: 0,
+      otaState: otaState.OTA_STATES.TRANSFERRING,
+      otaBytesSent: 0,
+      otaCanRetry: false
+    }, function () {
+      that._persistOtaSession();
     });
     that.debugLog('开始 OTA 升级，总大小: ' + totalSize + ' 字节，分 ' + totalChunks + ' 包', 'info');
 
@@ -849,6 +1018,7 @@ Page({
     lenPacket[6] = totalSize & 0xFF;
     lenPacket[7] = bleUtils.calculateChecksum(lenPacket, 7);
 
+    that._otaWriteStarted = true;
     app.sendBlePacket(lenPacket).then(function () {
       that.debugLog('OTA_LEN 已发送，等待设备初始化...', 'info');
       that.setData({ otaTransferStatus: '初始化中...' });
@@ -863,16 +1033,37 @@ Page({
       that.debugLog('数据传输完成，发送 OTA_STOP...', 'info');
       return app.sendBleCmd(bleUtils.BLE_FILM_TRANS_CH_OTA_STOP, null);
     }).then(function () {
+      var pending = otaState.afterStop();
+      that._otaConfirmRequested = false;
       that.setData({
-        otaTransferStatus: '升级完成',
-        otaTransferProgress: 100
+        otaState: pending.state,
+        otaTransferStatus: pending.status,
+        otaTransferProgress: pending.progress,
+        otaCanRetry: pending.canRetry,
+        showOtaTransfer: true,
+        otaFileData: null
+      }, function () {
+        that._persistOtaSession();
       });
-      that.debugLog('OTA 升级完成！', 'success');
-      wx.showToast({ title: '升级完成', icon: 'success' });
+      that.debugLog('OTA_STOP 已发送；等待设备重新连接并回读确认。', 'warn');
+      wx.showToast({ title: '已写入，待确认', icon: 'none' });
     }).catch(function (err) {
-      that.setData({ otaTransferStatus: '升级失败' });
+      var failed = otaState.afterFailure(that.data.otaBytesSent || (that._otaWriteStarted ? 1 : 0));
+      that.setData({
+        otaState: failed.state,
+        otaTransferStatus: failed.status,
+        otaTransferProgress: failed.progress,
+        otaCanRetry: failed.canRetry,
+        showOtaTransfer: true,
+        otaFileData: null
+      }, function () {
+        that._persistOtaSession();
+      });
       that.debugLog('OTA 失败: ' + JSON.stringify(err), 'error');
-      wx.showToast({ title: '升级失败', icon: 'none' });
+      wx.showToast({
+        title: failed.state === otaState.OTA_STATES.DEVICE_STATE_UNCERTAIN ? '状态待确认' : '升级失败',
+        icon: 'none'
+      });
     });
   },
 
@@ -898,6 +1089,7 @@ Page({
       var progress = Math.round((index / totalChunks) * 100);
 
       return app.sendBlePacket(packet).then(function () {
+        that.setData({ otaBytesSent: offset });
         if (index % 10 === 0 || progress >= 100) {
           that.setData({
             otaTransferProgress: progress,

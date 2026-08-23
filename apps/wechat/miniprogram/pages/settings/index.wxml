@@ -132,15 +132,18 @@
     <!-- OTA 升级 -->
     <view class="set-row">
       <view class="set-ic sc-red"><image src="/images/icons/white/ota.svg" mode="aspectFit"></image></view>
-      <view class="set-t">OTA 升级</view>
+      <view class="set-t">OTA 升级
+        <text class="set-d">写入后必须重新连接并回读，才算运行状态确认</text>
+      </view>
     </view>
     <view class="set-panel">
       <view class="action-controls">
         <button class="btn-secondary" bindtap="chooseOtaFile">选择固件</button>
         <text class="file-size-text" wx:if="{{otaFileName}}">{{otaFileName}} ({{otaFileSize}} 字节)</text>
       </view>
+      <view class="ota-safety-note">只使用已通过花生片发布门禁的镜像。BLE 写入回执不代表设备已经成功启动新固件。</view>
       <view class="button-row" wx:if="{{otaFileData}}">
-        <button class="btn-primary" bindtap="startOtaUpgrade" disabled="{{showOtaTransfer}}">开始升级</button>
+        <button class="btn-primary" bindtap="startOtaUpgrade" disabled="{{showOtaTransfer || !isConnected}}">开始升级</button>
       </view>
       <view class="transfer-container" wx:if="{{showOtaTransfer}}">
         <view class="transfer-status">{{otaTransferStatus}}</view>
@@ -148,6 +151,10 @@
           <view class="progress-fill" style="width: {{otaTransferProgress}}%"></view>
         </view>
         <view class="transfer-progress">{{otaTransferProgress}}%</view>
+        <view class="button-row" wx:if="{{otaState === 'device_state_uncertain' && isConnected}}">
+          <button class="btn-secondary" bindtap="confirmOtaState" disabled="{{!isConnected}}">重新读取并确认</button>
+        </view>
+        <view class="ota-confirmed-note" wx:if="{{otaState === 'succeeded'}}">已确认设备重新连接并回读运行状态；当前协议没有版本号回读。</view>
       </view>
     </view>
 

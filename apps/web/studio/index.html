@@ -275,24 +275,13 @@
                         <div class="section-content">
                         <div id="debug-log" class="debug-log" aria-live="polite"></div>
                             <div class="device-actions">
-                                <div class="action-item">
+                                <div class="action-item maintenance-entry">
                                     <div class="action-header">
                                         <i class="material-icons">system_update</i>
-                                        <span>固件升级</span>
+                                        <span>设备工具</span>
                                     </div>
-                                    <input type="file" id="ota-file-input" accept=".bin" style="display: none;" onchange="handleOtaFileSelect(event)">
-                                    <div class="action-controls">
-                                        <button class="secondary-button" onclick="selectOtaFile()">选择文件</button>
-                                        <span id="ota-file-size" class="file-size-text">未选择</span>
-                                        <button class="secondary-button" onclick="startOtaUpgrade()" id="ota-upgrade-btn">开始升级</button>
-                                    </div>
-                                    <div id="ota-transfer-container" class="transfer-container" style="display: none;">
-                                        <div id="ota-transfer-status" class="transfer-status">准备传输...</div>
-                                        <div class="progress-bar">
-                                            <div id="ota-transfer-progress-bar" class="progress-fill"></div>
-                                        </div>
-                                        <div id="ota-transfer-progress" class="transfer-progress">0%</div>
-                                    </div>
+                                    <p class="maintenance-note">固件升级、网络清除、恢复出厂和重启都需要重新广播与状态回读。请从独立设备工具开始，避免在照片传输中误操作。</p>
+                                    <a class="secondary-button maintenance-link" href="../device/">打开设备工具 <span aria-hidden="true">↗</span></a>
                                 </div>
                                 <div class="action-divider"></div>
                                 <div class="action-item">
@@ -314,6 +303,7 @@
                                             SD卡格式化
                                         </button>
                                     </div>
+                                    <p id="maintenance-status" class="maintenance-status" role="status" aria-live="polite">快捷命令写入后，设备状态仍需重新连接确认。</p>
                                 </div>
                             </div>
                         </div>

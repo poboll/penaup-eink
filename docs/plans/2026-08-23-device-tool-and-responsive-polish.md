@@ -31,9 +31,10 @@
 ## 实施结果（2026-08-23）
 
 - `/device/` 已落地 BLE 连接、状态回读、网络配置、网络清除、重启、恢复出厂和安全 OTA 门禁；没有正式镜像或固定公钥时，刷写按钮保持锁定。
+- `/studio/` 不再保留直接 `.bin` OTA 上传入口；固件升级、网络清除、恢复出厂和重启统一从 `/device/` 进入，创作工作台的快捷维护命令只显示“状态待确认”，不会把 BLE 写入回执当成成功。
 - `/studio/` 已统一网络、设备控制、显影和上传按钮栅格；网络折叠状态同时更新视觉箭头和无障碍属性。
 - 浏览器回归在 390、768、1024、1440px 验证首页、工作台和设备工具无横向溢出；创作、转换和设置页的主要操作目标保持 48px，重置类图标操作保持 44px 触控目标。
-- `npm run check`：178 passed、1 pending、0 failed；pending 为当前机器没有 ESP-IDF 5.5.2 / `idf.py`，不作为已验证固件构建证据。
-- `npm test`：服务端 26、film-core 7、微信 8 全部通过；`npm run audit`：0 vulnerabilities。
+- `npm run check`：187 passed、1 pending、0 failed；pending 为当前机器没有 ESP-IDF 5.5.2 / `idf.py`，不作为已验证固件构建证据。
+- `npm test`：服务端 26、film-core 7、微信 12 全部通过；`npm run audit`：0 vulnerabilities。
 
 本计划对应的代码和文档会作为一次大更新提交到 `codex/penaup-eink-rebuild`，只推送到 `poboll/penaup-eink`；旧 `origin` 远程不参与本轮发布。

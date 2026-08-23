@@ -39,11 +39,6 @@ const BLE_FILM_TRANS_CH_FILE_LIST = 0x06;
 const BLE_FILM_TRANS_CH_FILE_DISPLAY = 0x07;
 const BLE_FILM_TRANS_CH_FILE_DISPLAY_GET = 0x08;
 
-const BLE_FILM_TRANS_CH_OTA_LEN = 0x10;
-const BLE_FILM_TRANS_CH_OTA_DATA = 0x11;
-const BLE_FILM_TRANS_CH_OTA_START = 0x12;
-const BLE_FILM_TRANS_CH_OTA_STOP = 0x13;
-
 const BLE_FILM_TRANS_CH_CTRL_MODE = 0x20;
 const BLE_FILM_TRANS_CH_CTRL_MODE_GET = 0x21;
 const BLE_FILM_TRANS_CH_CTRL_RESET = 0x22;
@@ -85,12 +80,6 @@ const BLE_FILM_TRANS_STATE_RECV_LEN = 3;
 const BLE_FILM_TRANS_STATE_RECV_DATA = 4;
 const BLE_FILM_TRANS_STATE_STOPPED = 5;
 
-const BLE_OTA_TRANS_STATE_IDLE = 0;
-const BLE_OTA_TRANS_STATE_STARTED = 1;
-const BLE_OTA_TRANS_STATE_RECV_LEN = 2;
-const BLE_OTA_TRANS_STATE_RECV_DATA = 3;
-const BLE_OTA_TRANS_STATE_STOPPED = 4;
-
 const BLE_CHUNK_SIZE = 192;
 const BLE_CTRL_DELAY = 50;
 const BLE_DATA_DELAY = 2;
@@ -100,12 +89,9 @@ let filmTransFileName = '';
 let filmTransFileSize = 0;
 let filmTransSentBytes = 0;
 
-let otaTransState = BLE_OTA_TRANS_STATE_IDLE;
-let otaTransFileSize = 0;
-let otaTransSentBytes = 0;
-
 let bleCmdQueue = [];
 let scanInFlight = false;
+let pendingMaintenanceAction = '';
 
 async function queueBleCmd(fn) {
     bleCmdQueue.push(fn);
@@ -193,6 +179,12 @@ function initBluetooth() {
             window.fileListBuffer = [];
             bleCmdQueue = [];
 
+            if (pendingMaintenanceAction) {
+                updateMaintenanceStatus(`${pendingMaintenanceAction}待确认：Studio 已重新连接，但请打开设备工具完成状态回读。`, 'uncertain');
+            } else {
+                updateMaintenanceStatus('快捷命令写入后，设备状态仍需重新连接确认。');
+            }
+
             setTimeout(() => {
                 debugLog('开始发送初始化命令...');
                 sendBlePwrRead();
@@ -248,8 +240,12 @@ function onDisconnected(event) {
     setDeviceType('FRAMEFILM');
     var status = document.getElementById('connection-status');
     if (status) {
-        status.textContent = '设备已断开';
-        status.className = 'status';
+        status.textContent = pendingMaintenanceAction ? `${pendingMaintenanceAction} · 状态待确认` : '设备已断开';
+        status.className = pendingMaintenanceAction ? 'status uncertain' : 'status';
+    }
+    if (pendingMaintenanceAction) {
+        updateMaintenanceStatus(`${pendingMaintenanceAction}命令已发送，设备已离开连接；请打开设备工具重新连接并回读确认。`, 'uncertain');
+        showMessage(`${pendingMaintenanceAction}已写入，设备状态待确认。`, 'warn', 9000);
     }
     var deviceList = document.getElementById('device-list');
     if (deviceList) {
@@ -492,173 +488,24 @@ function delay(ms) {
 function checkBluetoothStatus() {
     const status = document.getElementById('connection-status');
     if (status && device && device.gatt && device.gatt.connected) {
-        status.textContent = '已连接';
-        status.className = 'status connected';
+        status.textContent = pendingMaintenanceAction ? `${pendingMaintenanceAction} · 状态待确认` : '已连接';
+        status.className = pendingMaintenanceAction ? 'status uncertain' : 'status connected';
     }
 }
 
 setInterval(checkBluetoothStatus, 5000);
 
-async function sendBleOtaStart() {
-    const packet = new Uint8Array(4);
-    packet[0] = BLE_CMD_HEAD;
-    packet[1] = BLE_FILM_TRANS_CH_OTA_START;
-    packet[2] = 0;
-    packet[3] = calculateChecksum(packet, 3);
-
-    await characteristic.writeValue(packet);
-    console.log('发送 OTA_START');
-    await delay(BLE_CTRL_DELAY);
+function updateMaintenanceStatus(message, kind = '') {
+    const status = document.getElementById('maintenance-status');
+    if (!status) return;
+    status.textContent = message;
+    status.className = 'maintenance-status' + (kind ? ` ${kind}` : '');
 }
 
-async function sendBleOtaLen(fileSize) {
-    const packet = new Uint8Array(8);
-    packet[0] = BLE_CMD_HEAD;
-    packet[1] = BLE_FILM_TRANS_CH_OTA_LEN;
-    packet[2] = 4;
-    packet[3] = (fileSize >> 24) & 0xFF;
-    packet[4] = (fileSize >> 16) & 0xFF;
-    packet[5] = (fileSize >> 8) & 0xFF;
-    packet[6] = fileSize & 0xFF;
-    packet[7] = calculateChecksum(packet, 7);
-
-    await characteristic.writeValue(packet);
-    console.log('发送 OTA_LEN:', fileSize);
-    await delay(BLE_CTRL_DELAY);
-}
-
-async function sendBleOtaData(data) {
-    const packet = new Uint8Array(4 + data.length);
-    packet[0] = BLE_CMD_HEAD;
-    packet[1] = BLE_FILM_TRANS_CH_OTA_DATA;
-    packet[2] = data.length;
-    packet.set(data, 3);
-    packet[packet.length - 1] = calculateChecksum(packet, packet.length - 1);
-
-    await characteristic.writeValue(packet);
-    await delay(BLE_DATA_DELAY);
-}
-
-async function sendBleOtaStop() {
-    const packet = new Uint8Array(4);
-    packet[0] = BLE_CMD_HEAD;
-    packet[1] = BLE_FILM_TRANS_CH_OTA_STOP;
-    packet[2] = 0;
-    packet[3] = calculateChecksum(packet, 3);
-
-    await characteristic.writeValue(packet);
-    console.log('发送 OTA_STOP');
-    await delay(BLE_CTRL_DELAY);
-}
-
-function updateOtaTransferStatus(message, progress) {
-    const statusEl = document.getElementById('ota-transfer-status');
-    const progressEl = document.getElementById('ota-transfer-progress');
-    const progressBarEl = document.getElementById('ota-transfer-progress-bar');
-
-    if (statusEl) {
-        statusEl.textContent = message;
-    }
-
-    if (progressBarEl) {
-        progressBarEl.style.width = progress + '%';
-    }
-
-    if (progressEl) {
-        progressEl.textContent = progress + '%';
-    }
-}
-
-async function uploadOtaFileViaBle(fileData) {
-    if (!device || !server || !characteristic) {
-        showMessage('请先连接设备', 'error');
-        return;
-    }
-
-    const transferContainer = document.getElementById('ota-transfer-container');
-    if (transferContainer) {
-        transferContainer.style.display = 'block';
-    }
-
-    try {
-        updateOtaTransferStatus('准备传输...', 0);
-
-        otaTransState = BLE_OTA_TRANS_STATE_STARTED;
-        otaTransFileSize = fileData.length;
-        otaTransSentBytes = 0;
-
-        await sendBleOtaLen(fileData.length);
-
-        await delay(50);
-
-        const chunkSize = BLE_CHUNK_SIZE;
-        let sentBytes = 0;
-        for (let i = 0; i < fileData.length; i += chunkSize) {
-            const chunk = fileData.slice(i, i + chunkSize);
-            await sendBleOtaData(chunk);
-            sentBytes += chunk.length;
-            otaTransSentBytes = sentBytes;
-
-            const progress = Math.round((sentBytes / fileData.length) * 100);
-            updateOtaTransferStatus(`传输中: ${sentBytes}/${fileData.length} 字节`, progress);
-
-            await delay(BLE_DATA_DELAY);
-        }
-
-        await sendBleOtaStop();
-
-        otaTransState = BLE_OTA_TRANS_STATE_STOPPED;
-        updateOtaTransferStatus('传输完成', 100);
-        showMessage('OTA升级文件传输成功!', 'success');
-
-    } catch (error) {
-        console.error('OTA传输失败:', error);
-        otaTransState = BLE_OTA_TRANS_STATE_IDLE;
-        updateOtaTransferStatus('传输失败', 0);
-        showMessage('OTA传输失败: ' + error.message, 'error');
-    }
-}
-
-function selectOtaFile() {
-    const fileInput = document.getElementById('ota-file-input');
-    if (fileInput) {
-        fileInput.click();
-    }
-}
-
-function handleOtaFileSelect(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const arrayBuffer = e.target.result;
-        const uint8Array = new Uint8Array(arrayBuffer);
-
-        const sizeInfo = document.getElementById('ota-file-size');
-        if (sizeInfo) {
-            sizeInfo.textContent = `文件大小: ${uint8Array.length} 字节`;
-        }
-
-        window.selectedOtaData = uint8Array;
-
-        event.target.value = '';
-    };
-    reader.readAsArrayBuffer(file);
-}
-
-function startOtaUpgrade() {
-    if (!device || !server || !characteristic) {
-        showMessage('请先连接设备', 'error');
-        return;
-    }
-
-    if (!window.selectedOtaData) {
-        showMessage('请先选择OTA升级文件', 'error');
-        return;
-    }
-
-    uploadOtaFileViaBle(window.selectedOtaData);
+function markMaintenancePending(action) {
+    pendingMaintenanceAction = action;
+    updateMaintenanceStatus(`${action}命令已发送；请打开设备工具重新连接并回读确认。`, 'uncertain');
+    showMessage(`${action}命令已发送，等待重新连接与状态确认。`, 'warn', 9000);
 }
 
 async function sendBleCmd(cmdType, data = null) {
@@ -668,35 +515,37 @@ async function sendBleCmd(cmdType, data = null) {
 
     debugLog('sendBleCmd: cmd=' + cmdType.toString(16) + ', data=' + data);
 
-    return queueBleCmd(async () => {
-        let packet;
-        if (data === null) {
-            packet = new Uint8Array(4);
-            packet[0] = BLE_CMD_HEAD;
-            packet[1] = cmdType;
-            packet[2] = 0;
-            packet[3] = calculateChecksum(packet, 3);
-        } else {
-            packet = new Uint8Array(5);
-            packet[0] = BLE_CMD_HEAD;
-            packet[1] = cmdType;
-            packet[2] = 1;
-            packet[3] = data;
-            packet[4] = calculateChecksum(packet, 4);
-        }
+    return new Promise((resolve, reject) => {
+        queueBleCmd(async () => {
+            let packet;
+            if (data === null) {
+                packet = new Uint8Array(4);
+                packet[0] = BLE_CMD_HEAD;
+                packet[1] = cmdType;
+                packet[2] = 0;
+                packet[3] = calculateChecksum(packet, 3);
+            } else {
+                packet = new Uint8Array(5);
+                packet[0] = BLE_CMD_HEAD;
+                packet[1] = cmdType;
+                packet[2] = 1;
+                packet[3] = data;
+                packet[4] = calculateChecksum(packet, 4);
+            }
 
-        debugLog('发送数据包: ' + Array.from(packet).map(b => b.toString(16).padStart(2, '0')).join(' '));
+            debugLog('发送数据包: ' + Array.from(packet).map(b => b.toString(16).padStart(2, '0')).join(' '));
 
-        try {
-            await characteristic.writeValue(packet);
-            debugLog('BLE写入成功', 'success');
-        } catch (err) {
-            debugLog('BLE写入失败: ' + err.message, 'error');
-            throw err;
-        }
-
-        console.log('发送命令:', cmdType.toString(16), data !== null ? '数据:' + data : '');
-        await delay(BLE_CTRL_DELAY);
+            try {
+                await characteristic.writeValue(packet);
+                debugLog('BLE写入成功', 'success');
+                console.log('发送命令:', cmdType.toString(16), data !== null ? '数据:' + data : '');
+                await delay(BLE_CTRL_DELAY);
+                resolve();
+            } catch (err) {
+                debugLog('BLE写入失败: ' + err.message, 'error');
+                reject(err);
+            }
+        });
     });
 }
 
@@ -705,8 +554,14 @@ async function sendBleReboot() {
         showMessage('请先连接设备', 'error');
         return;
     }
-    await sendBleCmd(BLE_FILM_TRANS_CH_CTRL_REBOOT);
-    showMessage('重启命令已发送', 'success');
+    if (!confirm('确认重启花生片吗？设备会暂时离开连接，照片和网络设置会保留。')) return;
+    try {
+        await sendBleCmd(BLE_FILM_TRANS_CH_CTRL_REBOOT);
+        markMaintenancePending('重启');
+    } catch (error) {
+        updateMaintenanceStatus('重启命令没有发送成功，请确认连接后重试。', 'error');
+        showMessage('重启命令发送失败：' + error.message, 'error');
+    }
 }
 
 async function sendBleReset() {
@@ -717,8 +572,13 @@ async function sendBleReset() {
     if (!confirm('确定要重置设备吗？设备将恢复出厂设置并重启。')) {
         return;
     }
-    await sendBleCmd(BLE_FILM_TRANS_CH_CTRL_RESET);
-    showMessage('重置命令已发送，设备将重启', 'success');
+    try {
+        await sendBleCmd(BLE_FILM_TRANS_CH_CTRL_RESET);
+        markMaintenancePending('恢复出厂');
+    } catch (error) {
+        updateMaintenanceStatus('恢复出厂命令没有发送成功，请确认连接后重试。', 'error');
+        showMessage('恢复出厂命令发送失败：' + error.message, 'error');
+    }
 }
 
 async function sendBleSdReset() {
@@ -732,8 +592,13 @@ async function sendBleSdReset() {
     if (!confirm('再次确认：格式化后SD卡所有数据将永久丢失，确定继续吗？')) {
         return;
     }
-    await sendBleCmd(BLE_FILM_TRANS_CH_CTRL_SDRESET);
-    showMessage('格式化命令已发送，设备将重启', 'success');
+    try {
+        await sendBleCmd(BLE_FILM_TRANS_CH_CTRL_SDRESET);
+        markMaintenancePending('SD 卡格式化');
+    } catch (error) {
+        updateMaintenanceStatus('SD 卡格式化命令没有发送成功，请确认连接后重试。', 'error');
+        showMessage('SD 卡格式化命令发送失败：' + error.message, 'error');
+    }
 }
 
 async function sendBlePwrRead() {
@@ -1256,7 +1121,8 @@ async function sendBleCmdString(cmdType, str, maxLen) {
         packet[2] = dataLen;
         packet.set(bytes, 3);
         packet[packet.length - 1] = calculateChecksum(packet, packet.length - 1);
-        debugLog('sendBleCmdString: cmd=' + cmdType.toString(16) + ' str=' + str);
+        const detail = cmdType === BLE_FILM_TRANS_CH_CTRL_WIFI_PASSWORD ? ' value=<redacted>' : ' str=' + str;
+        debugLog('sendBleCmdString: cmd=' + cmdType.toString(16) + detail);
         try {
             await characteristic.writeValue(packet);
             debugLog('BLE写入成功', 'success');

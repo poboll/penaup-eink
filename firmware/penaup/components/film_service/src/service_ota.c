@@ -146,9 +146,10 @@ void service_set_length(uint32_t len)
         return;
     }
 
-    if(len > m_ota_state.update_partition->size)
+    if(len == 0 || len > m_ota_state.update_partition->size)
     {
-        sys_loge(OTA_TAG, "OTA size %d exceeds partition size %d", len, m_ota_state.update_partition->size);
+        sys_loge(OTA_TAG, "Invalid OTA size %d for partition size %d", len, m_ota_state.update_partition->size);
+        esp_ota_abort(m_ota_state.update_handle);
         m_ota_state.state = OTA_STATE_FAILED;
         return;
     }
@@ -174,6 +175,17 @@ void service_ota_write(uint8_t *data, uint16_t len)
     if(data == NULL || len == 0)
     {
         sys_loge(OTA_TAG, "Invalid data or length");
+        return;
+    }
+
+    if(m_ota_state.total_size > 0 &&
+       (m_ota_state.received_size > m_ota_state.total_size ||
+        (uint32_t)len > m_ota_state.total_size - m_ota_state.received_size))
+    {
+        sys_loge(OTA_TAG, "OTA data exceeds declared size: received=%d, chunk=%d, total=%d",
+                 m_ota_state.received_size, len, m_ota_state.total_size);
+        esp_ota_abort(m_ota_state.update_handle);
+        m_ota_state.state = OTA_STATE_FAILED;
         return;
     }
 
@@ -217,6 +229,16 @@ void service_ota_stop(void)
     if(m_ota_state.state != OTA_STATE_RECEIVING)
     {
         sys_loge(OTA_TAG, "OTA not in receiving state, state: %d", m_ota_state.state);
+        sys_reboot();
+        return;
+    }
+
+    if(m_ota_state.total_size > 0 && m_ota_state.received_size != m_ota_state.total_size)
+    {
+        sys_loge(OTA_TAG, "OTA length mismatch: received=%d, expected=%d",
+                 m_ota_state.received_size, m_ota_state.total_size);
+        esp_ota_abort(m_ota_state.update_handle);
+        m_ota_state.state = OTA_STATE_FAILED;
         sys_reboot();
         return;
     }

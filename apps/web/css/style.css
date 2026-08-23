@@ -219,6 +219,8 @@ h1 em { color: var(--blue); font-style: italic; }
 .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--line-strong); }
 .status.connected { color: var(--green); }
 .status.connected::before { background: var(--green); box-shadow: 0 0 0 5px rgba(85, 120, 91, .13); }
+.status.uncertain { color: #8b6500; }
+.status.uncertain::before { background: var(--yellow); box-shadow: 0 0 0 5px rgba(223, 181, 46, .13); }
 .device-type-info { display: flex; gap: 9px; align-items: center; color: var(--ink-soft); font: 11px var(--mono); }
 .device-type-badge { color: var(--ink); }
 .device-type-badge::before { content: "MODEL / "; color: var(--blue); }
@@ -382,6 +384,12 @@ input[type="range"] { accent-color: var(--blue); }
 .action-header { color: var(--ink-soft); font: 13px var(--serif); }
 .action-header i { color: var(--blue); }
 .action-controls { margin-top: 12px; }
+.maintenance-note { max-width: 620px; margin: 10px 0 14px; color: var(--ink-soft); font-size: 13px; line-height: 1.55; }
+.maintenance-link { width: min(100%, 260px); color: var(--blue); text-decoration: none; }
+.maintenance-link:hover, .maintenance-link:focus-visible { color: var(--ink); text-decoration: none; }
+.maintenance-status { min-height: 22px; margin: 13px 0 0; color: var(--ink-soft); font: 11px/1.5 var(--mono); }
+.maintenance-status.uncertain { color: #8b6500; }
+.maintenance-status.error { color: var(--red); }
 .file-size-text, .setting-value { color: var(--ink-soft); font: 11px var(--mono); }
 .action-divider { height: 12px; }
 .progress-bar { position: relative; width: 100%; height: 8px; overflow: hidden; border-radius: 999px; background: var(--paper-deep); }

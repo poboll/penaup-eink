@@ -38,6 +38,8 @@
 .wake-slider-row slider { flex: 1; }
 .wake-min, .wake-max { color: #74766d; font-size: 18rpx; }
 .file-size-text { flex: 1; color: #74766d; font: 18rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
+.ota-safety-note, .ota-confirmed-note { padding: 14rpx 0; color: #74766d; font-size: 20rpx; line-height: 1.6; }
+.ota-safety-note { color: #b65347; }
 .wide-btn { width: 100%; margin-top: 16rpx; }
 .debug-log { max-height: 300rpx; overflow-y: auto; padding: 12rpx; color: #74766d; background: #efefe8; font: 18rpx/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .debug-entry { padding: 5rpx 0; border-bottom: 1rpx solid #d8d8cf; }

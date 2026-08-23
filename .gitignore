@@ -1,5 +1,41 @@
+# Operating-system and editor residue
+.DS_Store
 .vscode/
 .trae/
+.idea/
 .output/
 design/
+
+# JavaScript dependencies and local package-manager state
+node_modules/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local secrets and environment files. Keep examples reviewable.
+.env
+.env.*
+!.env.example
+
+# Runtime state and local media
+server/data/
+server/runtime/
+*.db-shm
+*.db-wal
+
+# WeChat DevTools machine-private overrides (keep the public project config)
+apps/wechat/project.private.config.json
+
+# ESP-IDF build/configuration output
+firmware/penaup/build/
 firmware/penaup/build_gate_*/
+firmware/penaup/sdkconfig
+firmware/penaup/sdkconfig.old
+
+# Generated device artifacts are never source-controlled release assets.
+*.bin
+*.elf
+*.map
+*.film
