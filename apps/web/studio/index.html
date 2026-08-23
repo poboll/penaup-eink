@@ -479,8 +479,8 @@
                                 <fieldset class="weread-scene-fieldset">
                                     <legend>选择一张纸的样子</legend>
                                     <div class="weread-scene-list" role="group" aria-label="壁纸场景">
-                                        <button type="button" class="weread-scene is-active" data-weread-scene="weekly_receipt" aria-pressed="true"><span class="scene-index">A</span><span><strong>本周小票</strong><small>把一周的阅读打印出来</small></span></button>
-                                        <button type="button" class="weread-scene" data-weread-scene="monthly_calendar" aria-pressed="false"><span class="scene-index">B</span><span><strong>本月日历</strong><small>每天读的书连成一条线</small></span></button>
+                                        <button type="button" class="weread-scene is-active" data-weread-scene="weekly_receipt" data-weread-period="weekly" aria-pressed="true"><span class="scene-index">A</span><span><strong>本周小票</strong><small>把一周的阅读打印出来</small></span></button>
+                                        <button type="button" class="weread-scene" data-weread-scene="monthly_calendar" data-weread-period="monthly" aria-pressed="false"><span class="scene-index">B</span><span><strong>本月日历</strong><small>每天读的书连成一条线</small></span></button>
                                         <button type="button" class="weread-scene" data-weread-scene="bookshelf" aria-pressed="false"><span class="scene-index">C</span><span><strong>书架标本</strong><small>让书脊在纸上排成一面墙</small></span></button>
                                         <button type="button" class="weread-scene" data-weread-scene="reading_card" aria-pressed="false"><span class="scene-index">D</span><span><strong>我的读书卡</strong><small>为一本正在读的书留一页</small></span></button>
                                     </div>
@@ -492,7 +492,7 @@
                                         <button type="button" class="weread-period is-active" data-weread-mode="weekly" aria-pressed="true">本周读书</button>
                                         <button type="button" class="weread-period" data-weread-mode="monthly" aria-pressed="false">本月读书</button>
                                     </div>
-                                    <label class="weread-month-field" for="weread-month"><span>月报月份</span><input id="weread-month" type="month" aria-label="月报月份"></label>
+                                    <label id="weread-month-field" class="weread-month-field" for="weread-month" hidden><span>月报月份</span><input id="weread-month" type="month" aria-label="月报月份"></label>
                                 </fieldset>
 
                                 <div id="weread-book-field" class="weread-book-field" hidden>

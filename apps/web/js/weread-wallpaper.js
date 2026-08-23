@@ -58,30 +58,47 @@
 
     function pad2(value) { return String(value).padStart(2, '0'); }
 
+    function daysInMonthValue(year, month) {
+        return new Date(Date.UTC(year, month, 0)).getUTCDate();
+    }
+
     // 示例数据完全在浏览器内生成，方便第一次打开实验室时先理解流程。
     // 它不模拟真实上游响应，也不应被当作微信读书数据。
-    function createDemoSnapshot() {
+    function createDemoSnapshot(mode) {
         var now = new Date();
         var year = now.getFullYear();
         var month = now.getMonth() + 1;
         var day = now.getDate();
+        var monthly = mode === 'monthly';
+        var weekStart = new Date(year, month - 1, day - 6);
         var minutes = [42, 18, 66, 31, 87, 24, 53];
         var books = [
             { bookId: 'demo-book-01', title: '山茶文具店', author: '小川糸', readingMinutes: 186, progress: 72, summary: '有些话不必急着说出口，写下来，便有了再次抵达的时间。' },
             { bookId: 'demo-book-02', title: '云边有个小卖部', author: '张嘉佳', readingMinutes: 124, progress: 48, summary: '每个人都有自己的路要走，慢一点也没有关系。' },
             { bookId: 'demo-book-03', title: '设计中的设计', author: '原研哉', readingMinutes: 93, progress: 36, summary: '留白不是空缺，而是让事物重新呼吸的地方。' }
         ];
+        var dailyReading = [];
+        if (monthly) {
+            for (var monthDay = 1; monthDay <= daysInMonthValue(year, month); monthDay += 1) {
+                var monthlyMinutes = monthDay % 5 === 0 ? 76 : monthDay % 3 === 0 ? 34 : monthDay % 2 === 0 ? 0 : 18;
+                if (monthlyMinutes > 0) dailyReading.push({ day: monthDay, readingMinutes: monthlyMinutes });
+            }
+        } else {
+            dailyReading = minutes.map(function (value, index) {
+                return { day: Math.max(1, day - 6 + index), readingMinutes: value };
+            });
+        }
+        var readingMinutes = dailyReading.reduce(function (total, item) { return total + item.readingMinutes; }, 0);
         return {
             source: 'demo',
-            periodKey: year + '-' + pad2(month),
+            mode: monthly ? 'monthly' : 'weekly',
+            periodKey: monthly ? year + '-' + pad2(month) : weekStart.getFullYear() + '-' + pad2(weekStart.getMonth() + 1) + '-' + pad2(weekStart.getDate()),
             periodLabel: year + ' 年 ' + pad2(month) + ' 月 · 示例阅读',
-            readingMinutes: minutes.reduce(function (total, value) { return total + value; }, 0),
-            readingDays: 6,
+            readingMinutes: readingMinutes,
+            readingDays: dailyReading.filter(function (item) { return item.readingMinutes > 0; }).length,
             bookCount: books.length,
             noteCount: 12,
-            dailyReading: minutes.map(function (value, index) {
-                return { day: Math.max(1, day - 6 + index), readingMinutes: value };
-            }),
+            dailyReading: dailyReading,
             topBooks: books.map(function (book) { return book.title; }),
             topBookDetails: books,
             quote: '把读过的书留给今天，明天再慢慢想起。',
@@ -278,7 +295,10 @@
         var top = 145;
         var width = WIDTH - 72;
         var cellWidth = width / 7;
-        var rows = Math.ceil(daysInMonth(month) / 7);
+        var totalDays = daysInMonth(month);
+        var firstDay = new Date(Date.UTC(parts[0], (parts[1] || 1) - 1, 1)).getUTCDay();
+        firstDay = firstDay === 0 ? 6 : firstDay - 1;
+        var rows = Math.ceil((firstDay + totalDays) / 7);
         var cellHeight = Math.min(43, 250 / rows);
         var dayMap = Object.create(null);
         (snapshot.dailyReading || []).forEach(function (item) { dayMap[item.day] = item.readingMinutes; });
@@ -289,9 +309,7 @@
         });
         ctx.strokeStyle = COLORS.line;
         ctx.strokeRect(left, top, width, rows * cellHeight);
-        var firstDay = new Date(Date.UTC(parts[0], (parts[1] || 1) - 1, 1)).getUTCDay();
-        firstDay = firstDay === 0 ? 6 : firstDay - 1;
-        for (var day = 1; day <= daysInMonth(month); day += 1) {
+        for (var day = 1; day <= totalDays; day += 1) {
             var offset = firstDay + day - 1;
             var col = offset % 7;
             var row = Math.floor(offset / 7);
@@ -395,7 +413,9 @@
         ctx.fillStyle = COLORS.quiet;
         ctx.font = '14px "SF Pro Text", sans-serif';
         ctx.fillText(author + (card && card.category ? '  ·  ' + card.category : ''), 272, 284);
-        var progress = clamp(Number(card && card.progress || book.progress || 0), 0, 100);
+        var cardProgress = card && Number(card.progress);
+        var bookProgress = Number(book.progress);
+        var progress = clamp(Number.isFinite(cardProgress) ? cardProgress : Number.isFinite(bookProgress) ? bookProgress : 0, 0, 100);
         ctx.fillStyle = 'rgba(38,37,33,.12)';
         ctx.fillRect(272, 312, 420, 7);
         ctx.fillStyle = COLORS.yellow;
@@ -438,7 +458,8 @@
         var phaseLabel = byId('weread-phase-label');
         var panel = byId('weread-preview-panel');
         var phaseIndexes = { fetching: 0, typesetting: 1, developing: 2, preview: 2, downloading: 3, transferring: 3, pending: 3, done: 3 };
-        if (Object.prototype.hasOwnProperty.call(phaseIndexes, phase)) state.phaseIndex = phaseIndexes[phase];
+        if (phase === 'idle') state.phaseIndex = 0;
+        else if (Object.prototype.hasOwnProperty.call(phaseIndexes, phase)) state.phaseIndex = phaseIndexes[phase];
         document.querySelectorAll('[data-weread-phase-step]').forEach(function (item) {
             var index = Object.prototype.hasOwnProperty.call(phaseIndexes, item.dataset.wereadPhaseStep) ? phaseIndexes[item.dataset.wereadPhaseStep] : 0;
             var isCurrent = index === state.phaseIndex;
@@ -472,6 +493,59 @@
             bookshelf: '书架标本',
             reading_card: '我的读书卡'
         }[state.scene] || '阅读屏保';
+    }
+
+    function setPeriodMode(mode) {
+        var nextMode = mode === 'monthly' ? 'monthly' : 'weekly';
+        var changed = state.mode !== nextMode;
+        state.mode = nextMode;
+        document.querySelectorAll('[data-weread-mode]').forEach(function (button) {
+            var active = button.dataset.wereadMode === nextMode;
+            button.classList.toggle('is-active', active);
+            button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        syncPeriodUi();
+        return changed;
+    }
+
+    function requiredPeriodForScene(scene) {
+        if (scene === 'weekly_receipt') return 'weekly';
+        if (scene === 'monthly_calendar') return 'monthly';
+        return '';
+    }
+
+    function syncSceneForPeriod(mode) {
+        var nextMode = mode === 'monthly' ? 'monthly' : 'weekly';
+        if (nextMode === 'monthly' && state.scene === 'weekly_receipt') {
+            state.scene = 'monthly_calendar';
+            return true;
+        }
+        if (nextMode === 'weekly' && state.scene === 'monthly_calendar') {
+            state.scene = 'weekly_receipt';
+            return true;
+        }
+        return false;
+    }
+
+    function clearWallpaperPreview(message) {
+        state.renderRevision += 1;
+        state.film = null;
+        var canvas = byId('weread-canvas');
+        if (canvas) {
+            var context = canvas.getContext('2d');
+            if (context) context.clearRect(0, 0, WIDTH, HEIGHT);
+            canvas.setAttribute('aria-label', '微信读书 3.68 英寸电子纸屏保预览，等待重新显影');
+        }
+        var empty = byId('weread-empty');
+        if (empty) empty.hidden = false;
+        var title = byId('weread-preview-title');
+        if (title) title.textContent = '一页还未显影';
+        var meta = byId('weread-preview-meta');
+        if (meta) meta.textContent = message || '选择新的阅读范围后，取回记录即可重新显影。';
+        setOutputButtons({ preview: false, film: false });
+        setDevelopmentPhase('idle', message || '选择新的阅读范围后重新显影');
+        updateStage(state.snapshot ? 'choose' : 'connect');
+        setStatus(message || '时间范围已改变；点击“取回并显影”生成新的一页。');
     }
 
     function setRenderNote() {
@@ -568,8 +642,14 @@
             weread_rate_limited: '请求有点频繁，请稍等一分钟再试。',
             origin_not_allowed: '当前来源没有被服务端允许。',
             weread_bad_response: '微信读书返回格式异常，请稍后重试。',
-            weread_unavailable: '微信读书暂时不可用，请稍后重试。'
-        }[code] || safeText(error && error.message, fallback || '微信读书暂时不可用，请稍后重试。');
+            weread_unavailable: '微信读书暂时不可用，请稍后重试。',
+            weread_upstream_error: '微信读书暂时无法返回数据，请稍后重试。',
+            weread_upstream_rejected: '微信读书暂时没有返回可用数据。',
+            weread_response_too_large: '微信读书返回内容过大，已停止处理。',
+            weread_skill_upgrade_required: '微信读书 Skill 需要升级，请稍后重试。',
+            weread_gateway_invalid: '微信读书服务地址配置无效。',
+            weread_not_configured: '微信读书服务暂不可用。'
+        }[code] || fallback || '微信读书暂时不可用，请稍后重试。';
     }
 
     async function requestWeread(path, body, key) {
@@ -637,12 +717,50 @@
         if (bookField) bookField.hidden = state.scene !== 'reading_card';
     }
 
+    function currentMonthValue(date) {
+        var value = date || new Date();
+        return value.getFullYear() + '-' + pad2(value.getMonth() + 1);
+    }
+
+    function syncPeriodUi() {
+        var monthField = byId('weread-month-field');
+        var monthInput = byId('weread-month');
+        var monthly = state.mode === 'monthly';
+        if (monthField) monthField.hidden = !monthly;
+        if (monthInput) {
+            monthInput.disabled = !monthly;
+            monthInput.setAttribute('aria-hidden', monthly ? 'false' : 'true');
+        }
+    }
+
+    function localReadingCard(bookId) {
+        var books = state.snapshot && state.snapshot.topBookDetails || [];
+        var book = books.find(function (item) { return safeText(item.bookId, '') === safeText(bookId, ''); }) || books[0];
+        if (!book) return null;
+        return {
+            source: 'demo',
+            bookId: safeText(book.bookId, ''),
+            title: safeText(book.title, '正在读的一本书'),
+            author: safeText(book.author, '作者未知'),
+            category: '示例阅读',
+            summary: safeText(book.summary, ''),
+            progress: clamp(Number(book.progress || 0), 0, 100),
+            excerpt: safeText(book.summary || state.snapshot.quote, '')
+        };
+    }
+
     async function loadReadingCard() {
         if (state.scene !== 'reading_card' || !state.snapshot) return;
         var select = byId('weread-book-select');
         var bookId = select && select.value;
-        var keyInput = byId('weread-skill-key');
         var requestedScene = state.scene;
+        if (state.source === 'demo') {
+            state.card = localReadingCard(bookId);
+            await renderWallpaper(state.snapshot);
+            if (state.scene === requestedScene) setStatus('示例读书卡已经换好；这一页不会请求微信读书。', 'success');
+            return;
+        }
+        var keyInput = byId('weread-skill-key');
         if (!bookId || !keyInput || !validKey(keyInput.value.trim())) {
             state.card = null;
             await renderWallpaper(state.snapshot);
@@ -737,7 +855,7 @@
     async function loadDemoSnapshot() {
         var button = byId('weread-demo');
         state.source = 'demo';
-        state.snapshot = createDemoSnapshot();
+        state.snapshot = createDemoSnapshot(state.mode);
         state.card = state.snapshot.topBookDetails[0];
         state.film = null;
         setOutputButtons({ preview: false, film: false });
@@ -858,17 +976,23 @@
     function init() {
         if (!byId('frame-weread')) return;
         var monthInput = byId('weread-month');
-        if (monthInput) monthInput.value = new Date().toISOString().slice(0, 7);
+        if (monthInput) monthInput.value = currentMonthValue();
         setRenderNote();
         setDevelopmentPhase('idle', '纸面在等一段阅读');
         syncSceneUi();
+        syncPeriodUi();
         document.querySelectorAll('[data-weread-scene]').forEach(function (button) {
             button.addEventListener('click', function () {
                 state.scene = button.dataset.wereadScene || 'weekly_receipt';
                 state.card = null;
+                var requiredMode = button.dataset.wereadPeriod || requiredPeriodForScene(state.scene);
+                var modeChanged = requiredMode && setPeriodMode(requiredMode);
                 syncSceneUi();
                 updateStage(state.snapshot ? 'choose' : 'connect');
-                if (state.snapshot) {
+                if (modeChanged && state.snapshot) {
+                    if (state.source === 'demo') loadDemoSnapshot();
+                    else clearWallpaperPreview('这张纸需要' + (state.mode === 'monthly' ? '本月' : '本周') + '数据；请重新取回并显影。');
+                } else if (state.snapshot) {
                     if (state.scene === 'reading_card') loadReadingCard();
                     else renderWallpaper(state.snapshot);
                 }
@@ -876,13 +1000,15 @@
         });
         document.querySelectorAll('[data-weread-mode]').forEach(function (button) {
             button.addEventListener('click', function () {
-                state.mode = button.dataset.wereadMode === 'monthly' ? 'monthly' : 'weekly';
-                document.querySelectorAll('[data-weread-mode]').forEach(function (item) {
-                    var active = item === button;
-                    item.classList.toggle('is-active', active);
-                    item.setAttribute('aria-pressed', active ? 'true' : 'false');
-                });
-                if (state.snapshot) setStatus('时间范围已改变；点击“取回并显影”生成新的一页。');
+                var modeChanged = setPeriodMode(button.dataset.wereadMode);
+                var sceneChanged = modeChanged && syncSceneForPeriod(state.mode);
+                if (sceneChanged) syncSceneUi();
+                if (modeChanged && state.snapshot) {
+                    if (state.source === 'demo') loadDemoSnapshot();
+                    else clearWallpaperPreview('时间范围已改变；请重新取回并显影，避免把旧的纸面误当成新范围。');
+                } else if (modeChanged) {
+                    setStatus('时间范围已改变；点击“取回并显影”生成新的一页。');
+                }
             });
         });
         document.querySelectorAll('[data-weread-render]').forEach(function (button) {

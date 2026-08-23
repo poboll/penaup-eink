@@ -19,6 +19,9 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
 
   assert.match(html, /id="weread-preview-panel"/);
   assert.match(html, /canvas id="weread-canvas" width="792" height="528"/);
+  assert.match(html, /id="weread-month-field"[^>]*hidden/);
+  assert.match(html, /data-weread-period="weekly"/);
+  assert.match(html, /data-weread-period="monthly"/);
   assert.match(html, /id="weread-phase-indicator"/);
   assert.match(html, /id="weread-demo"/);
   assert.match(html, /id="weread-download-jpg"/);
@@ -28,9 +31,17 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.match(script, /createDemoSnapshot/);
   assert.match(script, /loadDemoSnapshot/);
   assert.match(script, /setDevelopmentPhase\('pending'/);
+  assert.match(script, /function syncPeriodUi\(\)/);
+  assert.match(script, /function syncSceneForPeriod\(mode\)/);
+  assert.match(script, /syncSceneForPeriod\(state\.mode\)/);
+  assert.match(script, /function localReadingCard\(bookId\)/);
+  assert.match(script, /function clearWallpaperPreview\(message\)/);
+  assert.match(script, /Math\.ceil\(\(firstDay \+ totalDays\) \/ 7\)/);
+  assert.match(script, /state\.source === 'demo'/);
   assert.match(script, /X-Penaup-WeRead-Key/);
   assert.match(script, /downloadJpg/);
   assert.doesNotMatch(script, /localStorage\.(?:getItem|setItem|removeItem)/);
+  assert.doesNotMatch(script, /safeText\(error && error\.message/);
   assert.match(html, /当前页面临时使用/);
   assert.match(styles, /font-family:\s*"Huiwen Mincho"/);
   assert.match(styles, /--paper:\s*#fcfaf4/);
@@ -42,6 +53,9 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.match(responsiveStyles, /@media \(max-width: 420px\)/);
   assert.match(responsiveStyles, /@media \(min-width: 721px\)[\s\S]*?\.container[\s\S]*?height:\s*100vh/);
   assert.match(responsiveStyles, /@media \(min-width: 721px\)[\s\S]*?\.bottom-nav[\s\S]*?position:\s*static/);
+  assert.match(responsiveStyles, /\.bottom-nav\s*\{[\s\S]*?background:\s*var\(--paper-bright\)/);
+  assert.match(responsiveStyles, /\.weread-section-title small[\s\S]*?font-size:\s*13px/);
+  assert.match(responsiveStyles, /scroll-padding-bottom:\s*calc\(176px/);
   assert.match(styles, /\.weread-preview-panel\s*\{[\s\S]*?position:\s*static/);
   const convert = await read('js/convert.js');
   assert.match(convert, /\.polaroid-inner:not\(\.weread-polaroid-inner\)/);

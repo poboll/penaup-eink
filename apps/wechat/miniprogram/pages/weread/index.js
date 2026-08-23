@@ -73,26 +73,39 @@ function daysInMonth(year, month) {
   return new Date(year, month, 0).getDate();
 }
 
-function demoSnapshot() {
+function demoSnapshot(mode) {
   var now = new Date();
   var year = now.getFullYear();
   var month = now.getMonth() + 1;
   var day = now.getDate();
+  var monthly = mode === 'monthly';
+  var weekStart = new Date(year, month - 1, day - 6);
   var books = [
     { bookId: 'demo-book-01', title: '山茶文具店', author: '小川糸', readingMinutes: 186, progress: 72, summary: '有些话不必急着说出口，写下来，便有了再次抵达的时间。' },
     { bookId: 'demo-book-02', title: '云边有个小卖部', author: '张嘉佳', readingMinutes: 124, progress: 48, summary: '每个人都有自己的路要走，慢一点也没有关系。' },
     { bookId: 'demo-book-03', title: '设计中的设计', author: '原研哉', readingMinutes: 93, progress: 36, summary: '留白不是空缺，而是让事物重新呼吸的地方。' }
   ];
   var minutes = [42, 18, 66, 31, 87, 24, 53];
+  var dailyReading = [];
+  if (monthly) {
+    for (var monthDay = 1; monthDay <= daysInMonth(year, month); monthDay += 1) {
+      var monthlyMinutes = monthDay % 5 === 0 ? 76 : monthDay % 3 === 0 ? 34 : monthDay % 2 === 0 ? 0 : 18;
+      if (monthlyMinutes > 0) dailyReading.push({ day: monthDay, readingMinutes: monthlyMinutes });
+    }
+  } else {
+    dailyReading = minutes.map(function (value, index) { return { day: Math.max(1, day - 6 + index), readingMinutes: value }; });
+  }
+  var readingMinutes = dailyReading.reduce(function (sum, item) { return sum + item.readingMinutes; }, 0);
   return {
+    mode: monthly ? 'monthly' : 'weekly',
     profile: PROFILE,
-    periodKey: year + '-' + pad2(month),
+    periodKey: monthly ? year + '-' + pad2(month) : weekStart.getFullYear() + '-' + pad2(weekStart.getMonth() + 1) + '-' + pad2(weekStart.getDate()),
     periodLabel: year + ' 年 ' + pad2(month) + ' 月 · 示例阅读',
-    readingMinutes: minutes.reduce(function (sum, value) { return sum + value; }, 0),
-    readingDays: 6,
+    readingMinutes: readingMinutes,
+    readingDays: dailyReading.filter(function (item) { return item.readingMinutes > 0; }).length,
     bookCount: books.length,
     noteCount: 12,
-    dailyReading: minutes.map(function (value, index) { return { day: Math.max(1, day - 6 + index), readingMinutes: value }; }),
+    dailyReading: dailyReading,
     topBooks: books.map(function (book) { return book.title; }),
     topBookDetails: books,
     quote: '把读过的书留给今天，明天再慢慢想起。',
@@ -104,6 +117,7 @@ Page({
   data: {
     apiBaseUrl: wereadApi.readStoredBaseUrl(),
     skillKey: '',
+    source: 'idle',
     mode: 'weekly',
     month: '',
     scene: 'weekly_receipt',
@@ -137,6 +151,7 @@ Page({
   _card: null,
   _film: null,
   _pendingTransfer: null,
+  _renderRevision: 0,
 
   onReady: function () {
     var that = this;
@@ -153,6 +168,7 @@ Page({
   },
 
   onUnload: function () {
+    this._renderRevision += 1;
     this._canvas = null;
     this._ctx = null;
     this._snapshot = null;
@@ -172,6 +188,15 @@ Page({
 
   _setStatus: function (message, tone) {
     this.setData({ status: message, statusTone: tone || '' });
+  },
+
+  _invalidatePreview: function (message) {
+    this._renderRevision += 1;
+    this._film = null;
+    this._drawEmpty();
+    this.setData({ hasPreview: false, hasFilm: false, busy: false });
+    this._setPhase(this._snapshot ? 'choose' : 'idle', message || '选择新的阅读范围后重新显影');
+    this._setStatus(message || '时间范围已改变；点击“取回并显影”生成新的一页。');
   },
 
   _drawEmpty: function () {
@@ -392,7 +417,9 @@ Page({
     ctx.fillStyle = QUIET;
     ctx.font = '14px "Huiwen Mincho", "Songti SC", serif';
     ctx.fillText(author + (card && card.category ? '  ·  ' + clean(card.category, 30) : ''), 272, 320);
-    var progress = clamp(card && card.progress || book.progress, 0, 100);
+    var cardProgress = card && Number(card.progress);
+    var bookProgress = Number(book.progress);
+    var progress = clamp(isFinite(cardProgress) ? cardProgress : isFinite(bookProgress) ? bookProgress : 0, 0, 100);
     ctx.fillStyle = 'rgba(41,39,34,.14)';
     ctx.fillRect(272, 350, 420, 7);
     ctx.fillStyle = YELLOW;
@@ -418,13 +445,15 @@ Page({
     else this._drawWeekly(this._snapshot);
   },
 
-  _renderFilm: function () {
+  _renderFilm: function (revision) {
     var that = this;
     if (!this._ctx || !this._snapshot) return Promise.reject(new Error('preview_not_ready'));
+    if (revision !== this._renderRevision) return Promise.resolve(null);
     this._setPhase('developing', '六色显影正在扫描纸面');
     this.setData({ busy: true, hasFilm: false });
     return new Promise(function (resolve, reject) {
       setTimeout(function () {
+        if (revision !== that._renderRevision) { resolve(null); return; }
         var previous = filmUtils.getDeviceType();
         try {
           filmUtils.setDeviceType(PROFILE);
@@ -435,6 +464,7 @@ Page({
           var fileData = filmCore.createFilmFile(PROFILE, pixels);
           var validation = filmCore.validateFilmBuffer(fileData, PROFILE);
           if (!validation.valid) throw new Error('film_contract_invalid');
+          if (revision !== that._renderRevision) { filmUtils.setDeviceType(previous); resolve(null); return; }
           var decoded = filmUtils.decodeProcessedData(pixels, WIDTH, HEIGHT);
           var output = that._ctx.createImageData(WIDTH, HEIGHT);
           output.data.set(decoded.data);
@@ -447,6 +477,7 @@ Page({
           resolve(fileData);
         } catch (error) {
           filmUtils.setDeviceType(previous);
+          if (revision !== that._renderRevision) { resolve(null); return; }
           that.setData({ busy: false, hasFilm: false });
           that._setPhase('failed', '显影失败，可保留草稿重试');
           that._setStatus('六色显影暂时失败，阅读数据和版式仍保留，可以重新尝试。', 'error');
@@ -457,9 +488,10 @@ Page({
   },
 
   _renderSnapshot: function () {
+    var revision = ++this._renderRevision;
     this._drawSnapshot();
     this.setData({ hasPreview: true, hasFilm: false });
-    return this._renderFilm();
+    return this._renderFilm(revision);
   },
 
   _booksForPicker: function (snapshot) {
@@ -515,10 +547,19 @@ Page({
 
   chooseScene: function (event) {
     var scene = event.currentTarget.dataset.scene || 'weekly_receipt';
-    this.setData({ scene: scene });
+    var requiredMode = event.currentTarget.dataset.mode;
+    var modeChanged = requiredMode && requiredMode !== this.data.mode;
+    var that = this;
     this._card = null;
-    this._setPhase(this._snapshot ? 'choose' : 'idle', this._snapshot ? '已换一张纸，准备重新显影' : '纸面在等一段阅读');
-    if (this._snapshot) this._renderSnapshot().catch(function () {});
+    this.setData({ scene: scene, mode: modeChanged ? requiredMode : this.data.mode }, function () {
+      if (modeChanged) {
+        if (that.data.source === 'demo') { that.loadDemo(); return; }
+        that._invalidatePreview('这张纸需要' + (that.data.mode === 'monthly' ? '本月' : '本周') + '数据；请重新取回并显影。');
+        return;
+      }
+      that._setPhase(that._snapshot ? 'choose' : 'idle', that._snapshot ? '已换一张纸，准备重新显影' : '纸面在等一段阅读');
+      if (that._snapshot) that._renderSnapshot().catch(function () {});
+    });
   },
 
   chooseMode: function (event) {
@@ -528,17 +569,26 @@ Page({
   },
 
   choosePeriod: function (event) {
-    this.setData({ mode: event.currentTarget.dataset.mode === 'monthly' ? 'monthly' : 'weekly' });
-    this._setStatus('时间范围已改变；点击“取回并显影”生成新的一页。');
+    var nextMode = event.currentTarget.dataset.mode === 'monthly' ? 'monthly' : 'weekly';
+    if (nextMode === this.data.mode) return;
+    var that = this;
+    var nextScene = this.data.scene;
+    if (nextMode === 'monthly' && nextScene === 'weekly_receipt') nextScene = 'monthly_calendar';
+    if (nextMode === 'weekly' && nextScene === 'monthly_calendar') nextScene = 'weekly_receipt';
+    this.setData({ mode: nextMode, scene: nextScene }, function () {
+      if (that.data.source === 'demo') { that.loadDemo(); return; }
+      that._invalidatePreview('时间范围已改变；请重新取回并显影，避免把旧的纸面误当成新范围。');
+    });
   },
 
   loadDemo: function () {
     var that = this;
     if (!this._ctx) { wx.showToast({ title: '画布还没准备好', icon: 'none' }); return; }
-    var snapshot = demoSnapshot();
+    this._renderRevision += 1;
+    var snapshot = demoSnapshot(this.data.mode);
     this._setPhase('fetching', '示例阅读轨迹已就位');
     this._setStatus('示例数据只在本地使用，不会连接微信读书。');
-    this.setData({ busy: true });
+    this.setData({ busy: true, source: 'demo', hasPreview: false, hasFilm: false });
     this._applySnapshot(snapshot);
     setTimeout(function () {
       that._renderSnapshot().catch(function () {});
@@ -552,7 +602,7 @@ Page({
     try { wereadApi.storeBaseUrl(this.data.apiBaseUrl); } catch (error) { this._setStatus(this._friendlyError(error), 'error'); return; }
     this._setPhase('fetching', '正在确认微信读书书架');
     this._setStatus('正在确认 Skill，只读取书架数量，不保存书架内容。');
-    this.setData({ busy: true });
+    this.setData({ busy: true, source: 'live' });
     wereadApi.createClient(this.data.apiBaseUrl).connect(key).then(function (summary) {
       that.setData({ busy: false });
       that._setPhase('choose', '书架已连接，选择一张纸');
@@ -571,7 +621,9 @@ Page({
     try { wereadApi.storeBaseUrl(this.data.apiBaseUrl); } catch (error) { this._setStatus(this._friendlyError(error), 'error'); return; }
     this._setPhase('fetching', '正在取回阅读轨迹');
     this._setStatus('阅读记录会被整理成这一张纸，服务端不会保存 Key 或生成文件。');
-    this.setData({ busy: true, hasFilm: false });
+    this._renderRevision += 1;
+    this._film = null;
+    this.setData({ busy: true, source: 'live', hasFilm: false });
     wereadApi.createClient(this.data.apiBaseUrl).snapshot(key, { mode: this.data.mode, month: this.data.month, enrich: true }).then(function (snapshot) {
       that._applySnapshot(snapshot);
       return that._loadCardIfNeeded(key);

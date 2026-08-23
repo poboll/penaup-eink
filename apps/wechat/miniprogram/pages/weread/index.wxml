@@ -36,8 +36,8 @@
     </picker>
     <view class="choice-label">壁纸场景</view>
     <view class="scene-list">
-      <button class="scene-button {{scene == 'weekly_receipt' ? 'is-active' : ''}}" data-scene="weekly_receipt" bindtap="chooseScene"><text class="scene-mark">A</text><view class="scene-copy"><text class="scene-title">本周小票</text><text class="scene-detail">把一周阅读打印出来</text></view></button>
-      <button class="scene-button {{scene == 'monthly_calendar' ? 'is-active' : ''}}" data-scene="monthly_calendar" bindtap="chooseScene"><text class="scene-mark">B</text><view class="scene-copy"><text class="scene-title">本月日历</text><text class="scene-detail">每天读的书连成一条线</text></view></button>
+      <button class="scene-button {{scene == 'weekly_receipt' ? 'is-active' : ''}}" data-scene="weekly_receipt" data-mode="weekly" bindtap="chooseScene"><text class="scene-mark">A</text><view class="scene-copy"><text class="scene-title">本周小票</text><text class="scene-detail">把一周阅读打印出来</text></view></button>
+      <button class="scene-button {{scene == 'monthly_calendar' ? 'is-active' : ''}}" data-scene="monthly_calendar" data-mode="monthly" bindtap="chooseScene"><text class="scene-mark">B</text><view class="scene-copy"><text class="scene-title">本月日历</text><text class="scene-detail">每天读的书连成一条线</text></view></button>
       <button class="scene-button {{scene == 'bookshelf' ? 'is-active' : ''}}" data-scene="bookshelf" bindtap="chooseScene"><text class="scene-mark">C</text><view class="scene-copy"><text class="scene-title">书架标本</text><text class="scene-detail">让书脊排成一面墙</text></view></button>
       <button class="scene-button {{scene == 'reading_card' ? 'is-active' : ''}}" data-scene="reading_card" bindtap="chooseScene"><text class="scene-mark">D</text><view class="scene-copy"><text class="scene-title">我的读书卡</text><text class="scene-detail">为一本正在读的书留一页</text></view></button>
     </view>

@@ -9,7 +9,8 @@ import {
   createWereadService,
   normalizeWereadReadingCard,
   normalizeWereadShelf,
-  normalizeWereadSnapshot
+  normalizeWereadSnapshot,
+  publicMessageForError
 } from '../src/modules/weread.js';
 
 function payload() {
@@ -131,6 +132,11 @@ test('normalizes a reading card without exposing upstream response fields', () =
   assert.equal(card.progress, 61);
   assert.equal(card.notes[0].chapter, '第一章');
   assert.doesNotMatch(JSON.stringify(card), /errcode|chapters|updated|recordReadingTime/);
+});
+
+test('WeRead route errors never echo unknown upstream or internal messages', () => {
+  assert.equal(publicMessageForError(new Error('credential-or-upstream-trace')), '微信读书暂时不可用，请稍后重试。');
+  assert.equal(publicMessageForError({ code: 'weread_key_rejected', message: 'raw upstream response' }), '微信读书 Key 无效或已过期。');
 });
 
 test('WeRead proxy keeps the key out of the response and sends a no-store request', async () => {

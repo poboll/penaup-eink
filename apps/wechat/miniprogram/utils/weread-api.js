@@ -102,6 +102,7 @@ function normalizeSnapshot(snapshot) {
   });
   return {
     profile: 'PENAUP_PRO',
+    mode: snapshot.mode === 'weekly' ? 'weekly' : 'monthly',
     periodKey: clean(snapshot.periodKey, 16),
     periodLabel: clean(snapshot.periodLabel, 80) || '一段阅读记录',
     readingMinutes: Math.max(0, Math.round(Number(snapshot.readingMinutes) || 0)),

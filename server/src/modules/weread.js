@@ -561,6 +561,27 @@ function statusForError(error) {
   }[error?.code] || 502;
 }
 
+export function publicMessageForError(error) {
+  return {
+    weread_key_invalid: '请输入有效的微信读书 Skill Key。',
+    weread_key_rejected: '微信读书 Key 无效或已过期。',
+    weread_mode_invalid: '只支持周报或月报。',
+    weread_month_invalid: '月份格式无效，请选择一个月份。',
+    weread_week_invalid: '周起始日无效，请换一个周一。',
+    weread_book_id_invalid: '书籍编号格式无效。',
+    origin_not_allowed: '当前来源没有被服务端允许。',
+    weread_timeout: '微信读书请求超时，请稍后重试。',
+    weread_bad_response: '微信读书返回格式异常，请稍后重试。',
+    weread_response_too_large: '微信读书返回内容过大，已停止处理。',
+    weread_upstream_error: '微信读书暂时无法返回数据，请稍后重试。',
+    weread_upstream_rejected: '微信读书暂时没有返回可用数据。',
+    weread_skill_upgrade_required: '微信读书 Skill 需要升级，请稍后重试。',
+    weread_unavailable: '微信读书暂时不可用，请稍后重试。',
+    weread_gateway_invalid: '微信读书服务地址配置无效。',
+    weread_not_configured: '微信读书服务暂不可用。'
+  }[error?.code] || '微信读书暂时不可用，请稍后重试。';
+}
+
 export function registerWereadRoutes(app, { service, config = {} }) {
   const allowRequest = createRouteLimiter(20, 60_000);
   const run = async (request, reply, suffix, work) => {
@@ -570,7 +591,7 @@ export function registerWereadRoutes(app, { service, config = {} }) {
       const data = await work();
       return reply.header('Cache-Control', 'no-store').header('Pragma', 'no-cache').send({ ok: true, data });
     } catch (error) {
-      return commonResponse(reply, statusForError(error), { ok: false, error: error?.code || 'weread_unavailable', message: error?.message || '微信读书暂时不可用。' });
+      return commonResponse(reply, statusForError(error), { ok: false, error: error?.code || 'weread_unavailable', message: publicMessageForError(error) });
     }
   };
 

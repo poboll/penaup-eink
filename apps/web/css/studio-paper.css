@@ -1224,6 +1224,10 @@ body::before {
     font-size: 13px;
 }
 
+.weread-month-field[hidden] {
+    display: none;
+}
+
 .weread-month-field input,
 .weread-book-field select {
     width: 100%;
