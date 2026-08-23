@@ -347,7 +347,7 @@
   }
 
   function esc(s) {
-    return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
   /* ===== 相册列表 ===== */
@@ -355,10 +355,11 @@
     const box = document.getElementById('albums');
     FH.releaseAuthImages(box);
     box.innerHTML = albums.map(a => {
-      const cov = a.cover_url
-        ? '<img data-auth-src="' + esc(a.cover_url) + '" alt="" onerror="this.outerHTML=\'<div class=no-cover>暂无封面</div>\'">'
+      const coverUrl = FH.safeAssetUrl(a.cover_url);
+      const cov = coverUrl
+        ? '<img data-auth-src="' + esc(coverUrl) + '" alt="" onerror="this.outerHTML=\'<div class=no-cover>暂无封面</div>\'">'
         : '<div class="no-cover">暂无封面</div>';
-      const desc = a.description ? ' · ' + a.description : '';
+      const desc = a.description ? ' · ' + esc(a.description) : '';
       return '<div class="alb' + (cur && cur.id === a.id ? ' on' : '') + '" onclick="selectAlbum(' + a.id + ')">' +
         '<span class="pick">✓</span>' +
         '<button class="alb-edit" title="重命名 / 删除相册" onclick="event.stopPropagation();editAlbum(' + a.id + ')"><span class="ico ico-edit"></span></button>' +
@@ -457,10 +458,10 @@
       return;
     }
     wrap.innerHTML = '<div class="photos" id="photos">' + photos.map((p, i) => {
-      const url = p.thumb_url;
+      const url = FH.safeAssetUrl(p.thumb_url);
       const isCover = cur.cover_photo_id === p.id;
       return '<div class="ph' + (selSet.has(p.id) ? ' sel' : '') + '" data-id="' + p.id + '" style="animation-delay:' + (i * 0.04) + 's">' +
-        '<div class="img"><img data-auth-src="' + esc(url) + '" alt="" loading="lazy"></div>' +
+        '<div class="img">' + (url ? '<img data-auth-src="' + esc(url) + '" alt="" loading="lazy">' : '<div class="no-cover">暂无预览</div>') + '</div>' +
         '<span class="chk">✓</span>' +
         (isCover ? '<span class="cover-tag">封面</span>' : '') +
         '<div class="ops"><span onclick="event.stopPropagation();viewPhoto(' + p.id + ')">预览</span>' +

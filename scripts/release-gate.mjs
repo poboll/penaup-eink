@@ -137,6 +137,7 @@ const requiredPaths = [
   'docs/api/transfer-state.md',
   'docs/legal/provenance.md'
   , 'docs/ops/verification-matrix.md'
+  , 'docs/ops/security-audit.md'
   , 'package-lock.json'
   , 'server/package-lock.json'
   , 'docs/integrations/weread-wallpaper.md'

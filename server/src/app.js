@@ -110,6 +110,15 @@ export async function buildApp(options = {}) {
     max: config.rateLimitMax,
     maxKeys: config.rateLimitMaxKeys
   });
+  // Heartbeats are intentionally excluded from the user-API limiter so a
+  // device cannot be taken offline by unrelated traffic. Keep a separate,
+  // IP-scoped ceiling to prevent unauthenticated auto-provisioning and
+  // heartbeat floods from growing the database without bound.
+  const heartbeatRateLimit = options.heartbeatRateLimit || createRateLimiter({
+    windowMs: config.rateLimitWindowMs,
+    max: Math.max(12, Math.min(60, config.rateLimitMax)),
+    maxKeys: config.rateLimitMaxKeys
+  });
   const runtime = { config, database, events, mqtt: null, auth, ai, weread, queue, scheduler: null, rateLimit };
 
   app.addHook('onRequest', async (request, reply) => {
@@ -349,6 +358,13 @@ export async function buildApp(options = {}) {
   });
 
   app.get('/api/v1/device/heartbeat', async (request, reply) => {
+    const heartbeatLimit = heartbeatRateLimit.consume(request.ip || request.socket?.remoteAddress || 'anonymous');
+    reply.header('X-Heartbeat-RateLimit-Limit', String(heartbeatLimit.limit));
+    reply.header('X-Heartbeat-RateLimit-Remaining', String(heartbeatLimit.remaining));
+    if (!heartbeatLimit.allowed) {
+      reply.header('Retry-After', String(heartbeatLimit.retryAfterSeconds));
+      return reply.code(429).send({ ok: false, error: 'heartbeat_rate_limited', retry_after_seconds: heartbeatLimit.retryAfterSeconds });
+    }
     const query = request.query || {};
     if (!query.device_id) return reply.code(400).send({ ok: false, error: 'device_id_required' });
     const result = database.heartbeat({

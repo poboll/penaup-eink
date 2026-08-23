@@ -9,15 +9,15 @@
 | 领域 | 本机状态 | 证据 |
 | --- | --- | --- |
 | Node 运行时 | PASS | `node --version` = `v24.19.0`；根包和 `server` 都限制 `24.x` |
-| JavaScript / 契约 | PASS | Node 24 环境下 99 个 JavaScript 文件语法通过；契约门禁为 `217 passed / 0 pending / 0 failed` |
-| 自动化测试 | PASS | `npm test`：server 38、film-core 7、微信 16、Web/发布工具 7 全部通过 |
+| JavaScript / 契约 | PASS | Node 24 环境下 100 个 JavaScript 文件语法通过；严格契约门禁为 `218 passed / 0 pending / 0 failed` |
+| 自动化测试 | PASS | `npm test`：server 39、film-core 7、微信 16、Web/发布工具 11 全部通过 |
 | 依赖安全 | PASS | `npm run audit`：官方 registry 生产依赖 `0 vulnerabilities` |
 | 安装可重复性 | PASS | 根目录和 `server/` 的 `npm ci --dry-run` 均通过；原生 `better-sqlite3` 安装脚本仍需在部署机按 Node 24 审批 |
 | 运行时探针 | PASS | 8787 实例的 `/`、`/studio/`、`/health`、`/readyz` 均返回 200 |
 | Caddy 配置 | PASS | `PENAUP_DOMAIN=penaup.example.com caddy validate --config deploy/Caddyfile --adapter caddyfile` |
 | Mosquitto 配置语法 | PASS（配置） | `mosquitto --test-config -c deploy/mqtt/mosquitto.conf.example` 退出码为 0 并报告配置有效；本机缺少 `/var/lib/mosquitto/` 时有非致命持久化目录提示，未启动公网 broker |
 | 微信开发者工具登录 | PARTIAL | CLI `islogin` 返回 `login: true`；打开当前项目被微信返回 code 10：登录用户不是该小程序开发者 |
-| ESP-IDF 三机型构建 | PASS（代码构建） | ESP-IDF 5.5.2 + Python 3.13.2 已导出；STD/Pro/Max 均 `idf.py build` 通过，应用分区余量分别为 13%/12%/14%；实体刷写、刷新和功耗仍 pending |
+| ESP-IDF 三机型构建 | PASS（代码构建） | ESP-IDF 5.5.2 + Python 3.14.2 已导出；当前分支 `162380a` 的隔离干净构建中，STD/Pro/Max 均 `idf.py build` 通过，应用分区余量分别为 13%/12%/14%；实体刷写、刷新和功耗仍 pending |
 | 旧 FastAPI 正式导入 | PENDING | 本机未找到旧 `filmhub.db`；不能用当前 Penaup 目标库冒充旧源库 |
 | 真实 BLE / OTA / 刷屏 | PENDING | 需要实体 STD、Pro、Max 和重新广播后的状态回读 |
 | 正式邮件、Caddy 公网 TLS、MQTT ACL | PENDING | 需要部署机、真实域名/证书、邮件 provider 和设备账号 |
@@ -27,11 +27,11 @@
 
 ```text
 npm run check
-JavaScript syntax OK: 99 files
-Contract gate: 217 passed, 0 pending, 0 failed
+JavaScript syntax OK: 100 files
+Contract gate: 218 passed, 0 pending, 0 failed
 
 npm test
-server 38 passed · film-core 7 passed · 微信 16 passed · Web/release 7 passed
+server 39 passed · film-core 7 passed · 微信 16 passed · Web/release 11 passed
 
 npm run audit
 found 0 vulnerabilities
@@ -56,12 +56,12 @@ node server/migrations/import-fastapi.mjs --help
 本机已在 ESP-IDF 5.5.2 导出环境下执行严格门禁；三机型构建使用对应 `sdkconfig_std/pro/max`，并分别核对应用分区余量：
 
 ```bash
-export IDF_PYTHON_ENV_PATH=/Users/Apple/.espressif/python_env/idf5.5_py3.13_env
+export IDF_PYTHON_ENV_PATH=/Users/Apple/.espressif/python_env/idf5.5_py3.14_env
 source /Users/Apple/.espressif/frameworks/esp-idf-v5.5.2/export.sh
 npm run release:gate -- --strict-external
 ```
 
-本轮构建证据（临时隔离 worktree，源码提交均为 `a02a701`）：
+本轮构建证据（临时隔离源码副本，源码提交为当前 `162380a`）：
 
 | 机型 | `penaup.bin` | 最小应用分区余量 | `idf.py size` 总镜像 | 结果 |
 | --- | ---: | ---: | ---: | --- |

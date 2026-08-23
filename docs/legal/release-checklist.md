@@ -3,8 +3,8 @@
 ## 本机验证记录（2026-08-23）
 
 - Node.js `v24.19.0` 已确认；根包与服务端均限制在 `24.x`。
-- `npm test`：server 38、film-core 7、微信 16、Web/发布工具 7，全部通过。
-- `npm run check`：99 个 JavaScript 文件语法通过，契约门禁为 `217 passed / 0 pending / 0 failed`；ESP-IDF 5.5.2 环境已在隔离 worktree 完成 STD/Pro/Max 三机型构建，应用分区余量为 13%/12%/14%。构建不等于实体刷写验收，完整证据见 [`docs/ops/verification-matrix.md`](../ops/verification-matrix.md)。
+- `npm test`：server 39、film-core 7、微信 16、Web/发布工具 11，全部通过。
+- `npm run check`：100 个 JavaScript 文件语法通过；在已导出 ESP-IDF 5.5.2 + Python 3.14.2 的严格环境中，契约门禁为 `218 passed / 0 pending / 0 failed`。隔离源码副本已完成 STD/Pro/Max 三机型构建，应用分区余量为 13%/12%/14%。构建不等于实体刷写验收，完整证据见 [`docs/ops/verification-matrix.md`](../ops/verification-matrix.md)。
 - `npm run audit`：官方 registry 的生产依赖 `0 vulnerabilities`；`git diff --check` 通过。
 - 根目录和 `server/` 的 `npm ci --dry-run` 均通过；`better-sqlite3` 的原生安装脚本需在部署机按 Node 24 的脚本审批策略执行。
 - 8787 实例当前 `/`、`/studio/`、`/health`、`/readyz` 均返回 200；Caddy `validate` 通过；Mosquitto `--test-config` 退出码为 0 并报告模板配置有效，本机仅出现缺少 `/var/lib/mosquitto/` 的非致命持久化提示，没有启动公网 broker。
@@ -19,7 +19,7 @@
 - [ ] 图片、摄影、字体、图标、SDK、数据手册和 npm 依赖清单有作者/来源/版本/许可；
 - [ ] 新增 `poboll` 内容使用 `LICENSE` 的非商业许可，产品和仓库没有宣称商业授权；
 - [ ] 根目录 `npm run check`、`npm test` 和官方 registry `npm run audit` 均通过；
-- [x] `npm run check:contracts` 与本机严格发布门禁通过（`217 passed / 0 pending / 0 failed`）；公网部署、微信 AppID 权限和实体硬件门禁仍需在对应环境完成；
+- [x] `npm run check:contracts` 与本机严格发布门禁通过（`218 passed / 0 pending / 0 failed`）；公网部署、微信 AppID 权限和实体硬件门禁仍需在对应环境完成；
 - [ ] 原图 EXIF 清理、文件魔数、路径穿越、用户归属和 512 MiB 配额测试通过；
 - [ ] 生产环境关闭 dev code，配置真实邮件 provider、HttpOnly Secure Cookie、Caddy TLS、CORS allowlist 和限流；
 - [ ] 生产环境设置 `PENAUP_TRUST_PROXY=1` 仅在 Caddy 为唯一可信反代时启用，并验证 API `429` 的 `Retry-After`；设备心跳不因用户 API 限流中断；

@@ -20,6 +20,14 @@ function filmFixture(width = 600, height = 400) {
 
 function tinyJpeg() { return Buffer.from([0xff, 0xd8, 0xff, 0xd9]); }
 
+function jpegWithExif() {
+  return Buffer.from([
+    0xff, 0xd8, 0xff, 0xe1, 0x00, 0x08,
+    0x45, 0x78, 0x69, 0x66, 0x00, 0x00,
+    0xff, 0xd9
+  ]);
+}
+
 async function signIn(app, email) {
   const invite = await app.inject({ method: 'POST', url: '/api/v1/admin/invites', headers: { authorization: 'Bearer test-admin' }, payload: { email } });
   assert.equal(invite.statusCode, 200);
@@ -230,10 +238,11 @@ test('admin media upload is downloadable through the firmware latest.film alias'
   assert.equal(typeof token, 'string');
 
   const form = new FormData();
-  form.append('film', new Blob([filmFixture()], { type: 'application/octet-stream' }), 'memory-shot.film');
+  form.append('film', new Blob([filmFixture()], { type: 'text/html' }), 'memory-shot.film');
   const uploaded = await app.inject({ method: 'POST', url: '/api/v1/admin/media', payload: form });
   assert.equal(uploaded.statusCode, 200);
   assert.equal(uploaded.json().data.name, 'memory-shot.film');
+  assert.equal(uploaded.json().data.mime, 'application/octet-stream');
 
   const latest = await app.inject({
     method: 'GET',
@@ -462,7 +471,7 @@ test('user resources, stream controls and AI adapter remain owner-scoped', async
     assert.equal((await app.inject({ method: 'PATCH', url: `/api/v1/albums/${albumId}`, headers: bobHeaders, payload: { name: '越权修改' } })).statusCode, 404);
 
     const photoForm = new FormData();
-    photoForm.append('file', new Blob([tinyJpeg()], { type: 'image/jpeg' }), 'memory.jpg');
+    photoForm.append('file', new Blob([jpegWithExif()], { type: 'image/jpeg' }), 'memory.jpg');
     const photo = await app.inject({ method: 'POST', url: `/api/v1/albums/${albumId}/photos`, headers: aliceHeaders, payload: photoForm });
     assert.equal(photo.statusCode, 201);
     const photoId = photo.json().data.id;
@@ -477,6 +486,7 @@ test('user resources, stream controls and AI adapter remain owner-scoped', async
     assert.equal(mediaBeforeDelete.statusCode, 200);
     assert.equal(mediaBeforeDelete.json().data.length, 1);
     const storedPhotoPath = path.join(root, mediaBeforeDelete.json().data[0].storedPath);
+    assert.deepEqual([...await fs.readFile(storedPhotoPath)], [0xff, 0xd8, 0xff, 0xd9]);
     const deletedPhoto = await app.inject({ method: 'DELETE', url: `/api/v1/albums/${albumId}/photos/${photoId}`, headers: aliceHeaders });
     assert.equal(deletedPhoto.statusCode, 200);
     assert.equal((await app.inject({ method: 'GET', url: `/api/v1/albums/${albumId}/photos`, headers: aliceHeaders })).json().data.length, 0);
@@ -489,6 +499,7 @@ test('user resources, stream controls and AI adapter remain owner-scoped', async
     const trailingAlbumUpload = await app.inject({ method: 'POST', url: '/api/v1/media', headers: aliceHeaders, payload: trailingAlbumForm });
     assert.equal(trailingAlbumUpload.statusCode, 200);
     assert.equal(trailingAlbumUpload.json().data.albumId, albumId);
+    assert.equal(trailingAlbumUpload.json().data.mime, 'image/jpeg');
     const trailingMediaPath = path.join(root, trailingAlbumUpload.json().data.storedPath);
 
     const templateResponse = await app.inject({ method: 'POST', url: '/api/v1/templates', headers: aliceHeaders, payload: { name: '清晨', definition: { title: '今天也留下' } } });

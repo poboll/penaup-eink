@@ -210,7 +210,12 @@
     now.getFullYear() + '-' + FH.fmtTime(now).slice(0, 5) + ' · 星期' + WEEK[now.getDay()];
 
   function esc(s) {
-    return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function safeNumber(value, fallback) {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : fallback;
   }
 
   /* 时间轴单行条目：相对 -> 间隔，定点 -> 时间；当前时段高亮 */
@@ -248,14 +253,16 @@
   }
 
   function devRow(d, i) {
-    const pct = d.battery_percent != null && d.battery_percent >= 0 ? d.battery_percent : null;
+    const battery = safeNumber(d.battery_percent, -1);
+    const pct = battery >= 0 ? Math.min(100, Math.round(battery)) : null;
     const w = pct == null ? 0 : Math.min(100, pct);
+    const interval = Math.max(1, Math.round(safeNumber(d.heartbeat_interval, 60)));
     return '<div class="dev rise-in" style="animation-delay:' + (0.06 + i * 0.08) + 's">' +
       '<span class="dot ' + (d.online ? 'on' : 'off') + '" title="' + (d.online ? '在线' : '离线') + '"></span>' +
       '<div class="dev-tx">' +
         '<div class="nm">' + esc(d.name || '未命名设备') +
           '<span class="ty">' + (d.device_type === 'pro' ? 'Pro' : 'Basic') + '</span></div>' +
-        '<div class="st">' + esc(d.device_id || '—') + ' · 心跳 ' + (d.heartbeat_interval || 60) + 's · 上次心跳 ' + fmtHm(d.last_heartbeat_at) + '</div>' +
+        '<div class="st">' + esc(d.device_id || '—') + ' · 心跳 ' + interval + 's · 上次心跳 ' + fmtHm(d.last_heartbeat_at) + '</div>' +
       '</div>' +
       '<div class="now"><span class="tpl-tag' + (d.is_claimed ? '' : ' dim') + '">' +
         (d.is_claimed && d.template_name ? '播放 ' + esc(d.template_name) : '待认领') + '</span></div>' +
@@ -347,15 +354,15 @@
       const feed = document.getElementById('feed');
       const items = [];
       devices.filter(d => d.online).forEach(d => {
-        items.push(['心跳', '<b>' + (d.name || d.device_id) + '</b> 心跳在线 · 电量 ' + (d.battery_percent || 0) + '%',
+        items.push(['心跳', '<b>' + esc(d.name || d.device_id) + '</b> 心跳在线 · 电量 ' + (d.battery_percent || 0) + '%',
           FH.fmtTime(d.last_heartbeat_at), '<span class="tag green">● 正常</span>', 'var(--green)']);
       });
       devices.filter(d => !d.is_claimed).forEach(d => {
-        items.push(['新设备', '新设备 <b>' + (d.device_id || '') + '</b> 首次心跳，等待认领',
+        items.push(['新设备', '新设备 <b>' + esc(d.device_id || '') + '</b> 首次心跳，等待认领',
           FH.fmtTime(d.created_at), '<span class="tag yellow">待认领</span>', '#d9921e']);
       });
       streams.filter(s => s.enabled).forEach(s => {
-        items.push(['推送', '<b>' + s.name + '</b> 正在运行 · 共 ' + s.items.length + ' 条',
+        items.push(['推送', '<b>' + esc(s.name) + '</b> 正在运行 · 共 ' + s.items.length + ' 条',
           '—', '<span class="tag blue">push</span>', '#2f6fd8']);
       });
       if (items.length === 0) {

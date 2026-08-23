@@ -217,6 +217,10 @@
   let streams = []; // 轮播流列表（播放流下拉用），懒加载一次
   let streamsLoaded = false;
 
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
   function openModal(name) { document.getElementById('modal-' + name).classList.add('show'); }
   function closeModal(name) { document.getElementById('modal-' + name).classList.remove('show'); }
 
@@ -278,7 +282,7 @@
     document.getElementById('detailTitle').textContent = '设备详情 · ' + (d.name || d.device_id);
     const tokenShort = d.token ? d.token.slice(0, 6) + '…' : '—';
     const typeTxt = d.is_claimed
-      ? '<span class="tag on">' + d.device_type + ' · ' + RES[d.device_type] + '</span>'
+      ? '<span class="tag on">' + esc(d.device_type || 'unknown') + ' · ' + esc(RES[d.device_type] || '未知分辨率') + '</span>'
       : '<span class="tag yellow">待配置</span>';
     const stateTxt = d.online
       ? '<span class="tag green">● ' + (STATE_CN[d.state] || '在线') + '</span>'
@@ -286,11 +290,11 @@
 
     document.getElementById('detailBody').innerHTML =
       '<dl class="kv">' +
-      '<dt>设备 ID</dt><dd>' + (d.device_id || '—') + '</dd>' +
+      '<dt>设备 ID</dt><dd>' + esc(d.device_id || '—') + '</dd>' +
       '<dt>设备 Token</dt><dd class="mono-off"><span class="kv-token"><span>' + tokenShort + '</span>' +
         '<span class="copy" title="复制完整 Token" onclick="copyToken()"><span class="ico ico-copy ico-sm"></span></span></span></dd>' +
       '<dt>类型</dt><dd class="mono-off">' + typeTxt + '</dd>' +
-      '<dt>最后 IP</dt><dd>' + (d.last_ip || '—') + '</dd>' +
+      '<dt>最后 IP</dt><dd>' + esc(d.last_ip || '—') + '</dd>' +
       '<dt>最近心跳</dt><dd>' + (d.last_heartbeat_at ? new Date(d.last_heartbeat_at).toLocaleString('zh-CN') : '—') + '</dd>' +
       '<dt>注册时间</dt><dd>' + (d.created_at ? new Date(d.created_at).toLocaleString('zh-CN') : '—') + '</dd>' +
       '</dl>' +
@@ -369,7 +373,7 @@
     sel.innerHTML = '<option value="0">回退全局（默认）</option>' +
       streams.map(s =>
         '<option value="' + s.id + '"' + (s.id === current ? ' selected' : '') + '>' +
-        (s.name || ('流 #' + s.id)) + '（' + (s.enabled ? '启用' : '停用') + '）</option>'
+        esc(s.name || ('流 #' + s.id)) + '（' + (s.enabled ? '启用' : '停用') + '）</option>'
       ).join('');
     sel.value = String(current || 0);
   }
@@ -482,7 +486,7 @@
     }
     tbody.innerHTML = rows.map((d, i) => {
       const typeCell = d.is_claimed
-        ? '<span class="tag on">' + d.device_type + ' · ' + RES[d.device_type] + '</span>'
+        ? '<span class="tag on">' + esc(d.device_type || 'unknown') + ' · ' + esc(RES[d.device_type] || '未知分辨率') + '</span>'
         : '<span class="tag yellow">待配置</span>';
       const bat = d.is_claimed
         ? '<b>' + (d.battery_percent != null ? d.battery_percent + '%' : '—') + '</b>'
@@ -492,7 +496,7 @@
           '<button class="btn btn-sm btn-danger" onclick="delRow(' + d.id + ')"><span class="ico ico-trash ico-sm"></span> 删除</button>'
         : '<button class="btn btn-sm btn-primary" onclick="claimRow(' + d.id + ')"><span class="ico ico-link ico-sm"></span> 认领</button>';
       return '<tr style="animation-delay:' + (i * 0.06) + 's">' +
-        '<td><b>' + (d.name || '未命名设备') + '</b><div class="dev-id">' + (d.device_id || '') + '</div></td>' +
+        '<td><b>' + esc(d.name || '未命名设备') + '</b><div class="dev-id">' + esc(d.device_id || '') + '</div></td>' +
         '<td>' + typeCell + '</td>' +
         '<td>' + stateDot(d) + '</td>' +
         '<td>' + bat + '</td>' +

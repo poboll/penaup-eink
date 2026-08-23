@@ -43,6 +43,11 @@
     };
 
     var COMMANDS = P.COMMANDS;
+    // The shared partition table reserves 1536 KiB for each OTA slot. Keep a
+    // browser-side upper bound so a signed-looking local file cannot exhaust
+    // memory or start an impossible BLE transfer.
+    var MAX_OTA_IMAGE_BYTES = 1536 * 1024;
+    var PINNED_FIRMWARE_KEY_ID = global.PENAUP_FIRMWARE_PUBLIC_KEY_ID || 'poboll-release-2026';
     var phaseCopy = {
         idle: ['等待靠近', '扫描设备后，页面会在这里把连接过程讲清楚。'],
         discovering: ['正在发现', '请在浏览器选择器中选择花生片；取消不会改变设备。'],
@@ -419,7 +424,7 @@
         log('info', '打开 Web Bluetooth 设备选择器。');
         try {
             state.device = await global.navigator.bluetooth.requestDevice({
-                filters: [{ namePrefix: 'PENAUP' }, { namePrefix: 'FRAMEFILM' }],
+                filters: [{ namePrefix: 'PENAUP', services: [P.SERVICE_UUID] }, { namePrefix: 'FRAMEFILM', services: [P.SERVICE_UUID] }],
                 optionalServices: [P.SERVICE_UUID]
             });
             state.device.addEventListener('gattserverdisconnected', onDisconnected);
@@ -651,6 +656,7 @@
         var signature = manifest && manifest.signature;
         var publicKey = global.PENAUP_FIRMWARE_PUBLIC_KEY_JWK || null;
         if (!signature || signature.algorithm !== 'Ed25519' || !signature.value || !signature.key_id) return { ok: false, reason: '发布清单没有 Ed25519 签名信息' };
+        if (signature.key_id !== PINNED_FIRMWARE_KEY_ID) return { ok: false, reason: '固件签名 key_id 不是网页固定发布密钥' };
         if (!publicKey) return { ok: false, reason: '当前网页尚未配置 poboll 固件发布公钥' };
         if (!global.crypto || !global.crypto.subtle) return { ok: false, reason: '浏览器没有 Web Crypto 签名验证能力' };
         var expectedMessage = 'penaup-firmware-v1:' + String(manifest.sha256 || '').toLowerCase();
@@ -687,6 +693,7 @@
             if (!Array.isArray(manifest.models) || manifest.models.indexOf(state.profile.key) === -1) errors.push('固件型号与当前设备不匹配');
             if (manifest.protocol !== 'ble-v1') errors.push('BLE OTA 协议版本不匹配');
             if (manifest.filename !== firmwareFile.name) errors.push('清单文件名与镜像不匹配');
+            if (!Number.isSafeInteger(firmwareFile.size) || firmwareFile.size < 1 || firmwareFile.size > MAX_OTA_IMAGE_BYTES) errors.push('镜像长度超过 OTA 分区可接受范围');
             if (Number(manifest.size) !== firmwareFile.size) errors.push('清单长度与镜像不匹配');
             if (!/^[a-f0-9]{64}$/i.test(String(manifest.sha256 || ''))) errors.push('SHA-256 格式无效');
             if (!/^[a-zA-Z0-9._-]+\.bin$/.test(firmwareFile.name)) errors.push('镜像文件名不安全');

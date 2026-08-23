@@ -320,7 +320,12 @@
   let pvPhotoIdx = null; // 预览固定照片（相册内 sort 索引；null=自动轮换）
 
   function esc(s) {
-    return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function safeColor(value, fallback) {
+    const color = String(value == null ? '' : value).trim();
+    return /^#[0-9a-f]{3,8}$/i.test(color) ? color : (fallback || '#888');
   }
 
   /* ===== 微信式待办清单控件 ===== */
@@ -497,42 +502,43 @@
       return;
     }
     wrap.innerHTML = defs.map(d => {
-      const key = d.key;
+      const key = String(d.key == null ? '' : d.key);
+      const controlId = 'ctl-' + key;
       const cur = vals[key] != null ? vals[key] : d.default;
       const val = cur == null ? '' : cur;
       const label = '<label>' + esc(d.label || key) + (d.type === 'list' ? ' <small>（每行一条）</small>' : '') + (d.type === 'todo' ? ' <small>（点击圆圈标记完成）</small>' : '') + '</label>';
       let ctl = '';
       if (d.type === 'radio') {
-        ctl = '<div class="pills" id="ctl-' + key + '">' + (d.options || []).map(o =>
+        ctl = '<div class="pills" id="' + esc(controlId) + '">' + (d.options || []).map(o =>
           '<span class="pill' + (String(val) === String(o.value) ? ' on' : '') + '" data-v="' + esc(o.value) + '">' + esc(o.label) + '</span>'
         ).join('') + '</div>';
       } else if (d.type === 'scheme') {
-        ctl = '<div class="schemes" id="ctl-' + key + '">' + (t.definition.schemes || []).map((s, i) =>
-          '<span class="scheme-pill' + (Number(val) === i ? ' on' : '') + '" data-v="' + i + '"><i style="background:' + (s.accent || '#888') + '"></i>' + esc(s.name) + '</span>'
+        ctl = '<div class="schemes" id="' + esc(controlId) + '">' + (t.definition.schemes || []).map((s, i) =>
+          '<span class="scheme-pill' + (Number(val) === i ? ' on' : '') + '" data-v="' + i + '"><i style="background:' + safeColor(s.accent) + '"></i>' + esc(s.name) + '</span>'
         ).join('') + '</div>';
       } else if (d.type === 'todo') {
-        ctl = '<div class="todo-list" id="ctl-' + key + '">' + todoRowsHtml(Array.isArray(val) ? val : []) +
+        ctl = '<div class="todo-list" id="' + esc(controlId) + '">' + todoRowsHtml(Array.isArray(val) ? val : []) +
               '<button type="button" class="todo-add" onclick="addTodo(this)">＋ 添加事项</button></div>';
       } else if (d.type === 'list') {
         const listVal = Array.isArray(val) ? val.join('\n') : '';
-        ctl = '<textarea class="textarea" id="ctl-' + key + '" rows="4" style="min-height:84px" placeholder="每行一条，行首 [x] 表示已完成">' + esc(listVal) + '</textarea>';
+        ctl = '<textarea class="textarea" id="' + esc(controlId) + '" rows="4" style="min-height:84px" placeholder="每行一条，行首 [x] 表示已完成">' + esc(listVal) + '</textarea>';
       } else if (d.type === 'month') {
-        ctl = '<input class="input" id="ctl-' + key + '" type="month" value="' + esc(val) + '">';
+        ctl = '<input class="input" id="' + esc(controlId) + '" type="month" value="' + esc(val) + '">';
       } else if (d.type === 'date') {
-        ctl = '<input class="input" id="ctl-' + key + '" type="date" value="' + esc(val) + '">';
+        ctl = '<input class="input" id="' + esc(controlId) + '" type="date" value="' + esc(val) + '">';
       } else if (d.type === 'number') {
-        ctl = '<input class="input" id="ctl-' + key + '" type="number" value="' + esc(val) + '"' +
-          (d.min != null ? ' min="' + d.min + '"' : '') + (d.max != null ? ' max="' + d.max + '"' : '') + '>';
+        ctl = '<input class="input" id="' + esc(controlId) + '" type="number" value="' + esc(val) + '"' +
+          (d.min != null ? ' min="' + esc(d.min) + '"' : '') + (d.max != null ? ' max="' + esc(d.max) + '"' : '') + '>';
       } else if (d.type === 'textarea') {
-        ctl = '<textarea class="textarea" id="ctl-' + key + '" rows="2">' + esc(val) + '</textarea>';
+        ctl = '<textarea class="textarea" id="' + esc(controlId) + '" rows="2">' + esc(val) + '</textarea>';
       } else if (d.type === 'album') {
-        ctl = '<select class="select" id="ctl-' + key + '">' +
+        ctl = '<select class="select" id="' + esc(controlId) + '">' +
           '<option value="">— 不绑定相册 —</option>' +
           albums.map(a => '<option value="' + a.id + '"' + (String(val) === String(a.id) ? ' selected' : '') + '>' + esc(a.name) + '（' + a.photo_count + ' 张）</option>').join('') +
           '</select>';
       } else { /* text 默认 */
-        ctl = '<input class="input" id="ctl-' + key + '" type="text" value="' + esc(val) + '"' +
-          (d.maxlength ? ' maxlength="' + d.maxlength + '"' : '') + '>';
+        ctl = '<input class="input" id="' + esc(controlId) + '" type="text" value="' + esc(val) + '"' +
+          (d.maxlength ? ' maxlength="' + esc(d.maxlength) + '"' : '') + '>';
       }
       return '<div class="f">' + label + ctl + '</div>';
     }).join('');

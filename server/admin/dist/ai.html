@@ -194,7 +194,7 @@
   ];
 
   function esc(s) {
-    return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
   function openModal(n) { document.getElementById('modal-' + n).classList.add('show'); }
@@ -354,12 +354,18 @@
       const created = albums[albums.length - 1];
       albumName = created ? created.name : 'AI 生成相册';
     }
+    const previewUrl = FH.safeAssetUrl(res.thumb_url);
+    const previewMarkup = previewUrl
+      ? '<img id="imgResImg" src="' + esc(previewUrl) + '" alt="生成的花生片画面">' +
+        '<div class="scan"></div>'
+      : '<div class="ph">预览地址未通过本站资源校验</div>';
+    const albumHref = 'albums.html?album=' + encodeURIComponent(String(res.album_id || ''));
     box.innerHTML =
-      '<div class="gen-head"><b>' + res.width + '×' + res.height + '</b><span class="tag green"><span class="ico ico-check ico-sm" style="vertical-align:-2px"></span> 已保存到相册</span></div>' +
-      '<div class="ai-img"><img id="imgResImg" src="' + res.thumb_url + '" alt=""><div class="scan"></div></div>' +
-      '<div class="gen-meta" style="margin-top:10px">已保存到：' + albumName + '</div>' +
+      '<div class="gen-head"><b>' + esc(res.width) + '×' + esc(res.height) + '</b><span class="tag green"><span class="ico ico-check ico-sm" style="vertical-align:-2px"></span> 已保存到相册</span></div>' +
+      '<div class="ai-img">' + previewMarkup + '</div>' +
+      '<div class="gen-meta" style="margin-top:10px">已保存到：' + esc(albumName) + '</div>' +
       '<div class="ops">' +
-      '<button class="btn btn-sm btn-primary" style="margin-left:auto" onclick="location.href=\'albums.html?album=' + res.album_id + '\'">去相册查看 <span class="ico ico-arrow-r ico-sm"></span></button>' +
+      '<button class="btn btn-sm btn-primary" style="margin-left:auto" onclick="location.href=\'' + albumHref + '\'">去相册查看 <span class="ico ico-arrow-r ico-sm"></span></button>' +
       '<button class="btn btn-sm" onclick="genImage()">再生成</button>' +
       '</div>';
     box.classList.add('show');

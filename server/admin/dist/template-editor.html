@@ -221,9 +221,11 @@
     const box = document.getElementById('layerChips');
     const layers = (def && def.layers) || [];
     if (!layers.length) { box.innerHTML = '<span>（无图层）</span>'; return; }
-    box.innerHTML = layers.map((l, i) =>
-      '<span><b>#' + (i + 1) + ' ' + (LAYER_CN[l.type] || l.type) + '</b> · ' + (l.x || 0) + ',' + (l.y || 0) + ' ' + (l.w || 0) + '×' + (l.h || 0) + '</span>'
-    ).join('');
+    box.innerHTML = layers.map((layer, i) => {
+      const l = layer && typeof layer === 'object' ? layer : {};
+      const type = LAYER_CN[l.type] || l.type || '未知图层';
+      return '<span><b>#' + (i + 1) + ' ' + esc(type) + '</b> · ' + esc(l.x || 0) + ',' + esc(l.y || 0) + ' ' + esc(l.w || 0) + '×' + esc(l.h || 0) + '</span>';
+    }).join('');
   }
 
   /* 相册绑定：写入 definition.data.album.album_id（同时更新 image 图层 source） */
@@ -373,7 +375,7 @@
   }
 
   function esc(s) {
-    return String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
   init();

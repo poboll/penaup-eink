@@ -57,3 +57,44 @@ test('runtime rate limits API bursts but leaves device heartbeat available', asy
     await fs.rm(root, { recursive: true, force: true });
   }
 });
+
+test('heartbeat limiter blocks floods per IP without blocking another device IP', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'penaup-heartbeat-rate-'));
+  const heartbeatRateLimit = createRateLimiter({
+    windowMs: 60000,
+    max: 2,
+    maxKeys: 8
+  });
+  const app = await buildApp({
+    heartbeatRateLimit,
+    config: {
+      dataDir: root,
+      databasePath: path.join(root, 'penaup.db'),
+      mediaDir: path.join(root, 'media'),
+      mqttUrl: ''
+    },
+    logger: false
+  });
+  try {
+    const request = (deviceId, remoteAddress) => app.inject({
+      method: 'GET',
+      url: `/api/v1/device/heartbeat?device_id=${deviceId}`,
+      remoteAddress
+    });
+    const first = await request('heartbeat-one', '198.51.100.40');
+    const second = await request('heartbeat-two', '198.51.100.40');
+    const rejected = await request('heartbeat-three', '198.51.100.40');
+    const otherIp = await request('heartbeat-four', '198.51.100.41');
+
+    assert.equal(first.statusCode, 200);
+    assert.equal(second.statusCode, 200);
+    assert.equal(rejected.statusCode, 429);
+    assert.equal(rejected.json().error, 'heartbeat_rate_limited');
+    assert.equal(rejected.headers['x-heartbeat-ratelimit-remaining'], '0');
+    assert.equal(rejected.headers['retry-after'], '60');
+    assert.equal(otherIp.statusCode, 200);
+  } finally {
+    await app.close();
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});

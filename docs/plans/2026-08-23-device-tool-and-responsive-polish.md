@@ -34,7 +34,7 @@
 - `/studio/` 不再保留直接 `.bin` OTA 上传入口；固件升级、网络清除、恢复出厂和重启统一从 `/device/` 进入，创作工作台的快捷维护命令只显示“状态待确认”，不会把 BLE 写入回执当成成功。
 - `/studio/` 已统一网络、设备控制、显影和上传按钮栅格；网络折叠状态同时更新视觉箭头和无障碍属性。
 - 浏览器回归在 390、768、1024、1440px 验证首页、工作台和设备工具无横向溢出；创作、转换和设置页的主要操作目标保持 48px，重置类图标操作保持 44px 触控目标。
-- `npm run check`：契约检查 217 passed、0 pending、0 failed；另有 99 个 JavaScript 文件语法通过。ESP-IDF 5.5.2 已导出并完成 STD/Pro/Max 三机型代码构建，应用分区余量分别为 13%/12%/14%；实体刷写仍需真实硬件验收。
-- `npm test`：服务端 38、film-core 7、微信 16、Web/发布工具 7 全部通过；`npm run audit`：0 vulnerabilities。
+- `npm run check`：严格环境下契约检查 218 passed、0 pending、0 failed；另有 100 个 JavaScript 文件语法通过。ESP-IDF 5.5.2 已导出并完成 STD/Pro/Max 三机型代码构建，应用分区余量分别为 13%/12%/14%；实体刷写仍需真实硬件验收。
+- `npm test`：服务端 39、film-core 7、微信 16、Web/发布工具 11 全部通过；`npm run audit`：0 vulnerabilities。
 
 本计划对应的代码和文档会作为一次大更新提交到 `codex/penaup-eink-rebuild`，只推送到 `poboll/penaup-eink`；旧 `origin` 远程不参与本轮发布。

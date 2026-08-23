@@ -307,7 +307,7 @@
     openModal('create');
   }
   function esc(s) {
-    return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
   /* ===== 轮播流列表 ===== */
@@ -431,8 +431,9 @@
       return;
     }
     tray.innerHTML = templates.map(t => {
-      const thumb = t.thumb_url
-        ? '<img src="' + t.thumb_url + '" alt="" onerror="this.outerHTML=\'<div class=no-thumb>无预览</div>\'">'
+      const thumbUrl = FH.safeAssetUrl(t.thumb_url);
+      const thumb = thumbUrl
+        ? '<img src="' + esc(thumbUrl) + '" alt="" onerror="this.outerHTML=\'<div class=no-thumb>无预览</div>\'">'
         : '<div class="no-thumb">' + esc(t.name) + '</div>';
       return '<div class="tpl-card" draggable="true" data-id="' + t.id + '" title="' + esc(t.name) + '">' +
         '<div class="tc-frame">' + thumb + '</div>' +
@@ -523,9 +524,9 @@
   }
   function thumbHtml(it) {
     const t = templates.find(x => x.id === it.template_id);
-    const url = (t && t.thumb_url) || '';
+    const url = FH.safeAssetUrl(t && t.thumb_url);
     if (url) {
-      return '<img src="' + url + '" alt="" loading="lazy" onerror="this.outerHTML=thumbPh(' + it.template_id + ')">';
+      return '<img src="' + esc(url) + '" alt="" loading="lazy" onerror="this.outerHTML=thumbPh(' + it.template_id + ')">';
     }
     if (_thumbObj[it.template_id]) {
       return '<img src="' + _thumbObj[it.template_id] + '" alt="">';

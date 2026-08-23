@@ -18,7 +18,8 @@ export async function storeUploadedMedia({ part, config, database, userId, album
   if (!part || part.type !== 'file' || !part.file) return fail(part, 400, 'file_required');
   const fileName = safeFilename(part.filename || 'upload.bin');
   const isFilm = fileName.toLowerCase().endsWith('.film');
-  if (!isFilm && !isImageMime(part.mimetype)) return fail(part, 415, 'supported_image_or_film_required');
+  const mime = String(part.mimetype || '').toLowerCase();
+  if (!isFilm && !isImageMime(mime)) return fail(part, 415, 'supported_image_or_film_required');
   if (database.getUserMediaBytes(userId) >= config.userQuotaBytes) return fail(part, 413, 'user_quota_exceeded');
 
   const storedName = `${crypto.randomUUID()}-${fileName}`;
@@ -33,6 +34,10 @@ export async function storeUploadedMedia({ part, config, database, userId, album
     let content = await fs.promises.readFile(absolutePath);
     let profile = '';
     let kind = isFilm ? 'film' : 'original';
+    // A valid .film is always served as opaque binary. Never persist the
+    // multipart Content-Type for a film because an attacker can choose
+    // `text/html` or another browser-active MIME value in the upload part.
+    const storedMime = isFilm ? 'application/octet-stream' : mime;
     if (isFilm) {
       const checked = validateFilmBuffer(content);
       if (!checked.valid) {
@@ -41,11 +46,11 @@ export async function storeUploadedMedia({ part, config, database, userId, album
       }
       profile = checked.profile.key;
     } else {
-      if (!isImageMagic(content, part.mimetype)) {
+      if (!isImageMagic(content, storedMime)) {
         await fs.promises.rm(absolutePath, { force: true });
         return { ok: false, status: 415, error: 'file_magic_mismatch' };
       }
-      content = stripImageMetadata(content, part.mimetype);
+      content = stripImageMetadata(content, storedMime);
       if (content.byteLength === 0) {
         await fs.promises.rm(absolutePath, { force: true });
         return { ok: false, status: 422, error: 'image_metadata_invalid' };
@@ -61,7 +66,7 @@ export async function storeUploadedMedia({ part, config, database, userId, album
     const storedPath = path.relative(config.dataDir, absolutePath);
     const media = database.insertMedia({
       userId, albumId, name: fileName, storedPath, originalPath: kind === 'original' ? storedPath : '',
-      mime: part.mimetype, kind, profile, sha256: crypto.createHash('sha256').update(content).digest('hex'), size: stat.size
+      mime: storedMime, kind, profile, sha256: crypto.createHash('sha256').update(content).digest('hex'), size: stat.size
     });
     return { ok: true, media, storedPath, isFilm, kind };
   } catch (error) {

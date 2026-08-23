@@ -14,7 +14,7 @@ import { pipeline } from 'node:stream/promises';
 
 import { getProfile } from '../../../packages/film-core/src/index.js';
 import { serializeDevice } from '../db.js';
-import { isImageMagic, isImageMime, mediaAbsolutePath, safeFilename } from '../modules/media.js';
+import { isImageMagic, isImageMime, mediaAbsolutePath, safeFilename, stripImageMetadata } from '../modules/media.js';
 import { AI_PROVIDERS, sanitizeAiSettings } from '../modules/ai.js';
 
 function body(request) { return request.body && typeof request.body === 'object' ? request.body : {}; }
@@ -30,6 +30,14 @@ function escapeXml(value) {
     .replaceAll("'", '&apos;');
 }
 
+function adminAssetUrl(value) {
+  const raw = String(value ?? '').trim().replaceAll(String.fromCharCode(92), '/');
+  if (!raw || !/^[a-zA-Z0-9._/-]+$/.test(raw)) return '';
+  const segments = raw.split('/').filter(Boolean);
+  if (!segments.length || segments.includes('..')) return '';
+  return '/assets/' + segments.join('/');
+}
+
 function adminTemplate(template) {
   if (!template) return null;
   return {
@@ -41,7 +49,7 @@ function adminTemplate(template) {
     definition: template.definition,
     render_config: template.renderConfig,
     renderConfig: template.renderConfig,
-    thumb_url: template.thumbPath ? `/assets/${template.thumbPath.replace(/^\/+/, '')}` : '',
+    thumb_url: adminAssetUrl(template.thumbPath),
     created_at: template.createdAt,
     createdAt: template.createdAt
   };
@@ -243,7 +251,10 @@ export function registerLegacyAdminRoutes(app, { config, database, auth, emit })
       if (part.file.truncated) { await fs.promises.rm(storedPath, { force: true }); return reply.code(413).send({ ok: false, error: 'file_too_large' }); }
       const bytes = await fs.promises.readFile(storedPath);
       if (!isImageMagic(bytes, part.mimetype)) { await fs.promises.rm(storedPath, { force: true }); continue; }
-      const photo = database.insertPhoto({ albumId: album.id, filename: originalName, originalPath: storedPath, width: 0, height: 0 });
+      const stripped = stripImageMetadata(bytes, part.mimetype);
+      if (!stripped.length) { await fs.promises.rm(storedPath, { force: true }); continue; }
+      await fs.promises.writeFile(storedPath, stripped);
+      const photo = database.insertPhoto({ albumId: album.id, filename: originalName, originalPath: path.relative(config.dataDir, storedPath), width: 0, height: 0 });
       results.push(adminPhoto(config, photo));
     }
     if (!results.length) return reply.code(400).send({ ok: false, error: 'no_supported_images' });

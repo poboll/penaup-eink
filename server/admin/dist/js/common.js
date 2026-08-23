@@ -61,10 +61,34 @@
     }, 2600);
   }
 
+  /*
+   * Admin responses may contain paths that originated in a database or an
+   * integration. Keep image fetches on the current runtime origin and on the
+   * two namespaces that are intentionally allowed to serve image assets.
+   * Escaping an attribute is not enough: `javascript:` and cross-origin URLs
+   * still create an unsafe resource boundary.
+   */
+  function safeAssetUrl(value) {
+    const raw = String(value == null ? '' : value).trim();
+    if (!raw) return '';
+    try {
+      const origin = global.location && global.location.origin ? global.location.origin : 'http://penaup.local';
+      const url = new URL(raw, origin);
+      const sameOrigin = url.origin === origin && (url.protocol === 'http:' || url.protocol === 'https:');
+      const allowedPath = url.pathname === '/api' || url.pathname.startsWith('/api/') ||
+        url.pathname === '/assets' || url.pathname.startsWith('/assets/');
+      return sameOrigin && allowedPath ? url.pathname + url.search + url.hash : '';
+    } catch (error) {
+      return '';
+    }
+  }
+
   /* 加载受鉴权保护的图片（如模板服务端预览），返回 objectURL */
   async function authImg(url) {
+    const endpoint = safeAssetUrl(url);
+    if (!endpoint) throw new Error('图片资源地址无效');
     const token = localStorage.getItem('fh_token') || '';
-    const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+    const res = await fetch(endpoint, { headers: { 'Authorization': 'Bearer ' + token } });
     if (!res.ok) throw new Error('图片加载失败 (' + res.status + ')');
     return URL.createObjectURL(await res.blob());
   }
@@ -81,7 +105,7 @@
   function loadAuthImages(root) {
     const scope = root || document;
     scope.querySelectorAll('img[data-auth-src]').forEach(async img => {
-      const endpoint = img.dataset.authSrc;
+      const endpoint = safeAssetUrl(img.dataset.authSrc);
       if (!endpoint || img.dataset.loading === '1') return;
       img.dataset.loading = '1';
       try {
@@ -158,5 +182,5 @@
     });
   }
 
-  global.FH = { guard, refreshStatus, toast, fmtTime, fmtClock, confirmBox, setupNavRefresh, authImg, loadAuthImages, releaseAuthImages, PAGES };
+  global.FH = { guard, refreshStatus, toast, fmtTime, fmtClock, confirmBox, setupNavRefresh, authImg, safeAssetUrl, loadAuthImages, releaseAuthImages, PAGES };
 })(window);
