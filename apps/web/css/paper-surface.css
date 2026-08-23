@@ -14,8 +14,8 @@
 }
 
 :root {
-    --penaup-paper-white: #ffffff;
-    --penaup-paper-ivory: #fafaf7;
+    --penaup-paper-white: #fffefa;
+    --penaup-paper-ivory: #f8f8f4;
     --penaup-paper-rice: #f2f2ee;
     --penaup-paper-fiber: rgba(48, 49, 45, .014);
     --penaup-paper-ink: #20211f;
@@ -306,9 +306,9 @@ body .button-danger:disabled {
  * this final bridge after the legacy sheets so desktop, phone and the device
  * tool resolve the same geometry instead of competing with older selectors. */
 :root {
-    --penaup-paper-ivory: #fafaf7;
+    --penaup-paper-ivory: #f8f8f4;
     --penaup-paper-rice: #f2f2ee;
-    --paper: #fafaf7;
+    --paper: #f8f8f4;
     --paper-bright: #fffefa;
     --paper-raised: #fffefa;
     --paper-shadow: #e9e9e5;

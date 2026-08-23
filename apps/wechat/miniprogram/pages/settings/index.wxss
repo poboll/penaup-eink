@@ -15,12 +15,12 @@
 .set-ic image { width: 30rpx; height: 30rpx; }
 .sc-red { background: #c95849; }.sc-teal { background: #55765e; }.sc-purple { background: #4d73ad; }.sc-blue { background: #4779bc; }.sc-yellow { background: #c49a24; }.sc-pink { background: #b65347; }
 .set-t { flex: 1; font-size: 25rpx; font-weight: 600; }
-.set-d { display: block; margin-top: 5rpx; color: #656761; font-size: 19rpx; font-weight: 400; }
+.set-d { display: block; margin-top: 5rpx; color: #656761; font-size: 20rpx; font-weight: 400; }
 .set-a { flex-shrink: 0; color: #4d73ad; font-size: 38rpx; font-weight: 300; }
 .set-panel { padding: 18rpx 0 20rpx 72rpx; border-bottom: 2rpx solid #d5d5d1; }
 .set-panel:last-child { border-bottom: 0; }
 .mode-selector { display: flex; gap: 8rpx; }
-.mode-button { flex: 1; padding: 14rpx 6rpx; color: #656761; border: 2rpx solid #b6b7b2; border-radius: 5rpx; font-size: 20rpx; text-align: center; }
+.mode-button { flex: 1; min-height: 64rpx; padding: 14rpx 6rpx; color: #656761; border: 2rpx solid #b6b7b2; border-radius: 5rpx; font-size: 21rpx; text-align: center; }
 .mode-button.active { color: #20211f; background: #b7d6c0; border-color: #4f775d; }
 .mode-button.hidden { display: none; }
 .switch-row, .network-input-group, .wake-slider-row, .action-controls, .wifi-status-row { display: flex; align-items: center; gap: 12rpx; min-height: 70rpx; border-bottom: 2rpx solid #d5d5d1; }
@@ -50,5 +50,5 @@
 
 @media (max-width: 620px) {
   .set-panel { padding-left: 0; }
-  .mode-button { font-size: 18rpx; }
+  .mode-button { font-size: 20rpx; }
 }

@@ -9,7 +9,7 @@
 }
 
 :root {
-    --paper: #fafaf7;
+    --paper: #f8f8f4;
     --paper-bright: #fffef9;
     --paper-raised: #fdfbf6;
     --paper-shadow: #ece6da;
@@ -792,7 +792,7 @@ button.primary-button i, button.secondary-button i, a.primary-button i, a.second
 /* 2026-08-23 wallpaper lab: pale rice paper, a quiet editorial grid, and
  * one touch-safe control language across desktop and phone. */
 :root {
-    --paper: #fafaf7;
+    --paper: #f8f8f4;
     --paper-bright: #fffef9;
     --paper-raised: #fdfbf6;
     --paper-shadow: #ece6da;
@@ -1650,7 +1650,7 @@ body {
         radial-gradient(circle at 93% 3%, rgba(212, 165, 46, .05), transparent 25%),
         repeating-linear-gradient(90deg, rgba(118, 99, 70, .018) 0 1px, transparent 1px 22px),
         repeating-linear-gradient(0deg, rgba(84, 70, 48, .014) 0 1px, transparent 1px 7px),
-        linear-gradient(180deg, #fffefa 0%, #fafaf7 54%, #f2f2ee 100%);
+        linear-gradient(180deg, #fffefa 0%, #f8f8f4 54%, #f2f2ee 100%);
 }
 
 body::before {

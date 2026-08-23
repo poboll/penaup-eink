@@ -17,7 +17,7 @@
 
 ## Template constraints
 
-- 模板参考画布为 400 x 600，坐标和尺寸使用非负整数。
+- 默认模板参考画布为花生片 Pro 的 `528 × 792` 竖向视觉相纸，坐标和尺寸使用非负整数；输出 `.film` 时再由 `packages/film-core` 转为 Pro 的 `792 × 528` 兼容协议。STD/Max 只有在调用方明确提供对应 Profile 时才允许改变画布。
 - 只允许 `text`、`image`、`rect`、`line`、`circle` 等已被渲染器理解的图层类型。
 - 电子纸输出仍然经过 `packages/film-core` 的六色索引和 `.film` 校验；叠色、网点、抖动是显影策略，不新增固件颜色编码。
 - 不生成密码、设备 token、私人照片内容或未经验证的 EPD 电气参数。

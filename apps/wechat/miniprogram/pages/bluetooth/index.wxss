@@ -25,7 +25,7 @@
 .device-info { flex: 1; min-width: 0; }
 .device-name { display: flex; align-items: center; gap: 10rpx; font-size: 25rpx; font-weight: 600; }
 .dev-tag { padding: 3rpx 8rpx; color: #4d73ad; border: 2rpx solid #9fb7dc; font-size: 17rpx; }
-.device-id { margin-top: 5rpx; overflow: hidden; color: #656761; font-size: 18rpx; text-overflow: ellipsis; white-space: nowrap; }
+.device-id { margin-top: 5rpx; overflow: hidden; color: #656761; font-size: 20rpx; text-overflow: ellipsis; white-space: nowrap; }
 .device-signal { display: flex; align-items: flex-end; gap: 4rpx; height: 28rpx; }
 .signal-bar { width: 6rpx; background: #d5d5d1; }
 .signal-bar.bar1 { height: 10rpx; }.signal-bar.bar2 { height: 18rpx; }.signal-bar.bar3 { height: 28rpx; }

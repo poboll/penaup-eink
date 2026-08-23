@@ -1,0 +1,446 @@
+/*
+ * Copyright (c) 2026 poboll
+ * SPDX-License-Identifier: LicenseRef-Poboll-NonCommercial
+ *
+ * Final surface layer for the Penaup web pages.
+ *
+ * The older story, studio and device sheets intentionally remain separate:
+ * they contain page-specific layout and interaction rules. This file is the
+ * last, small bridge between those sheets. Keeping the bridge isolated makes
+ * the paper tone, action geometry and narrow-screen rules auditable without
+ * duplicating a second component system.
+ */
+
+:root {
+    --penaup-paper-base: #f8f8f4;
+    --penaup-paper-ivory: #f8f8f4;
+    --penaup-paper-white: #fffefa;
+    --penaup-paper-rice: #f2f2ee;
+    --penaup-paper-shadow: #e9e9e4;
+    --paper: #f8f8f4;
+    --paper-bright: #fffefa;
+    --paper-raised: #fffefa;
+    --penaup-paper-ink: #20211f;
+    --penaup-paper-muted: #686a63;
+    --penaup-paper-line: rgba(32, 33, 31, .19);
+    --penaup-paper-sage: #b7d6c0;
+    --penaup-paper-sage-ink: #4f775d;
+    --penaup-paper-radius: 7px 8px 6px 7px;
+    --penaup-paper-ease: cubic-bezier(.22, .75, .25, 1);
+}
+
+html {
+    background: var(--penaup-paper-base);
+}
+
+body {
+    background-color: var(--penaup-paper-base);
+    background-image:
+        radial-gradient(circle at 7% -12%, rgba(255, 255, 252, .99), transparent 34%),
+        radial-gradient(circle at 93% 3%, rgba(196, 154, 36, .028), transparent 24%),
+        repeating-linear-gradient(106deg, rgba(70, 70, 65, .011) 0 1px, transparent 1px 18px),
+        repeating-linear-gradient(17deg, rgba(70, 70, 65, .008) 0 1px, transparent 1px 13px),
+        linear-gradient(180deg, #fffefa 0%, var(--penaup-paper-base) 57%, #f0f0eb 100%);
+}
+
+/* One restrained grain layer gives the background a tactile grass-paper read
+ * while remaining CSS-only and cheap to paint on a phone. */
+body::before {
+    opacity: .055;
+}
+
+body::after {
+    opacity: .095;
+    background-size: 220px 220px;
+}
+
+/* Shared action geometry. The selectors are deliberately explicit so icon
+ * buttons and decorative controls are not stretched by accident. */
+body .button,
+body .primary-button,
+body .secondary-button,
+body .button-primary,
+body .button-quiet,
+body .button-danger,
+body .nav-cta,
+body .device-tool-link,
+body .network-header,
+body .frame-action-btn,
+body .frame-send-btn,
+body .mode-button,
+body .weread-period,
+body .weread-scene,
+body .weread-render,
+body .rendering-mode-button {
+    box-sizing: border-box;
+    min-width: 0;
+    border-radius: var(--penaup-paper-radius);
+    line-height: 1.25;
+    transition: color .22s var(--penaup-paper-ease),
+        background-color .22s var(--penaup-paper-ease),
+        border-color .22s var(--penaup-paper-ease),
+        box-shadow .22s var(--penaup-paper-ease),
+        transform .22s var(--penaup-paper-ease);
+}
+
+body .button,
+body .primary-button,
+body .secondary-button,
+body .button-primary,
+body .button-quiet,
+body .button-danger,
+body .nav-cta,
+body .frame-action-btn,
+body .frame-send-btn {
+    min-height: 50px;
+    padding-inline: 17px;
+    font-size: 15px;
+}
+
+body .button-primary,
+body .primary-button,
+body .nav-cta,
+body .frame-send-btn {
+    color: var(--penaup-paper-white);
+    border-color: var(--penaup-paper-ink);
+    background: var(--penaup-paper-ink);
+    box-shadow: 0 7px 18px rgba(42, 41, 36, .12), 4px 5px 0 rgba(42, 41, 36, .055);
+}
+
+body .button-quiet,
+body .secondary-button,
+body .frame-action-btn {
+    color: var(--penaup-paper-ink);
+    border-color: rgba(32, 33, 31, .48);
+    background: rgba(255, 255, 252, .72);
+    box-shadow: 0 7px 18px rgba(42, 41, 36, .055), 4px 5px 0 rgba(42, 41, 36, .035);
+}
+
+body .button-danger {
+    color: #97473e;
+    border-color: rgba(151, 71, 62, .52);
+    background: rgba(255, 255, 252, .72);
+}
+
+body .button-primary:hover:not(:disabled),
+body .primary-button:hover:not(:disabled),
+body .nav-cta:hover,
+body .frame-send-btn:hover:not(:disabled),
+body .button-primary:focus-visible,
+body .primary-button:focus-visible,
+body .nav-cta:focus-visible,
+body .frame-send-btn:focus-visible {
+    color: var(--penaup-paper-ink);
+    border-color: var(--penaup-paper-sage-ink);
+    background: var(--penaup-paper-sage);
+    box-shadow: 2px 3px 0 rgba(79, 119, 93, .12);
+}
+
+body .button-quiet:hover:not(:disabled),
+body .secondary-button:hover:not(:disabled),
+body .frame-action-btn:hover:not(:disabled),
+body .button-quiet:focus-visible,
+body .secondary-button:focus-visible,
+body .frame-action-btn:focus-visible {
+    color: var(--penaup-paper-ink);
+    border-color: var(--penaup-paper-ink);
+    background: var(--penaup-paper-white);
+    box-shadow: 2px 3px 0 rgba(42, 41, 36, .12);
+}
+
+body .button-danger:hover:not(:disabled),
+body .button-danger:focus-visible {
+    color: #8d4038;
+    border-color: #ad5145;
+    background: rgba(173, 81, 69, .09);
+    box-shadow: 2px 3px 0 rgba(173, 81, 69, .12);
+}
+
+body .button:active:not(:disabled),
+body .primary-button:active:not(:disabled),
+body .secondary-button:active:not(:disabled),
+body .button-primary:active:not(:disabled),
+body .button-quiet:active:not(:disabled),
+body .button-danger:active:not(:disabled),
+body .frame-action-btn:active:not(:disabled),
+body .frame-send-btn:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 rgba(42, 41, 36, .14);
+}
+
+body .button:disabled,
+body .primary-button:disabled,
+body .secondary-button:disabled,
+body .button-primary:disabled,
+body .button-quiet:disabled,
+body .button-danger:disabled,
+body .frame-action-btn:disabled,
+body .frame-send-btn:disabled {
+    color: #94968f;
+    background: #e9e9e4;
+    border-color: rgba(32, 33, 31, .15);
+    box-shadow: none;
+    opacity: .82;
+}
+
+/* Keep the dark six-colour study dark. The generic paper layer must not turn
+ * its unselected controls into white-on-white buttons. */
+body .story-shell .color-mode {
+    min-width: 52px;
+    min-height: 48px;
+    padding-inline: 12px;
+    color: rgba(255, 254, 250, .78);
+    border-color: rgba(255, 254, 250, .26);
+    border-radius: 7px;
+    background: transparent;
+    box-shadow: none;
+    font-size: 13px;
+}
+
+body .story-shell .color-mode:hover,
+body .story-shell .color-mode:focus-visible {
+    color: var(--penaup-paper-white);
+    border-color: rgba(255, 254, 250, .64);
+    background: rgba(255, 254, 250, .08);
+    box-shadow: none;
+}
+
+body .story-shell .color-mode[aria-pressed="true"] {
+    color: var(--penaup-paper-ink);
+    border-color: #c49a24;
+    background: #c49a24;
+    box-shadow: 2px 3px 0 rgba(196, 154, 36, .18);
+}
+
+/* The four creation modes are a single, equal-width rail at every size. */
+body .frame-tabs {
+    width: 100%;
+    gap: 6px;
+    border-color: rgba(32, 33, 31, .14);
+    border-radius: 8px;
+    background: rgba(225, 225, 220, .66);
+    box-shadow: 0 8px 18px rgba(42, 41, 36, .04);
+}
+
+body .frame-tab {
+    min-width: 0;
+    min-height: 60px;
+    padding-inline: 6px;
+    overflow-wrap: anywhere;
+    border-radius: 6px;
+    font-size: 15px;
+    white-space: normal;
+}
+
+body .frame-tab.active,
+body .frame-tab:hover,
+body .frame-tab:focus-visible {
+    color: var(--penaup-paper-ink);
+    border-color: rgba(32, 33, 31, .20);
+    background: rgba(255, 255, 252, .90);
+    box-shadow: 4px 5px 0 rgba(42, 41, 36, .06);
+}
+
+body .frame-tab.active {
+    box-shadow: inset 0 -3px var(--penaup-paper-sage-ink), 4px 5px 0 rgba(42, 41, 36, .06);
+}
+
+body .paper-card,
+body .weread-controls,
+body .weread-pro-spec,
+body .reading-ticket,
+body .frame-format-note,
+body .polaroid-frame,
+body .weread-polaroid {
+    border-radius: var(--penaup-paper-radius);
+    border-color: rgba(32, 33, 31, .17);
+    background-color: rgba(255, 255, 252, .84);
+    box-shadow: 4px 5px 0 rgba(42, 41, 36, .045), 0 16px 30px rgba(42, 41, 36, .04);
+}
+
+body .polaroid-inner,
+body .weread-polaroid-inner {
+    aspect-ratio: 2 / 3;
+    background-color: #f0f0eb;
+}
+
+body .weread-polaroid-inner canvas {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: none;
+}
+
+/* Readability floor: metadata can be quiet, but it should not disappear. */
+body .section-kicker,
+body .app-meta,
+body .device-tool-link,
+body .frame-format-note small,
+body .frame-hint,
+body .app-meta-label,
+body .weread-key-field p,
+body .weread-book-field p,
+body .weread-render-note,
+body .weread-enrichment-note,
+body .weread-preview-meta,
+body .weread-output-note {
+    font-size: 14px;
+}
+
+body .page-lede,
+body .weread-lede,
+body .hero-lede {
+    font-size: 17px;
+}
+
+body .device-app .button {
+    font-size: 15px;
+}
+
+body .device-tool-link {
+    min-height: 48px;
+    padding-inline: 14px;
+    color: var(--penaup-paper-ink);
+    border: 1px solid rgba(32, 33, 31, .44);
+    background: rgba(255, 255, 252, .74);
+}
+
+body .device-tool-link:hover,
+body .device-tool-link:focus-visible {
+    color: var(--penaup-paper-ink);
+    border-color: var(--penaup-paper-sage-ink);
+    background: rgba(183, 214, 192, .22);
+    box-shadow: 2px 3px 0 rgba(79, 119, 93, .08);
+    transform: translateY(-1px);
+}
+
+/* The narrow layout is intentionally explicit: one action per row, no
+ * shrinking text, and the preview remains a true 528 × 792 paper. */
+@media (max-width: 720px) {
+    body .story-nav,
+    body .app-topbar,
+    body .story-progress,
+    body .device-topbar {
+        background: rgba(255, 255, 252, .94);
+    }
+
+    body .hero-actions,
+    body .quote-btn-group,
+    body .conversion-actions,
+    body .network-btn-row,
+    body .button-row,
+    body .action-controls,
+    body .button-group,
+    body .weread-connect-row,
+    body .weread-demo-row,
+    body .weread-actions {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+
+    body .hero-actions {
+        display: flex;
+        flex-direction: column;
+    }
+
+    body .hero-actions > *,
+    body .quote-btn-group > *,
+    body .conversion-actions > *,
+    body .network-btn-row > *,
+    body .button-row > *,
+    body .action-controls > *,
+    body .button-group > *,
+    body .weread-connect-row > *,
+    body .weread-demo-row > *,
+    body .weread-actions > * {
+        width: 100%;
+        min-width: 0;
+        align-self: stretch;
+    }
+
+    body .weread-layout {
+        grid-template-columns: 1fr;
+    }
+
+    body .weread-preview-panel {
+        position: static;
+    }
+
+    body .weread-scene-list,
+    body .weread-render-list {
+        grid-template-columns: 1fr;
+    }
+
+    body .weread-scene,
+    body .weread-render {
+        min-height: 58px;
+    }
+
+    body .weread-render {
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        text-align: left;
+    }
+
+    body .frame-tab {
+        min-height: 60px;
+        padding-inline: 3px;
+        font-size: 14px;
+    }
+
+    body .frame-tab i {
+        font-size: 19px;
+    }
+
+    body .device-app .button,
+    body .device-tool-link {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 420px) {
+    body .story-nav {
+        padding-inline: 16px;
+    }
+
+    body .app-brand strong {
+        font-size: 18px;
+    }
+
+    body .device-tool-link {
+        min-height: 46px;
+        padding-inline: 11px;
+        font-size: 12px;
+    }
+
+    body .frame-tabs {
+        gap: 4px;
+        padding: 4px;
+    }
+
+    body .frame-tab {
+        min-height: 58px;
+        font-size: 14px;
+    }
+
+    body .weread-controls,
+    body .weread-polaroid {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body::after {
+        display: none;
+    }
+
+    body *,
+    body *::before,
+    body *::after {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

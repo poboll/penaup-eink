@@ -8,7 +8,7 @@
 }
 
 :root {
-  --paper: #fafaf7;
+  --paper: #f8f8f4;
   --paper-bright: #fffefa;
   --ink: #171816;
   --quiet: #717269;
@@ -203,7 +203,7 @@ a { color: inherit; }
 }
 
 :root {
-  --paper: #fafaf7;
+  --paper: #f8f8f4;
   --paper-bright: #fffefa;
   --line: #e1dbd1;
   --quiet: #717269;
@@ -283,7 +283,7 @@ body {
     radial-gradient(circle at 94% 2%, rgba(212, 169, 47, .055), transparent 25%),
     repeating-linear-gradient(90deg, rgba(118, 99, 70, .018) 0 1px, transparent 1px 22px),
     repeating-linear-gradient(0deg, rgba(84, 70, 48, .014) 0 1px, transparent 1px 7px),
-    linear-gradient(180deg, #fffefa 0%, #fafaf7 54%, #f2f2ee 100%);
+    linear-gradient(180deg, #fffefa 0%, #f8f8f4 54%, #f2f2ee 100%);
 }
 
 .feature-section {

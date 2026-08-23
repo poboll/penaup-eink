@@ -14,7 +14,7 @@
 .lr-img { flex-shrink: 0; width: 76rpx; height: 76rpx; background: #f2f2ee; }
 .lr-info { flex: 1; min-width: 0; }
 .lr-name { overflow: hidden; font-size: 24rpx; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
-.lr-meta { margin-top: 5rpx; overflow: hidden; color: #656761; font: 19rpx ui-monospace, SFMono-Regular, Menlo, monospace; text-overflow: ellipsis; white-space: nowrap; }
+.lr-meta { margin-top: 5rpx; overflow: hidden; color: #656761; font: 20rpx ui-monospace, SFMono-Regular, Menlo, monospace; text-overflow: ellipsis; white-space: nowrap; }
 .lr-del, .lr-tag { flex-shrink: 0; padding: 10rpx 0 10rpx 10rpx; color: #b65347; font-size: 20rpx; }
 .lr-tag { color: #4d73ad; }
 .cta { display: flex; flex-direction: column; align-items: flex-start; width: 100%; min-height: 118rpx; padding: 24rpx; }

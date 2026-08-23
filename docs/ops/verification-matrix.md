@@ -9,8 +9,8 @@
 | 领域 | 本机状态 | 证据 |
 | --- | --- | --- |
 | Node 运行时 | PASS | `node --version` = `v24.19.0`；根包和 `server` 都限制 `24.x` |
-| JavaScript / 契约 | PASS | Node 24 环境下 106 个 JavaScript 文件语法通过；严格契约门禁为 `235 passed / 0 pending / 0 failed` |
-| 自动化测试 | PASS | `npm test`：server 43、film-core 8、微信 19、Web/发布工具 22 全部通过 |
+| JavaScript / 契约 | PASS | Node 24 环境下 107 个 JavaScript 文件语法通过；导出 ESP-IDF 5.5.2 后严格契约门禁为 `235 passed / 0 pending / 0 failed` |
+| 自动化测试 | PASS | `npm test`：server 43、film-core 8、微信 19、Web/发布工具 25 全部通过 |
 | 依赖安全 | PASS | `npm run audit`：官方 registry 生产依赖 `0 vulnerabilities` |
 | 安装可重复性 | PASS | 根目录和 `server/` 的 `npm ci --dry-run` 均通过；原生 `better-sqlite3` 安装脚本仍需在部署机按 Node 24 审批 |
 | 运行时探针 | PASS | 8787 实例的 `/`、`/studio/`、`/health`、`/readyz` 均返回 200 |
@@ -30,11 +30,11 @@
 
 ```text
 npm run check
-JavaScript syntax OK: 106 files
+JavaScript syntax OK: 107 files
 Contract gate: 235 passed, 0 pending, 0 failed
 
 npm test
-server 43 passed · film-core 8 passed · 微信 19 passed · Web/release 22 passed
+server 43 passed · film-core 8 passed · 微信 19 passed · Web/release 25 passed
 
 npm run audit
 found 0 vulnerabilities

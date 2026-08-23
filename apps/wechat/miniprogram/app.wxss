@@ -3,7 +3,7 @@
 @import "./styles/paper-surface.wxss";
 
 page {
-  background-color: #fafaf7;
+  background-color: #f8f8f4;
   color: #20211f;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", sans-serif;
   line-height: 1.55;
@@ -335,4 +335,101 @@ input::placeholder, textarea::placeholder { color: #a5a69e; }
 .cta-half:active {
   transform: translate(2rpx, 2rpx);
   box-shadow: 1rpx 1rpx 0 rgba(42, 41, 36, .16);
+}
+
+/* Final Penaup paper pass: near-white grass paper, quiet keylines and one
+ * readable action rhythm across every mini-program page. */
+page {
+  background-color: #f8f8f4;
+  background-image:
+    radial-gradient(circle at 8% -12%, rgba(255, 255, 252, .99), transparent 34%),
+    radial-gradient(circle at 94% 4%, rgba(196, 154, 36, .028), transparent 24%),
+    repeating-linear-gradient(104deg, rgba(70, 70, 65, .011) 0 1px, transparent 1px 18px),
+    repeating-linear-gradient(16deg, rgba(70, 70, 65, .008) 0 1px, transparent 1px 13px),
+    linear-gradient(180deg, #fffefa 0%, #f8f8f4 58%, #f0f0eb 100%);
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-disconnect,
+.mini-action,
+.choice-button,
+.scene-button,
+.render-button,
+.mode-button {
+  border-radius: 7rpx 9rpx 6rpx 8rpx;
+  box-shadow: 0 9rpx 18rpx rgba(42, 41, 36, .055), 4rpx 5rpx 0 rgba(42, 41, 36, .04);
+}
+
+.btn-primary {
+  color: #fffefa;
+  background: #20211f;
+  border-color: #20211f;
+}
+
+.btn-primary:active {
+  color: #20211f;
+  background: #b7d6c0;
+  border-color: #4f775d;
+}
+
+.btn-secondary,
+.btn-disconnect,
+.mini-action,
+.choice-button,
+.scene-button,
+.render-button,
+.mode-button {
+  background: rgba(255, 255, 252, .86);
+}
+
+.button-row,
+.action-controls,
+.connect-row,
+.output-actions,
+.cta-row {
+  align-items: stretch;
+}
+
+.button-row > button,
+.action-controls > button,
+.connect-row > button,
+.output-actions > button,
+.cta-row > view {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.info-text,
+.setting-hint,
+.dev-meta,
+.m-sub,
+.status-sub,
+.transfer-msg,
+.transfer-status,
+.transfer-progress {
+  font-size: 22rpx;
+}
+
+.label,
+.field-label,
+.choice-label,
+.network-label,
+.device-id,
+.lr-meta,
+.set-d,
+.file-size-text {
+  font-size: 20rpx;
+}
+
+@media (max-width: 620px) {
+  .container { padding-left: 28rpx; padding-right: 28rpx; }
+  .cta-row { flex-direction: column; }
+  .cta-row > view { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  page {
+    background-image: linear-gradient(180deg, #fffefa 0%, #f8f8f4 58%, #f0f0eb 100%);
+  }
 }

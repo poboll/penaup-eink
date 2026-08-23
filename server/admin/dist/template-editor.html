@@ -109,7 +109,7 @@
 
       <div class="prop-sec">
         <h5>说明</h5>
-        <p style="font-size:12px;color:var(--gray);line-height:1.8">渲染管线：画布 → 对比度/亮度预处理 → 6 色调色板量化 + 抖动 → 4bit 像素打包 → film 文件。definition 参考坐标系为 400×600，渲染时按设备分辨率缩放。</p>
+        <p style="font-size:12px;color:var(--gray);line-height:1.8">渲染管线：528×792 竖向视觉画布 → 对比度/亮度预处理 → 6 色调色板量化 + 抖动 → 4bit 像素打包 → film 文件。Pro 输出会转为 792×528 兼容协议；切换 STD/Max 时再按明确的设备 Profile 适配。</p>
       </div>
     </div>
 
@@ -136,8 +136,8 @@
         </div>
       </div>
       <div class="dev-tabs">
-        <span class="filter on" data-dev="basic" onclick="pickDev(this)">basic 400×600</span>
-        <span class="filter" data-dev="pro" onclick="pickDev(this)">pro 528×792</span>
+        <span class="filter" data-dev="basic" onclick="pickDev(this)">basic 400×600</span>
+        <span class="filter on" data-dev="pro" onclick="pickDev(this)">pro 528×792 · 默认</span>
       </div>
       <div class="pv-tip">预览由后端实时渲染并缓存缩略图，点击「预览」强制刷新。</div>
     </div>
@@ -159,7 +159,7 @@
 
   let tplId = null;       // 编辑中的模板 id（null = 新建）
   let isBuiltin = false;
-  let devType = 'basic';
+  let devType = 'pro';
   let albums = [];
 
   const params = new URLSearchParams(location.search);

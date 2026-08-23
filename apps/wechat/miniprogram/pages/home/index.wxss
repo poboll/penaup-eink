@@ -5,9 +5,11 @@
   min-height: 260rpx;
   padding: 34rpx 30rpx;
   overflow: hidden;
-  color: #fffefa;
-  background: #20211f;
-  border-radius: 8rpx;
+  color: #20211f;
+  background: rgba(255, 255, 252, .88);
+  border: 2rpx solid rgba(32, 33, 31, .2);
+  border-radius: 7rpx 9rpx 6rpx 8rpx;
+  box-shadow: 4rpx 5rpx 0 rgba(42, 41, 36, .055), 0 16rpx 30rpx rgba(42, 41, 36, .04);
 }
 .banner-strip::after {
   content: '✦';
@@ -19,8 +21,8 @@
   opacity: .72;
 }
 .bn-t { position: relative; z-index: 1; font: 600 48rpx/1.18 Georgia, "Songti SC", serif; letter-spacing: 1rpx; }
-.bn-s { position: relative; z-index: 1; margin-top: 14rpx; color: rgba(247, 247, 242, .7); font-size: 24rpx; }
-.bn-chip { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 10rpx; margin-top: 38rpx; padding: 10rpx 16rpx; color: #fffefa; border: 2rpx solid rgba(247, 247, 242, .28); border-radius: 999rpx; font-size: 21rpx; }
+.bn-s { position: relative; z-index: 1; margin-top: 14rpx; color: #656761; font-size: 24rpx; }
+.bn-chip { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 10rpx; margin-top: 38rpx; padding: 10rpx 16rpx; color: #20211f; border: 2rpx solid rgba(32, 33, 31, .3); border-radius: 7rpx; background: rgba(255, 255, 252, .72); font-size: 21rpx; }
 .bn-dot { width: 12rpx; height: 12rpx; border-radius: 50%; background: #86877f; }
 .bn-dot.on { background: #55765e; }
 

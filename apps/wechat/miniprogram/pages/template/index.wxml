@@ -1,14 +1,14 @@
 <view class="container">
   <view class="header">
     <text class="title">模板中心</text>
-    <text class="subtitle">日历、一签、天气、纪念日、备忘录，画上墙每天换一种心情</text>
+    <text class="subtitle">日历、一签、天气、纪念日、备忘录，全部为 3.68 英寸竖向相纸排版。</text>
     <view class="paper-format-note"><text>PENAUP PRO / E6 3.68 INCH</text><text>528 × 792 竖向相纸</text></view>
   </view>
 
   <view class="grid">
     <view class="tpl-card" wx:for="{{templates}}" wx:key="id"
           data-id="{{item.id}}" bindtap="goTemplate" style="background: {{item.gradient}};">
-      <view class="tpl-paper-mark" aria-hidden="true"><view class="tpl-paper-screen"><text>3.68″</text></view></view>
+      <view class="tpl-paper-mark" aria-hidden="true"><view class="tpl-paper-screen"><text>3.68″</text><text>528 × 792</text></view></view>
       <text class="tpl-emoji">{{item.emoji}}</text>
       <text class="tpl-name">{{item.name}}</text>
       <text class="tpl-desc">{{item.desc}}</text>
