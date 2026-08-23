@@ -1,6 +1,6 @@
 /* Copyright (c) 2026 poboll · Penaup paper interface */
 :root {
-    --paper: #fbfaf5;
+    --paper: #fafaf7;
     --paper-raised: #fffdf8;
     --paper-deep: #ece7dc;
     --ink: #171816;
@@ -30,7 +30,7 @@ body {
         radial-gradient(circle at 92% 5%, rgba(223, 181, 46, .04), transparent 25%),
         repeating-linear-gradient(90deg, rgba(118, 99, 70, .016) 0 1px, transparent 1px 22px),
         repeating-linear-gradient(0deg, rgba(84, 70, 48, .012) 0 1px, transparent 1px 7px),
-        linear-gradient(180deg, #fffefa 0%, var(--paper) 55%, #f7f1e7 100%);
+        linear-gradient(180deg, #fffefa 0%, var(--paper) 55%, #f2f2ee 100%);
     font: 400 15px/1.6 var(--sans);
     overflow: hidden;
 }

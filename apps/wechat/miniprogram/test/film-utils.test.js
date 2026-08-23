@@ -106,6 +106,9 @@ test('Bayer rendering keeps the output inside the six-color palette', () => {
 test('template center labels every template as the Pro portrait paper', () => {
   const templates = require('../utils/template-core');
   assert.equal(templates.TEMPLATE_OUTPUT.profile, 'PENAUP_PRO');
+  assert.equal(templates.TEMPLATE_OUTPUT.visualWidth, 528);
+  assert.equal(templates.TEMPLATE_OUTPUT.visualHeight, 792);
+  assert.equal(templates.TEMPLATE_OUTPUT.visualRatio, '2:3');
   assert.equal(templates.TEMPLATE_OUTPUT.label, '3.68 英寸 · 528 × 792 竖向');
   assert.equal(templates.TEMPLATE_LIST.length, 5);
   assert.ok(templates.TEMPLATE_LIST.every(function (item) {

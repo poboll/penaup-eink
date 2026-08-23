@@ -59,13 +59,20 @@ function initNavigation() {
             this.setAttribute('aria-current', 'page');
 
             // 更新页面显示
-            pages.forEach(page => page.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+            pages.forEach(page => {
+                const active = page.id === pageId;
+                page.classList.toggle('active', active);
+                page.setAttribute('aria-hidden', active ? 'false' : 'true');
+            });
             resetPageContentScroll();
             window.requestAnimationFrame(() => {
                 if (typeof updateCanvasScale === 'function') updateCanvasScale();
             });
         });
+    });
+
+    pages.forEach(page => {
+        page.setAttribute('aria-hidden', page.classList.contains('active') ? 'false' : 'true');
     });
 
     // 标签页切换

@@ -27,31 +27,58 @@ function frameRenderStatus(canvasId, message, type) {
 }
 
 function initFrameTabSwitch() {
-    var tabs = document.querySelectorAll('.frame-tab');
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.frame-tab'));
+    if (!tabs.length) return;
+
+    function activateTab(tab, moveFocus) {
+        if (!tab) return;
+        var tabId = tab.getAttribute('data-frame-tab');
+        tabs.forEach(function(t) {
+            var active = t === tab;
+            var panelId = t.getAttribute('aria-controls') || t.getAttribute('data-frame-tab');
+            var panel = document.getElementById(panelId);
+            t.classList.toggle('active', active);
+            t.setAttribute('aria-selected', active ? 'true' : 'false');
+            t.setAttribute('tabindex', active ? '0' : '-1');
+            if (panel) {
+                panel.classList.toggle('active', active);
+                panel.setAttribute('aria-hidden', active ? 'false' : 'true');
+            }
+        });
+        frameActiveTab = tabId;
+        if (tabId !== 'frame-camera' && frameCameraStream) {
+            frameStopCamera();
+        }
+        if (moveFocus) tab.focus();
+        var pageContent = document.getElementById('page-content');
+        if (pageContent) pageContent.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        setTimeout(function() {
+            updateCanvasScale();
+        }, 50);
+    }
+
     tabs.forEach(function(tab) {
         tab.addEventListener('click', function() {
-            var tabId = this.getAttribute('data-frame-tab');
-            tabs.forEach(function(t) {
-                t.classList.remove('active');
-                t.setAttribute('aria-selected', 'false');
-            });
-            this.classList.add('active');
-            this.setAttribute('aria-selected', 'true');
-            document.querySelectorAll('.frame-tab-content').forEach(function(c) {
-                c.classList.remove('active');
-            });
-            document.getElementById(tabId).classList.add('active');
-            frameActiveTab = tabId;
-            if (tabId !== 'frame-camera' && frameCameraStream) {
-                frameStopCamera();
+            activateTab(this, false);
+        });
+        tab.addEventListener('keydown', function(event) {
+            var index = tabs.indexOf(this);
+            var nextIndex = index;
+            if (event.key === 'ArrowRight' || event.key === 'ArrowDown') nextIndex = (index + 1) % tabs.length;
+            if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') nextIndex = (index - 1 + tabs.length) % tabs.length;
+            if (event.key === 'Home') nextIndex = 0;
+            if (event.key === 'End') nextIndex = tabs.length - 1;
+            if (nextIndex !== index) {
+                event.preventDefault();
+                activateTab(tabs[nextIndex], true);
+            } else if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                activateTab(this, false);
             }
-            var pageContent = document.getElementById('page-content');
-            if (pageContent) pageContent.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-            setTimeout(function() {
-                updateCanvasScale();
-            }, 50);
         });
     });
+
+    activateTab(tabs.find(function(tab) { return tab.classList.contains('active'); }) || tabs[0], false);
 }
 
 function initFrameUpload() {

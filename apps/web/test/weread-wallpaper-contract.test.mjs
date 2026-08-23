@@ -47,7 +47,7 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.doesNotMatch(script, /safeText\(error && error\.message/);
   assert.match(html, /当前页面临时使用/);
   assert.match(styles, /font-family:\s*"Huiwen Mincho"/);
-  assert.match(styles, /--paper:\s*#fcfaf4/);
+  assert.match(styles, /--paper:\s*#fafaf7/);
   assert.match(styles, /repeating-linear-gradient\(90deg/);
   assert.match(styles, /prefers-reduced-motion/);
   assert.match(responsiveStyles, /\.weread-phase-trail/);
@@ -60,11 +60,14 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.match(responsiveStyles, /\.weread-section-title small[\s\S]*?font-size:\s*13px/);
   assert.match(responsiveStyles, /scroll-padding-bottom:\s*calc\(176px/);
   assert.match(styles, /\.weread-preview-panel\s*\{[\s\S]*?position:\s*static/);
-  assert.match(paperSurface, /--penaup-paper-ivory:\s*#f5f5f1/);
+  assert.match(paperSurface, /--penaup-paper-ivory:\s*#fafaf7/);
+  assert.match(paperSurface, /--penaup-paper-rice:\s*#f2f2ee/);
   assert.match(paperSurface, /aspect-ratio:\s*2 \/ 3/);
   assert.match(paperSurface, /body::after\s*\{/);
   assert.match(paperSurface, /\.weread-preview-panel\[aria-busy="true"\]/);
   assert.match(paperSurface, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(paperSurface, /body \.story-nav \.nav-cta \{\n    color: var\(--penaup-paper-white\) !important;/);
+  assert.match(paperSurface, /body \.story-nav \.nav-cta:hover[\s\S]*?color: var\(--penaup-paper-ink\) !important;/);
   const convert = await read('js/convert.js');
   assert.match(convert, /\.polaroid-inner:not\(\.weread-polaroid-inner\)/);
   assert.match(styles, /\.weread-polaroid-inner canvas\s*\{[\s\S]*?top:\s*0;[\s\S]*?left:\s*0;/);

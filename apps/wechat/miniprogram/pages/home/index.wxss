@@ -30,7 +30,7 @@
 .dev-info { flex: 1; min-width: 0; }
 .dev-name { display: flex; align-items: center; gap: 12rpx; font-size: 28rpx; font-weight: 600; }
 .dev-meta { margin-top: 8rpx; overflow: hidden; font-size: 22rpx; text-overflow: ellipsis; white-space: nowrap; }
-.dev-batt { min-width: 92rpx; padding: 12rpx 14rpx; color: #55785b; background: #ebebe8; text-align: center; }
+.dev-batt { min-width: 92rpx; padding: 12rpx 14rpx; color: #55785b; background: #f2f2ee; text-align: center; }
 .dev-batt .num { font: 600 28rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
 .dev-batt .t { margin-top: 2rpx; color: #656761; font-size: 20rpx; }
 

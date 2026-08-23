@@ -15,9 +15,9 @@
 
 :root {
     --penaup-paper-white: #ffffff;
-    --penaup-paper-ivory: #f5f5f1;
-    --penaup-paper-rice: #ebebe8;
-    --penaup-paper-fiber: rgba(48, 49, 45, .018);
+    --penaup-paper-ivory: #fafaf7;
+    --penaup-paper-rice: #f2f2ee;
+    --penaup-paper-fiber: rgba(48, 49, 45, .014);
     --penaup-paper-ink: #20211f;
     --penaup-paper-blue: #4d73ad;
     --penaup-paper-yellow: #c49a24;
@@ -30,12 +30,12 @@
     --paper: var(--penaup-paper-ivory);
     --paper-bright: #fffefa;
     --paper-raised: #fffefa;
-    --paper-shadow: #e8e8e4;
+    --paper-shadow: #e9e9e5;
     --ink: var(--penaup-paper-ink);
     --ink-soft: #656761;
     --ink-faint: #858780;
-    --line: rgba(38, 40, 36, .16);
-    --line-strong: rgba(38, 40, 36, .34);
+    --line: rgba(38, 40, 36, .15);
+    --line-strong: rgba(38, 40, 36, .30);
     --blue: var(--penaup-paper-blue);
     --yellow: var(--penaup-paper-yellow);
     --red: #ad5145;
@@ -54,9 +54,9 @@ body {
     background-image:
         radial-gradient(circle at 8% -14%, rgba(255, 255, 255, .98), transparent 34%),
         radial-gradient(circle at 94% 4%, rgba(196, 154, 36, .026), transparent 24%),
-        repeating-linear-gradient(104deg, rgba(70, 70, 65, .010) 0 1px, transparent 1px 19px),
-        repeating-linear-gradient(16deg, rgba(70, 70, 65, .007) 0 1px, transparent 1px 13px),
-        linear-gradient(180deg, var(--penaup-paper-white) 0%, var(--penaup-paper-ivory) 62%, var(--penaup-paper-rice) 100%);
+        repeating-linear-gradient(104deg, rgba(70, 70, 65, .008) 0 1px, transparent 1px 19px),
+        repeating-linear-gradient(16deg, rgba(70, 70, 65, .006) 0 1px, transparent 1px 13px),
+        linear-gradient(180deg, var(--penaup-paper-white) 0%, var(--penaup-paper-ivory) 58%, var(--penaup-paper-rice) 100%);
 }
 
 /* A low-frequency grain keeps the surface tactile without making text noisy. */
@@ -66,7 +66,7 @@ body::after {
     inset: 0;
     pointer-events: none;
     content: "";
-    opacity: .095;
+    opacity: .065;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='penaup-paper-grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23penaup-paper-grain)' opacity='.34'/%3E%3C/svg%3E");
     background-size: 240px 240px;
     mix-blend-mode: multiply;
@@ -193,6 +193,9 @@ body .nav-cta {
     align-items: center;
     justify-content: center;
     gap: 8px;
+    align-self: center;
+    box-sizing: border-box;
+    line-height: 1.25;
     padding-inline: 17px;
     border: 1px solid rgba(32, 33, 31, .54);
     border-radius: 5px 7px 4px 6px;
@@ -217,12 +220,14 @@ body .nav-cta {
 body .button-primary,
 body .primary-button,
 body .nav-cta {
-    color: var(--penaup-paper-ink);
-    background: rgba(255, 254, 250, .88);
+    color: var(--penaup-paper-white);
+    border-color: var(--penaup-paper-ink);
+    background: var(--penaup-paper-ink);
+    box-shadow: 0 7px 18px rgba(42, 41, 36, .12), 4px 5px 0 rgba(42, 41, 36, .06);
 }
 
 body .story-nav .nav-cta {
-    color: var(--penaup-paper-ink) !important;
+    color: var(--penaup-paper-white) !important;
 }
 
 body .story-nav .nav-cta:hover,
@@ -296,6 +301,157 @@ body .button-danger:disabled {
     opacity: .78;
 }
 
+/* 2026-08-24 pale paper finish. The reference direction is a near-white
+ * grey paper, small 6–8px controls and a clear filled primary action. Keep
+ * this final bridge after the legacy sheets so desktop, phone and the device
+ * tool resolve the same geometry instead of competing with older selectors. */
+:root {
+    --penaup-paper-ivory: #fafaf7;
+    --penaup-paper-rice: #f2f2ee;
+    --paper: #fafaf7;
+    --paper-bright: #fffefa;
+    --paper-raised: #fffefa;
+    --paper-shadow: #e9e9e5;
+}
+
+body {
+    background-color: var(--penaup-paper-ivory);
+    background-image:
+        radial-gradient(circle at 8% -12%, rgba(255, 255, 255, .99), transparent 33%),
+        radial-gradient(circle at 94% 2%, rgba(196, 154, 36, .024), transparent 24%),
+        repeating-linear-gradient(112deg, rgba(70, 70, 65, .008) 0 1px, transparent 1px 19px),
+        repeating-linear-gradient(18deg, rgba(70, 70, 65, .006) 0 1px, transparent 1px 13px),
+        linear-gradient(180deg, #fff 0%, var(--penaup-paper-ivory) 58%, var(--penaup-paper-rice) 100%);
+}
+
+body .story-nav,
+body .app-topbar,
+body .story-progress,
+body .device-topbar,
+body .bottom-nav {
+    background: rgba(255, 255, 252, .90);
+}
+
+body .story-nav .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+body .story-nav .nav-links > a:not(.nav-cta) {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 12px;
+    color: var(--penaup-paper-ink);
+    font-size: 13px;
+    line-height: 1.25;
+}
+
+body .story-nav .nav-links > a:not(.nav-cta):hover,
+body .story-nav .nav-links > a:not(.nav-cta):focus-visible {
+    color: var(--penaup-paper-blue);
+}
+
+body .story-nav .nav-links > .nav-cta {
+    font-size: 13px;
+}
+
+body .story-footer {
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+body .hero-note,
+body .hero-proof-label,
+body .hero-proof-detail {
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+body .section-kicker,
+body .app-meta,
+body .device-tool-link {
+    font-size: 13px;
+}
+
+body .app-motto {
+    font-size: 18px;
+}
+
+body .frame-tab {
+    font-size: 15px;
+}
+
+body .frame-tab i {
+    font-size: 20px;
+}
+
+body .frame-format-note small,
+body .frame-hint,
+body .app-meta-label {
+    font-size: 13px;
+}
+
+body .device-app .button {
+    font-size: 14px;
+}
+
+body .paper-card,
+body .weread-controls,
+body .weread-pro-spec,
+body .reading-ticket,
+body .frame-format-note,
+body .polaroid-frame,
+body .weread-polaroid {
+    border-color: rgba(32, 33, 31, .16);
+    background-color: rgba(255, 255, 252, .88);
+}
+
+body .polaroid-inner,
+body .weread-polaroid-inner {
+    aspect-ratio: 528 / 792;
+    background-color: var(--penaup-paper-rice);
+}
+
+body .polaroid-inner::after,
+body .weread-polaroid-inner::after {
+    color: var(--penaup-paper-ink);
+    opacity: .72;
+}
+
+@media (max-width: 720px) {
+    body .story-nav .nav-links {
+        gap: 4px;
+    }
+
+    body .story-nav .nav-links > a:not(.nav-cta) {
+        display: none;
+    }
+
+    body .frame-tab {
+        min-height: 60px;
+        padding-inline: 3px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 420px) {
+    body .frame-tab {
+        min-height: 58px;
+        font-size: 12px;
+    }
+
+    body .frame-tab i {
+        font-size: 18px;
+    }
+
+    body .device-app .button {
+        font-size: 14px;
+    }
+}
+
 body .story-nav .nav-cta {
     display: inline-flex;
     font-weight: 700;
@@ -313,6 +469,12 @@ body .button-row > *,
 body .network-btn-row > *,
 body .action-controls > * {
     min-width: 0;
+}
+
+body .button-row > *,
+body .network-btn-row > *,
+body .action-controls > * {
+    align-self: stretch;
 }
 
 body .frame-tabs {

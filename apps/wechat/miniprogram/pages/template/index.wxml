@@ -8,6 +8,7 @@
   <view class="grid">
     <view class="tpl-card" wx:for="{{templates}}" wx:key="id"
           data-id="{{item.id}}" bindtap="goTemplate" style="background: {{item.gradient}};">
+      <view class="tpl-paper-mark" aria-hidden="true"><view class="tpl-paper-screen"><text>3.68″</text></view></view>
       <text class="tpl-emoji">{{item.emoji}}</text>
       <text class="tpl-name">{{item.name}}</text>
       <text class="tpl-desc">{{item.desc}}</text>

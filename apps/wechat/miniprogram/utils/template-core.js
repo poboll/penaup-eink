@@ -18,6 +18,9 @@ var COLORS = {
 // from the physical 3.68-inch portrait surface.
 var TEMPLATE_OUTPUT = {
   profile: 'PENAUP_PRO',
+  visualWidth: 528,
+  visualHeight: 792,
+  visualRatio: '2:3',
   label: '3.68 英寸 · 528 × 792 竖向'
 };
 

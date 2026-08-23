@@ -6,13 +6,13 @@
  */
 page {
   color: #20211f;
-  background-color: #f5f5f1;
+  background-color: #fafaf7;
   background-image:
     radial-gradient(circle at 8% -12%, rgba(255, 255, 255, .98), transparent 34%),
-    radial-gradient(circle at 94% 4%, rgba(196, 154, 36, .026), transparent 24%),
-    repeating-linear-gradient(104deg, rgba(70, 70, 65, .010) 0 1px, transparent 1px 19px),
-    repeating-linear-gradient(16deg, rgba(70, 70, 65, .007) 0 1px, transparent 1px 13px),
-    linear-gradient(180deg, #ffffff 0%, #f5f5f1 62%, #ebebe8 100%);
+    radial-gradient(circle at 94% 4%, rgba(196, 154, 36, .024), transparent 24%),
+    repeating-linear-gradient(104deg, rgba(70, 70, 65, .008) 0 1px, transparent 1px 19px),
+    repeating-linear-gradient(16deg, rgba(70, 70, 65, .006) 0 1px, transparent 1px 13px),
+    linear-gradient(180deg, #ffffff 0%, #fafaf7 58%, #f2f2ee 100%);
 }
 
 /* The Web app owns the bundled Huiwen Mincho subset; mini program canvas
@@ -73,6 +73,6 @@ page {
 
 @media (prefers-reduced-motion: reduce) {
   page {
-    background-image: linear-gradient(180deg, #ffffff 0%, #f5f5f1 62%, #ebebe8 100%);
+    background-image: linear-gradient(180deg, #ffffff 0%, #fafaf7 58%, #f2f2ee 100%);
   }
 }
