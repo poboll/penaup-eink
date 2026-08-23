@@ -1,4 +1,5 @@
 <view class="container">
+  <view class="paper-format-note"><text>PENAUP PRO / E6 3.68 INCH</text><text>528 × 792 竖向相纸</text></view>
   <view class="tpl-toolbar">
     <view class="tpl-btn" bindtap="refreshSign">🎋 换一签</view>
   </view>

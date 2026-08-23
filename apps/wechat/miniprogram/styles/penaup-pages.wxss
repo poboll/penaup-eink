@@ -12,23 +12,23 @@
   align-items: center;
   justify-content: center;
   padding: 48rpx;
-  background: #1a1b18;
+  background: #20211f;
   animation: penaup-fade-up .28s ease both;
 }
-.intro-sheet { width: 100%; color: #f7f7f2; text-align: left; }
+.intro-sheet { width: 100%; color: #fffefa; text-align: left; }
 .intro-mark { position: relative; width: 82rpx; height: 64rpx; margin-bottom: 52rpx; }
-.intro-leaf { position: absolute; width: 36rpx; height: 52rpx; border: 3rpx solid #1a1b18; border-radius: 50%; background: #d4ad31; }
+.intro-leaf { position: absolute; width: 36rpx; height: 52rpx; border: 3rpx solid #20211f; border-radius: 50%; background: #c49a24; }
 .leaf-a { left: 8rpx; top: 0; transform: rotate(-28deg); }
 .leaf-b { left: 38rpx; top: 10rpx; transform: rotate(28deg); }
 .intro-kicker { display: block; margin-bottom: 20rpx; color: #8fb1df; font: 600 20rpx/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 3rpx; }
 .intro-title { display: block; white-space: pre-line; font: 400 64rpx/1.14 Georgia, "Songti SC", serif; letter-spacing: 0; }
 .intro-colors { display: flex; width: 100%; height: 8rpx; margin-top: 62rpx; }
-.intro-colors view { flex: 1; background: #1a1b18; }
-.intro-colors view:nth-child(2) { background: #f7f7f2; }
+.intro-colors view { flex: 1; background: #20211f; }
+.intro-colors view:nth-child(2) { background: #fffefa; }
 .intro-colors view:nth-child(3) { background: #c95849; }
-.intro-colors view:nth-child(4) { background: #d4ad31; }
-.intro-colors view:nth-child(5) { background: #4d75b6; }
-.intro-colors view:nth-child(6) { background: #6f936e; }
+.intro-colors view:nth-child(4) { background: #c49a24; }
+.intro-colors view:nth-child(5) { background: #4d73ad; }
+.intro-colors view:nth-child(6) { background: #55765e; }
 .intro-hint { display: block; margin-top: 22rpx; color: rgba(247, 247, 242, .58); font-size: 21rpx; }
 
 /* 电子纸画面：外框像一张纸，内容区保持平面、无发光 */
@@ -42,9 +42,10 @@
 
 .canvas-wrap {
   position: relative;
-  width: 600rpx;
+  /* Penaup Pro E6 3.68 inch: the visual paper is portrait 528 × 792. */
+  width: 528rpx;
   max-width: 100%;
-  height: 900rpx;
+  height: 792rpx;
   margin: 0 auto;
   overflow: hidden;
   background: #ecece5;
@@ -94,13 +95,13 @@
   gap: 14rpx;
   min-height: 76rpx;
   padding: 14rpx 18rpx;
-  border: 2rpx solid #d8d8cf;
+  border: 2rpx solid #d5d5d1;
 }
-.filename-label { color: #74766d; font-size: 21rpx; flex-shrink: 0; }
-.filename-value { flex: 1; overflow: hidden; color: #1a1b18; font-size: 24rpx; text-overflow: ellipsis; white-space: nowrap; }
-.filename-edit { color: #4d75b6; font-size: 22rpx; flex-shrink: 0; }
+.filename-label { color: #656761; font-size: 21rpx; flex-shrink: 0; }
+.filename-value { flex: 1; overflow: hidden; color: #20211f; font-size: 24rpx; text-overflow: ellipsis; white-space: nowrap; }
+.filename-edit { color: #4d73ad; font-size: 22rpx; flex-shrink: 0; }
 .filename-input { flex: 1; min-width: 0; height: 54rpx; padding: 0 12rpx; font-size: 24rpx; }
-.filename-ext { color: #74766d; font-size: 22rpx; }
+.filename-ext { color: #656761; font-size: 22rpx; }
 
 /* 上传和模板共用的传输弹层 */
 .transfer-overlay,
@@ -129,7 +130,7 @@
   height: 112rpx;
   margin-bottom: 22rpx;
   overflow: hidden;
-  border-bottom: 2rpx solid #d8d8cf;
+  border-bottom: 2rpx solid #d5d5d1;
 }
 .airplane {
   position: absolute;
@@ -138,8 +139,8 @@
   width: 64rpx;
   height: 78rpx;
   overflow: hidden;
-  background: #fbfaf6;
-  border: 3rpx solid #1a1b18;
+  background: #fffefa;
+  border: 3rpx solid #20211f;
   border-radius: 3rpx;
   box-shadow: 8rpx 8rpx 0 rgba(26, 27, 24, .08);
   animation: penaup-card-fly 1.8s cubic-bezier(.45, 0, .55, 1) infinite;
@@ -151,7 +152,7 @@
   right: 7rpx;
   top: 7rpx;
   bottom: 22rpx;
-  background: linear-gradient(135deg, #d4ad31 0 28%, #4d75b6 28% 54%, #6f936e 54% 76%, #c95849 76%);
+  background: linear-gradient(135deg, #c49a24 0 28%, #4d73ad 28% 54%, #55765e 54% 76%, #c95849 76%);
 }
 .airplane::after {
   content: 'PENAUP';
@@ -159,7 +160,7 @@
   left: 7rpx;
   right: 7rpx;
   bottom: 5rpx;
-  color: #74766d;
+  color: #656761;
   font: 10rpx/1 ui-monospace, SFMono-Regular, Menlo, monospace;
   letter-spacing: 1rpx;
 }
@@ -170,14 +171,14 @@
   right: 8rpx;
   bottom: 11rpx;
   height: 4rpx;
-  background: #4d75b6;
+  background: #4d73ad;
   transform-origin: left center;
   animation: penaup-trail 1.8s ease-in-out infinite;
 }
-.transfer-percent { margin-bottom: 8rpx; color: #4d75b6; font: 600 48rpx/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
-.transfer-kicker { margin-bottom: 10rpx; color: #4d75b6; font: 600 20rpx/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 2rpx; }
-.transfer-title { margin-bottom: 8rpx; color: #1a1b18; font: 500 30rpx/1.25 Georgia, "Songti SC", serif; }
-.transfer-rendering { margin: -2rpx 0 10rpx; color: #4d75b6; font: 19rpx/1.35 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.transfer-percent { margin-bottom: 8rpx; color: #4d73ad; font: 600 48rpx/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.transfer-kicker { margin-bottom: 10rpx; color: #4d73ad; font: 600 20rpx/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 2rpx; }
+.transfer-title { margin-bottom: 8rpx; color: #20211f; font: 500 30rpx/1.25 Georgia, "Songti SC", serif; }
+.transfer-rendering { margin: -2rpx 0 10rpx; color: #4d73ad; font: 19rpx/1.35 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .transfer-msg { margin-bottom: 24rpx; font-size: 23rpx; }
 .modal-progress-bar { width: 100%; height: 10rpx; overflow: hidden; border-radius: 0; }
 .modal-progress-fill { height: 100%; transition: width .25s ease; }
@@ -185,9 +186,9 @@
 .transfer-actions { display: flex; gap: 14rpx; margin-top: 24rpx; }
 .transfer-actions button { flex: 1; min-height: 76rpx; padding: 14rpx 12rpx; font-size: 23rpx; }
 .transfer-retry { color: #20211f; background: #b7d6c0; border-color: #4f775d; box-shadow: 4rpx 5rpx 0 rgba(79, 119, 93, .12); }
-.transfer-close { color: #1a1b18; background: transparent; border-color: #bbbcb3; }
-.airplane-uncertain { border-color: #d4ad31; }
-.airplane-uncertain::before { background: linear-gradient(135deg, #d4ad31 0 30%, #f7f7f2 30% 55%, #d4ad31 55% 78%, #f7f7f2 78%); }
+.transfer-close { color: #20211f; background: transparent; border-color: #b6b7b2; }
+.airplane-uncertain { border-color: #c49a24; }
+.airplane-uncertain::before { background: linear-gradient(135deg, #c49a24 0 30%, #fffefa 30% 55%, #c49a24 55% 78%, #fffefa 78%); }
 
 @keyframes penaup-card-fly {
   0% { left: -14%; transform: translateY(18rpx) rotate(-8deg); opacity: 0; }
@@ -207,14 +208,27 @@
 }
 
 /* 模板详情 */
+.paper-format-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx 18rpx;
+  margin: 0 auto 20rpx;
+  padding: 14rpx 16rpx;
+  border-left: 5rpx solid #4d73ad;
+  background: rgba(255, 255, 252, .78);
+  color: #656761;
+  font: 19rpx/1.35 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.paper-format-note text:first-child { color: #4d73ad; font-weight: 600; letter-spacing: .04em; }
+
 .tpl-toolbar { display: flex; gap: 12rpx; margin-bottom: 18rpx; }
 .tpl-btn {
   flex: 1;
   min-height: 70rpx;
   padding: 18rpx 12rpx;
-  color: #1a1b18;
-  background: #fbfaf6;
-  border: 2rpx solid #bbbcb3;
+  color: #20211f;
+  background: #fffefa;
+  border: 2rpx solid #b6b7b2;
   border-radius: 6rpx;
   font-size: 23rpx;
   text-align: center;
@@ -223,13 +237,13 @@
 .scheme-pill {
   flex-shrink: 0;
   padding: 12rpx 22rpx;
-  color: #74766d;
+  color: #656761;
   background: transparent;
-  border: 2rpx solid #bbbcb3;
+  border: 2rpx solid #b6b7b2;
   border-radius: 999rpx;
   font-size: 22rpx;
 }
-.scheme-pill.active { color: #f7f7f2; background: #1a1b18; border-color: #1a1b18; }
+.scheme-pill.active { color: #fffefa; background: #20211f; border-color: #20211f; }
 
 /* 传图 / 高级转换 */
 .adjust-hint {
@@ -238,7 +252,7 @@
   right: 6%;
   bottom: 16rpx;
   padding: 8rpx 0;
-  color: #f7f7f2;
+  color: #fffefa;
   background: rgba(26, 27, 24, .78);
   border-radius: 3rpx;
   font-size: 20rpx;
@@ -246,41 +260,41 @@
 .settings-section { max-width: 668rpx; margin: 22rpx auto; padding: 0 24rpx; }
 .section-header { padding: 22rpx 0 18rpx; font-size: 27rpx; font-weight: 600; }
 .setting-item,
-.slider-row { display: flex; align-items: center; gap: 16rpx; min-height: 76rpx; border-bottom: 2rpx solid #d8d8cf; }
+.slider-row { display: flex; align-items: center; gap: 16rpx; min-height: 76rpx; border-bottom: 2rpx solid #d5d5d1; }
 .setting-item:last-child, .slider-row:last-child { border-bottom: 0; }
 .setting-label, .slider-label { width: 132rpx; flex-shrink: 0; font-size: 24rpx; }
-.picker-value { flex: 1; padding: 12rpx 16rpx; border: 2rpx solid #bbbcb3; font-size: 23rpx; text-align: right; }
+.picker-value { flex: 1; padding: 12rpx 16rpx; border: 2rpx solid #b6b7b2; font-size: 23rpx; text-align: right; }
 .slider-row slider { flex: 1; }
-.slider-value { width: 76rpx; color: #4d75b6; font: 22rpx ui-monospace, SFMono-Regular, Menlo, monospace; text-align: right; }
+.slider-value { width: 76rpx; color: #4d73ad; font: 22rpx ui-monospace, SFMono-Regular, Menlo, monospace; text-align: right; }
 .btn-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12rpx; max-width: 668rpx; margin: 20rpx auto; }
 .btn-group .btn-secondary { min-height: 70rpx; padding: 12rpx 8rpx; font-size: 21rpx; }
 .file-name-row { max-width: 668rpx; margin: 18rpx auto 0; padding: 14rpx 0; }
-.file-name-input { flex: 1; height: 60rpx; padding: 0 14rpx; border: 2rpx solid #bbbcb3; font-size: 23rpx; }
-.transfer-container { max-width: 668rpx; margin: 22rpx auto; padding: 22rpx; border: 2rpx solid #d8d8cf; }
+.file-name-input { flex: 1; height: 60rpx; padding: 0 14rpx; border: 2rpx solid #b6b7b2; font-size: 23rpx; }
+.transfer-container { max-width: 668rpx; margin: 22rpx auto; padding: 22rpx; border: 2rpx solid #d5d5d1; }
 .progress-bar { height: 10rpx; margin: 14rpx 0 8rpx; overflow: hidden; }
 .progress-fill { height: 100%; transition: width .25s ease; }
 
 /* 颜色选择器 */
 .color-picker-modal { width: 620rpx; max-width: calc(100vw - 72rpx); overflow: hidden; }
-.picker-title { padding: 26rpx 28rpx 20rpx; border-bottom: 2rpx solid #d8d8cf; font-size: 28rpx; font-weight: 600; }
+.picker-title { padding: 26rpx 28rpx 20rpx; border-bottom: 2rpx solid #d5d5d1; font-size: 28rpx; font-weight: 600; }
 .picker-body { padding: 24rpx 28rpx; }
 .picker-preview-area { display: flex; align-items: center; gap: 18rpx; margin-bottom: 24rpx; }
-.picker-preview { width: 80rpx; height: 80rpx; border: 2rpx solid #1a1b18; }
-.picker-hex { color: #74766d; font: 22rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
+.picker-preview { width: 80rpx; height: 80rpx; border: 2rpx solid #20211f; }
+.picker-hex { color: #656761; font: 22rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
 .picker-row { display: flex; align-items: center; gap: 12rpx; height: 62rpx; }
 .picker-color-dot { width: 22rpx; height: 22rpx; border-radius: 50%; }
 .picker-slider { flex: 1; }
-.picker-val { width: 56rpx; color: #74766d; font: 21rpx ui-monospace, SFMono-Regular, Menlo, monospace; text-align: right; }
-.picker-buttons { display: flex; border-top: 2rpx solid #d8d8cf; }
-.btn-cancel, .btn-confirm { flex: 1; height: 84rpx; color: #1a1b18; background: transparent; border-radius: 0; font-size: 25rpx; }
-.btn-confirm { color: #4d75b6; border-left: 2rpx solid #d8d8cf; }
+.picker-val { width: 56rpx; color: #656761; font: 21rpx ui-monospace, SFMono-Regular, Menlo, monospace; text-align: right; }
+.picker-buttons { display: flex; border-top: 2rpx solid #d5d5d1; }
+.btn-cancel, .btn-confirm { flex: 1; height: 84rpx; color: #20211f; background: transparent; border-radius: 0; font-size: 25rpx; }
+.btn-confirm { color: #4d73ad; border-left: 2rpx solid #d5d5d1; }
 
 /* 空态、片单、预览 */
-.empty-state { padding: 42rpx 18rpx; color: #74766d; font-size: 23rpx; text-align: center; }
-.preview-modal { width: 620rpx; max-width: calc(100vw - 72rpx); padding: 26rpx; background: #fbfaf6; border: 2rpx solid #d8d8cf; text-align: center; }
-.preview-img { width: 100%; height: 670rpx; background: #e9e9e1; }
-.preview-name { margin: 18rpx 0; color: #1a1b18; font-size: 24rpx; }
-.preview-close { padding: 16rpx; color: #4d75b6; border-top: 2rpx solid #d8d8cf; font-size: 24rpx; }
+.empty-state { padding: 42rpx 18rpx; color: #656761; font-size: 23rpx; text-align: center; }
+.preview-modal { width: 620rpx; max-width: calc(100vw - 72rpx); padding: 26rpx; background: #fffefa; border: 2rpx solid #d5d5d1; text-align: center; }
+.preview-img { width: 100%; height: 670rpx; background: #ebebe8; }
+.preview-name { margin: 18rpx 0; color: #20211f; font-size: 24rpx; }
+.preview-close { padding: 16rpx; color: #4d73ad; border-top: 2rpx solid #d5d5d1; font-size: 24rpx; }
 
 @media (max-width: 620px) {
   .btn-group { grid-template-columns: repeat(2, 1fr); }

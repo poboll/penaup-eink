@@ -14,25 +14,25 @@
 }
 
 :root {
-    --penaup-paper-white: #fffefa;
-    --penaup-paper-ivory: #f0f0ec;
-    --penaup-paper-rice: #e8e8e3;
-    --penaup-paper-fiber: rgba(48, 49, 45, .052);
+    --penaup-paper-white: #ffffff;
+    --penaup-paper-ivory: #f5f5f1;
+    --penaup-paper-rice: #ebebe8;
+    --penaup-paper-fiber: rgba(48, 49, 45, .018);
     --penaup-paper-ink: #20211f;
     --penaup-paper-blue: #4d73ad;
     --penaup-paper-yellow: #c49a24;
     --penaup-paper-sage: #b7d6c0;
     --penaup-paper-sage-ink: #4f775d;
     --penaup-paper-tape: #e7dfbd;
-    --penaup-paper-line: rgba(38, 40, 36, .22);
+    --penaup-paper-line: rgba(38, 40, 36, .18);
 
     /* Alias the older studio tokens so every page shares one surface. */
     --paper: var(--penaup-paper-ivory);
     --paper-bright: #fffefa;
-    --paper-raised: #fbfbf7;
-    --paper-shadow: #e3e3de;
+    --paper-raised: #fffefa;
+    --paper-shadow: #e8e8e4;
     --ink: var(--penaup-paper-ink);
-    --ink-soft: #60625d;
+    --ink-soft: #656761;
     --ink-faint: #858780;
     --line: rgba(38, 40, 36, .16);
     --line-strong: rgba(38, 40, 36, .34);
@@ -52,11 +52,9 @@ body {
     isolation: isolate;
     background-color: var(--penaup-paper-ivory);
     background-image:
-        radial-gradient(circle at 7% -12%, rgba(255, 255, 252, .98), transparent 33%),
-        radial-gradient(circle at 92% 3%, rgba(196, 154, 36, .045), transparent 26%),
-        repeating-linear-gradient(112deg, transparent 0 17px, var(--penaup-paper-fiber) 17px 18px, transparent 18px 37px),
-        repeating-linear-gradient(7deg, transparent 0 7px, rgba(38, 40, 36, .022) 7px 8px, transparent 8px 16px),
-        linear-gradient(180deg, var(--penaup-paper-white) 0%, var(--penaup-paper-ivory) 53%, var(--penaup-paper-rice) 100%);
+        radial-gradient(circle at 8% -14%, rgba(255, 255, 255, .98), transparent 34%),
+        radial-gradient(circle at 94% 4%, rgba(196, 154, 36, .026), transparent 24%),
+        linear-gradient(180deg, var(--penaup-paper-white) 0%, var(--penaup-paper-ivory) 62%, var(--penaup-paper-rice) 100%);
 }
 
 /* A low-frequency grain keeps the surface tactile without making text noisy. */
@@ -66,10 +64,16 @@ body::after {
     inset: 0;
     pointer-events: none;
     content: "";
-    opacity: .13;
+    opacity: .07;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='penaup-paper-grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23penaup-paper-grain)' opacity='.34'/%3E%3C/svg%3E");
     background-size: 240px 240px;
     mix-blend-mode: multiply;
+}
+
+/* The older page sheets carry their own grain layer. Keep it present, but
+ * quiet enough that the surface reads as pale paper instead of graph paper. */
+body::before {
+    opacity: .035;
 }
 
 .story-shell,
@@ -183,16 +187,29 @@ body .button-quiet,
 body .button-danger,
 body .nav-cta {
     min-width: 0;
-    min-height: 50px;
+    min-height: 48px;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding-inline: 18px;
+    padding-inline: 17px;
     border: 1px solid rgba(32, 33, 31, .54);
     border-radius: 7px;
-    box-shadow: 4px 5px 0 rgba(42, 41, 36, .08), 0 7px 18px rgba(42, 41, 36, .055);
+    box-shadow: 0 7px 18px rgba(42, 41, 36, .06), 4px 5px 0 rgba(42, 41, 36, .045);
     text-decoration: none;
     transition: color .22s ease, background-color .22s ease, border-color .22s ease, box-shadow .22s ease, transform .22s cubic-bezier(.22, .75, .25, 1);
+}
+
+body .button,
+body .primary-button,
+body .secondary-button,
+body .button-primary,
+body .button-quiet,
+body .button-danger,
+body .nav-cta {
+    display: inline-flex;
+    text-align: center;
+    white-space: normal;
+    font-weight: 650;
 }
 
 body .button-primary,
@@ -261,7 +278,7 @@ body .button-primary:active:not(:disabled),
 body .button-quiet:active:not(:disabled),
 body .button-danger:active:not(:disabled) {
     transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 rgba(42, 41, 36, .16);
+    box-shadow: 1px 1px 0 rgba(42, 41, 36, .14);
 }
 
 body .button-primary:disabled,
@@ -325,11 +342,20 @@ body .frame-format-note {
     border-radius: 7px 8px 6px 7px;
 }
 
+body .paper-card,
+body .weread-controls,
+body .weread-pro-spec,
+body .reading-ticket,
+body .frame-format-note {
+    background-color: rgba(255, 255, 252, .84);
+    box-shadow: 4px 5px 0 rgba(42, 41, 36, .045), 0 16px 30px rgba(42, 41, 36, .045);
+}
+
 body .polaroid-frame,
 body .weread-polaroid {
     border-radius: 7px 8px 6px 7px;
     background: rgba(255, 255, 252, .82);
-    box-shadow: 4px 5px 0 rgba(42, 41, 36, .08), 0 24px 50px rgba(42, 41, 36, .1);
+    box-shadow: 5px 6px 0 rgba(42, 41, 36, .06), 0 24px 50px rgba(42, 41, 36, .08);
 }
 
 body .polaroid-inner {
@@ -348,6 +374,42 @@ body .weread-scene,
 body .weread-render,
 body .rendering-mode-button {
     border-radius: 7px;
+}
+
+body .frame-tabs {
+    border: 1px solid rgba(32, 33, 31, .12);
+    box-shadow: 0 8px 18px rgba(42, 41, 36, .035);
+}
+
+body .frame-tab {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+body .weread-scene,
+body .weread-period,
+body .weread-render,
+body .color-mode,
+body .rendering-mode-button {
+    min-width: 0;
+    border-color: rgba(32, 33, 31, .18);
+    background: rgba(255, 255, 252, .66);
+}
+
+body .weread-scene:hover,
+body .weread-scene:focus-visible,
+body .weread-period:hover,
+body .weread-period:focus-visible,
+body .weread-render:hover,
+body .weread-render:focus-visible,
+body .color-mode:hover,
+body .color-mode:focus-visible,
+body .rendering-mode-button:hover,
+body .rendering-mode-button:focus-visible {
+    border-color: var(--penaup-paper-sage-ink);
+    background: rgba(183, 214, 192, .2);
+    box-shadow: 2px 3px 0 rgba(79, 119, 93, .07);
 }
 
 body .weread-period.is-active,
@@ -465,8 +527,77 @@ body .secondary-button:disabled {
  * Its 792 × 528 film payload is an internal compatibility detail. */
 .weread-polaroid-inner {
     aspect-ratio: 2 / 3;
+    background-color: var(--penaup-paper-rice);
 }
 
 .weread-polaroid-inner::after {
     content: "PENAUP / E6 PRO / 528 × 792 VISUAL";
+}
+
+/* Final paper-cut bridge for legacy sheets. The story, studio and device
+ * pages still share older component files; keep their last-mile surfaces in
+ * the same near-white grass-paper family without changing the dark color
+ * study or the six physical accent colors. */
+body .story-nav,
+body .app-topbar,
+body .story-progress,
+body .device-topbar {
+    background: rgba(255, 255, 252, .86);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .84);
+}
+
+body .hero-proof,
+body .weread-demo-row,
+body .weread-phase-trail li,
+body .story-shell .closing {
+    background: rgba(255, 255, 252, .78);
+    box-shadow: 4px 5px 0 rgba(42, 41, 36, .035), 0 12px 24px rgba(42, 41, 36, .035);
+}
+
+body .device-tool-link {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    gap: 7px;
+    padding: 0 14px;
+    border: 1px solid rgba(32, 33, 31, .42);
+    border-radius: 7px;
+    color: var(--penaup-paper-ink);
+    background: rgba(255, 255, 252, .74);
+    box-shadow: 0 7px 18px rgba(42, 41, 36, .05), 4px 5px 0 rgba(42, 41, 36, .035);
+}
+
+body .device-tool-link:hover,
+body .device-tool-link:focus-visible {
+    border-color: var(--penaup-paper-sage-ink);
+    color: var(--penaup-paper-ink);
+    background: rgba(183, 214, 192, .22);
+    box-shadow: 2px 3px 0 rgba(79, 119, 93, .08);
+    transform: translateY(-1px);
+}
+
+body .hero-proof {
+    border-right: 1px solid rgba(32, 33, 31, .12);
+    border-top: 1px solid rgba(32, 33, 31, .12);
+    border-bottom: 1px solid rgba(32, 33, 31, .12);
+}
+
+body .weread-demo-row,
+body .weread-phase-trail li {
+    border-color: rgba(32, 33, 31, .16);
+}
+
+@media (max-width: 720px) {
+    body .device-tool-link {
+        min-height: 44px;
+        padding-inline: 10px;
+        font-size: 11px;
+    }
+
+    body .story-nav,
+    body .app-topbar,
+    body .story-progress,
+    body .device-topbar {
+        background: rgba(255, 255, 252, .94);
+    }
 }

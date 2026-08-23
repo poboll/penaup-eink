@@ -3,10 +3,10 @@
 .quote-controls { display: flex; gap: 12rpx; }
 .quote-controls .btn-secondary { flex: 1; }
 .custom-panel { display: flex; flex-direction: column; gap: 14rpx; margin: 18rpx 0; padding: 20rpx; }
-.custom-textarea { width: 100%; min-height: 150rpx; padding: 14rpx; border: 2rpx solid #bbbcb3; font-size: 25rpx; }
-.custom-input { width: 100%; min-height: 70rpx; padding: 0 14rpx; border: 2rpx solid #bbbcb3; font-size: 24rpx; }
+.custom-textarea { width: 100%; min-height: 150rpx; padding: 14rpx; border: 2rpx solid #b6b7b2; font-size: 25rpx; }
+.custom-input { width: 100%; min-height: 70rpx; padding: 0 14rpx; border: 2rpx solid #b6b7b2; font-size: 24rpx; }
 .custom-panel .btn-secondary { min-height: 70rpx; }
 .canvas-container { margin-top: 22rpx; }
 .container > .btn-primary { width: 100%; margin-top: 18rpx; color: #20211f; background: #b7d6c0; border-color: #4f775d; }
 .dither-toggle { display: flex; align-items: center; justify-content: center; gap: 10rpx; margin-top: 16rpx; }
-.dither-label { color: #74766d; font-size: 22rpx; }
+.dither-label { color: #656761; font-size: 22rpx; }

@@ -72,7 +72,7 @@ Node 运行时固定在 24.x（见 `.node-version`）。如果修改 `packages/f
 
 打开 `http://127.0.0.1:8787/` 查看产品故事页，打开 `/studio/` 进入创作工作台。Web Bluetooth 需要 HTTPS 或 localhost，并需要支持 Web Bluetooth 的 Chromium 系浏览器。部署探针使用 `GET /health`（进程存活）和 `GET /readyz`（SQLite 与媒体目录可读写）。
 
-工作台的“读书”入口是一间小型壁纸实验室：可以把微信读书的本周小票、本月日历、书架标本或单本读书卡排成花生片 Pro 的 3.68 英寸屏保。页面采用偏白糙米色的类纸背景，使用汇文明朝体做本地排版；服务端只做一次性数据转发，浏览器本地完成纸面排版和六色显影。叠色、网点和抖动会让六种物理墨水形成最多 48 种色彩观感，但不会改变 `.film` 的六色协议。Key 不写入仓库或服务端存储。视觉 token 与纸纤维实现见 [类纸表面规范](docs/brand/paper-surface.md)，使用前请阅读 [微信读书屏保整合说明](docs/integrations/weread-wallpaper.md) 和 [壁纸实验室设计](docs/plans/2026-08-23-weread-wallpaper-lab-design.md)。
+工作台的“读书”入口是一间小型壁纸实验室：可以把微信读书的本周小票、本月日历、书架标本或单本读书卡排成花生片 Pro 的 3.68 英寸屏保。页面采用接近白色的灰白草纸背景，使用汇文明朝体做本地排版；服务端只做一次性数据转发，浏览器本地完成纸面排版和六色显影。叠色、网点和抖动会让六种物理墨水形成最多 48 种色彩观感，但不会改变 `.film` 的六色协议。Key 不写入仓库或服务端存储。视觉 token 与纸面噪点实现见 [类纸表面规范](docs/brand/paper-surface.md)，使用前请阅读 [微信读书屏保整合说明](docs/integrations/weread-wallpaper.md) 和 [壁纸实验室设计](docs/plans/2026-08-23-weread-wallpaper-lab-design.md)。
 
 打开 `/device/` 进入浏览器设备工具：它可以读取型号、电量和 Wi-Fi 状态，使用已核实的 BLE 命令清除网络、重启或恢复出厂。命令发送后页面会进入“状态待确认”，只有设备重新广播并成功回读才会结束。固件升级入口会校验 manifest、型号、长度、SHA-256 和签名；当前仓库没有正式 `.bin`，不会把本地构建产物伪装成可刷写发布包。详见 [浏览器固件升级边界](docs/device-tool/firmware-updates.md)。
 

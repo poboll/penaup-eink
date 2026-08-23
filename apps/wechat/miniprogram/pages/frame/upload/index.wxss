@@ -4,7 +4,7 @@
 .rendering-study {
   margin: 18rpx auto 0;
   padding: 24rpx;
-  color: #f7f7f2;
+  color: #fffefa;
   background: #222520;
   border: 2rpx solid #474a43;
   border-radius: 8rpx;
@@ -20,15 +20,15 @@
   font: 18rpx/1.25 ui-monospace, SFMono-Regular, Menlo, monospace;
   letter-spacing: 1rpx;
 }
-.rendering-study-count { color: #d4ad31; font-weight: 600; letter-spacing: 0; }
+.rendering-study-count { color: #c49a24; font-weight: 600; letter-spacing: 0; }
 .rendering-palette { display: flex; gap: 6rpx; height: 12rpx; margin: 24rpx 0 18rpx; }
 .rendering-palette view { flex: 1; border-radius: 999rpx; }
-.rendering-palette view:nth-child(1) { background: #1a1b18; border: 2rpx solid rgba(247, 247, 242, .35); }
-.rendering-palette view:nth-child(2) { background: #f7f7f2; }
+.rendering-palette view:nth-child(1) { background: #20211f; border: 2rpx solid rgba(247, 247, 242, .35); }
+.rendering-palette view:nth-child(2) { background: #fffefa; }
 .rendering-palette view:nth-child(3) { background: #c95849; }
-.rendering-palette view:nth-child(4) { background: #d4ad31; }
-.rendering-palette view:nth-child(5) { background: #4d75b6; }
-.rendering-palette view:nth-child(6) { background: #6f936e; }
+.rendering-palette view:nth-child(4) { background: #c49a24; }
+.rendering-palette view:nth-child(5) { background: #4d73ad; }
+.rendering-palette view:nth-child(6) { background: #55765e; }
 .rendering-study-line { color: rgba(247, 247, 242, .8); letter-spacing: 0; }
 .rendering-mode-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8rpx; margin-top: 20rpx; }
 .rendering-mode-button {
@@ -44,7 +44,7 @@
   text-align: left;
 }
 .rendering-mode-button::after { border: 0; }
-.rendering-mode-button.is-active { color: #f7f7f2; background: rgba(77, 117, 182, .25); border-color: #8fb1df; box-shadow: inset 0 -4rpx #d4ad31; }
+.rendering-mode-button.is-active { color: #fffefa; background: rgba(77, 117, 182, .25); border-color: #8fb1df; box-shadow: inset 0 -4rpx #c49a24; }
 .rendering-mode-label { font: 600 24rpx/1.1 Georgia, "Songti SC", serif; }
 .rendering-mode-detail { color: inherit; font: 17rpx/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; opacity: .72; }
 .rendering-mode-note { display: block; min-height: 38rpx; margin-top: 16rpx; color: rgba(247, 247, 242, .78); font-size: 21rpx; line-height: 1.55; }

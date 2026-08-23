@@ -1,8 +1,8 @@
 @import "../../../styles/template-preview.wxss";
 
 .set-card { display: flex; align-items: center; gap: 14rpx; margin-bottom: 18rpx; padding: 8rpx 18rpx; }
-.set-input { flex: 1; min-width: 0; height: 70rpx; padding: 0 6rpx; color: #1a1b18; background: transparent; font-size: 24rpx; }
-.set-picker { display: flex; align-items: center; gap: 8rpx; padding: 12rpx; color: #4d75b6; border-left: 2rpx solid #d8d8cf; font: 20rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
+.set-input { flex: 1; min-width: 0; height: 70rpx; padding: 0 6rpx; color: #20211f; background: transparent; font-size: 24rpx; }
+.set-picker { display: flex; align-items: center; gap: 8rpx; padding: 12rpx; color: #4d73ad; border-left: 2rpx solid #d5d5d1; font: 20rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
 .set-picker-icon { font-size: 24rpx; filter: grayscale(1); }
 .canvas-container { margin-top: 0; }
 .container > .btn-primary { width: 100%; margin-top: 18rpx; color: #20211f; background: #b7d6c0; border-color: #4f775d; }

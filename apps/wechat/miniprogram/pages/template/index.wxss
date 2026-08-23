@@ -1,17 +1,19 @@
 @import "../../styles/penaup-pages.wxss";
 
 .header { margin-bottom: 28rpx; }
-.title { display: block; color: #1a1b18; font: 600 46rpx/1.15 Georgia, "Songti SC", serif; }
-.subtitle { display: block; max-width: 600rpx; margin-top: 14rpx; color: #74766d; font-size: 23rpx; line-height: 1.7; }
+.title { display: block; color: #20211f; font: 600 46rpx/1.15 Georgia, "Songti SC", serif; }
+.subtitle { display: block; max-width: 600rpx; margin-top: 14rpx; color: #656761; font-size: 23rpx; line-height: 1.7; }
+.paper-format-note { display: flex; flex-wrap: wrap; gap: 10rpx 18rpx; margin-top: 20rpx; padding: 14rpx 16rpx; border-left: 5rpx solid #4d73ad; background: rgba(255, 255, 252, .78); color: #656761; font: 19rpx/1.35 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.paper-format-note text:first-child { color: #4d73ad; font-weight: 600; letter-spacing: .04em; }
 .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14rpx; }
 .tpl-card { position: relative; min-height: 230rpx; padding: 24rpx; overflow: hidden; background: rgba(255, 255, 252, .8) !important; border: 2rpx solid rgba(32, 33, 31, .2); border-radius: 8rpx 10rpx 7rpx 9rpx; box-shadow: 4rpx 5rpx 0 rgba(42, 41, 36, .07); }
-.tpl-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 8rpx; background: #d4ad31; }
+.tpl-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 8rpx; background: #c49a24; }
 .tpl-card:nth-child(2)::before { background: #c95849; }
-.tpl-card:nth-child(3)::before { background: #4d75b6; }
-.tpl-card:nth-child(4)::before { background: #6f936e; }
+.tpl-card:nth-child(3)::before { background: #4d73ad; }
+.tpl-card:nth-child(4)::before { background: #55765e; }
 .tpl-card:nth-child(5)::before { background: #4779bc; }
 .tpl-emoji { display: block; font-size: 48rpx; opacity: .68; filter: grayscale(.5); }
-.tpl-name { display: block; margin-top: 24rpx; color: #1a1b18; font-size: 28rpx; font-weight: 600; }
-.tpl-desc { display: block; margin-top: 6rpx; color: #74766d; font-size: 20rpx; }
-.tpl-go { position: absolute; right: 18rpx; bottom: 18rpx; color: #4d75b6; font: 19rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
+.tpl-name { display: block; margin-top: 24rpx; color: #20211f; font-size: 28rpx; font-weight: 600; }
+.tpl-desc { display: block; margin-top: 6rpx; color: #656761; font-size: 20rpx; }
+.tpl-go { position: absolute; right: 18rpx; bottom: 18rpx; color: #4d73ad; font: 19rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
 @media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }

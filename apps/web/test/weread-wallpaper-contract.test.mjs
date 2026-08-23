@@ -60,7 +60,7 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.match(responsiveStyles, /\.weread-section-title small[\s\S]*?font-size:\s*13px/);
   assert.match(responsiveStyles, /scroll-padding-bottom:\s*calc\(176px/);
   assert.match(styles, /\.weread-preview-panel\s*\{[\s\S]*?position:\s*static/);
-  assert.match(paperSurface, /--penaup-paper-ivory:\s*#f0f0ec/);
+  assert.match(paperSurface, /--penaup-paper-ivory:\s*#f5f5f1/);
   assert.match(paperSurface, /aspect-ratio:\s*2 \/ 3/);
   assert.match(paperSurface, /body::after\s*\{/);
   assert.match(paperSurface, /\.weread-preview-panel\[aria-busy="true"\]/);

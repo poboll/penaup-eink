@@ -3,7 +3,7 @@
 .status-card { display: flex; align-items: center; gap: 18rpx; min-height: 164rpx; padding: 24rpx; }
 .status-icon-wrap { flex-shrink: 0; }
 .status-icon { display: flex; align-items: center; justify-content: center; width: 84rpx; height: 84rpx; border-radius: 50%; }
-.status-icon.connected { background: #6f936e; border-color: #6f936e; }
+.status-icon.connected { background: #55765e; border-color: #55765e; }
 .status-ico { width: 42rpx; height: 42rpx; }
 .status-icon.scanning { animation: penaup-pulse 1.2s ease-in-out infinite; }
 .status-info { flex: 1; min-width: 0; }
@@ -18,18 +18,18 @@
 .device-list { margin-top: 40rpx; }
 .list-header { display: flex; align-items: center; gap: 12rpx; margin-bottom: 14rpx; }
 .list-title { font-size: 25rpx; font-weight: 600; }
-.list-count { min-width: 38rpx; padding: 4rpx 10rpx; color: #f7f7f2; text-align: center; border-radius: 999rpx; font-size: 19rpx; }
-.device-item { display: flex; align-items: center; gap: 16rpx; min-height: 96rpx; margin-bottom: 10rpx; padding: 14rpx; background: #fbfaf6; border: 2rpx solid #d8d8cf; border-radius: 6rpx; animation: penaup-fade-up .4s ease both; }
+.list-count { min-width: 38rpx; padding: 4rpx 10rpx; color: #fffefa; text-align: center; border-radius: 999rpx; font-size: 19rpx; }
+.device-item { display: flex; align-items: center; gap: 16rpx; min-height: 96rpx; margin-bottom: 10rpx; padding: 14rpx; background: #fffefa; border: 2rpx solid #d5d5d1; border-radius: 6rpx; animation: penaup-fade-up .4s ease both; }
 .device-icon { display: flex; align-items: center; justify-content: center; width: 64rpx; height: 64rpx; border-radius: 50%; }
 .device-icon image { width: 32rpx; height: 32rpx; }
 .device-info { flex: 1; min-width: 0; }
 .device-name { display: flex; align-items: center; gap: 10rpx; font-size: 25rpx; font-weight: 600; }
-.dev-tag { padding: 3rpx 8rpx; color: #4d75b6; border: 2rpx solid #9fb7dc; font-size: 17rpx; }
-.device-id { margin-top: 5rpx; overflow: hidden; color: #74766d; font-size: 18rpx; text-overflow: ellipsis; white-space: nowrap; }
+.dev-tag { padding: 3rpx 8rpx; color: #4d73ad; border: 2rpx solid #9fb7dc; font-size: 17rpx; }
+.device-id { margin-top: 5rpx; overflow: hidden; color: #656761; font-size: 18rpx; text-overflow: ellipsis; white-space: nowrap; }
 .device-signal { display: flex; align-items: flex-end; gap: 4rpx; height: 28rpx; }
-.signal-bar { width: 6rpx; background: #d8d8cf; }
+.signal-bar { width: 6rpx; background: #d5d5d1; }
 .signal-bar.bar1 { height: 10rpx; }.signal-bar.bar2 { height: 18rpx; }.signal-bar.bar3 { height: 28rpx; }
-.signal-bar.active { background: #6f936e; }
-.hint-area { margin-top: 64rpx; padding: 44rpx 24rpx; color: #74766d; border-top: 2rpx solid #d8d8cf; border-bottom: 2rpx solid #d8d8cf; text-align: center; }
+.signal-bar.active { background: #55765e; }
+.hint-area { margin-top: 64rpx; padding: 44rpx 24rpx; color: #656761; border-top: 2rpx solid #d5d5d1; border-bottom: 2rpx solid #d5d5d1; text-align: center; }
 .hint-icon { display: block; width: 52rpx; height: 52rpx; margin: 0 auto 16rpx; opacity: .46; }
 .hint-text { font-size: 22rpx; }

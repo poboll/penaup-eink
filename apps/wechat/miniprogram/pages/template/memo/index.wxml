@@ -1,4 +1,5 @@
 <view class="container">
+  <view class="paper-format-note"><text>PENAUP PRO / E6 3.68 INCH</text><text>528 × 792 竖向相纸</text></view>
   <!-- 设置卡：输入 + 添加 -->
   <view class="set-card">
     <input class="set-input" placeholder="输入备忘内容…" value="{{inputText}}"

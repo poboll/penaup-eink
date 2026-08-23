@@ -22,7 +22,7 @@
 
 ## 体验与状态
 
-页面统一使用 `styles/paper-surface.wxss` 的浅糙米纸面，再叠加 `styles/penaup-pages.wxss` 的纸白、墨黑、六色 token。模板预览不再覆盖成旧的灰麻色；小屏读书页会把地址操作和主按钮堆叠，避免输入框被挤压。传图流程显示：
+页面统一使用 `styles/paper-surface.wxss` 的接近白色灰白草纸面，再叠加 `styles/penaup-pages.wxss` 的纸白、墨黑、六色 token。模板预览不再覆盖成旧的灰麻色；小屏读书页会把地址操作和主按钮堆叠，避免输入框被挤压。传图流程显示：
 
 ```text
 准备相纸 → 发送开始指令 → 发送文件名/长度 → 192B 分块写入
