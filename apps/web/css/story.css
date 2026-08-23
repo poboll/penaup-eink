@@ -185,18 +185,19 @@ a { color: inherit; }
 }
 
 :root {
-  --paper: #f8f4eb;
-  --paper-bright: #fffdf7;
-  --line: #ddd5c8;
-  --quiet: #6d685e;
+  --paper: #fbf8f0;
+  --paper-bright: #fffefa;
+  --line: #ded8cd;
+  --quiet: #6c685f;
   --serif: "Huiwen Mincho", "Songti SC", "STSong", "Noto Serif SC", Georgia, serif;
 }
 
 body {
   background:
-    radial-gradient(circle at 10% -10%, rgba(255, 253, 247, .96), transparent 34%),
-    radial-gradient(circle at 92% 4%, rgba(212, 169, 47, .08), transparent 25%),
-    linear-gradient(180deg, #fcfaf4 0%, var(--paper) 52%, #f0e9dd 100%);
+    radial-gradient(circle at 10% -10%, rgba(255, 254, 250, .98), transparent 34%),
+    radial-gradient(circle at 92% 4%, rgba(212, 169, 47, .06), transparent 25%),
+    repeating-linear-gradient(0deg, rgba(84, 70, 48, .01) 0 1px, transparent 1px 6px),
+    linear-gradient(180deg, #fffefa 0%, var(--paper) 52%, #f4eee4 100%);
   font-size: 17px;
 }
 
@@ -205,7 +206,7 @@ body::before {
 }
 
 .story-nav {
-  background: rgba(248, 244, 235, .88);
+  background: rgba(251, 248, 240, .9);
 }
 
 .brand strong {
@@ -258,10 +259,10 @@ body::before {
  * paper surface; dark ink is reserved for the actual color-study object. */
 body {
   background:
-    radial-gradient(circle at 8% -12%, rgba(255, 253, 247, .98), transparent 33%),
-    radial-gradient(circle at 94% 2%, rgba(212, 169, 47, .07), transparent 25%),
-    repeating-linear-gradient(0deg, rgba(84, 70, 48, .012) 0 1px, transparent 1px 6px),
-    linear-gradient(180deg, #fefcf7 0%, #f8f4eb 54%, #f1e9dd 100%);
+    radial-gradient(circle at 8% -12%, rgba(255, 254, 250, .99), transparent 33%),
+    radial-gradient(circle at 94% 2%, rgba(212, 169, 47, .055), transparent 25%),
+    repeating-linear-gradient(0deg, rgba(84, 70, 48, .01) 0 1px, transparent 1px 6px),
+    linear-gradient(180deg, #fffefa 0%, #fbf8f0 54%, #f4eee4 100%);
 }
 
 .feature-section {

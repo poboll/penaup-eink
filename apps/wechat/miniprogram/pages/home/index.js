@@ -223,6 +223,11 @@ Page({
     wx.navigateTo({ url: '/pages/template/index' });
   },
 
+  // 微信读书阅读轨迹 → Pro 版屏保
+  goWeread: function () {
+    wx.navigateTo({ url: '/pages/weread/index' });
+  },
+
   // 最近上墙点击：设备有同名文件直接切换显示，否则上传这一张
   tapRecent: function (e) {
     var that = this;

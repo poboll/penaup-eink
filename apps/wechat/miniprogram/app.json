@@ -6,6 +6,7 @@
     "pages/frame/camera/index",
     "pages/frame/quote/index",
     "pages/frame/draw/index",
+    "pages/weread/index",
     "pages/filmlist/index",
     "pages/film/index",
     "pages/template/index",

@@ -1,0 +1,82 @@
+<view class="container weread-page">
+  <view class="weread-hero">
+    <text class="weread-kicker">PENAUP / READING WALLPAPER LAB</text>
+    <text class="weread-title">把读过的书，&#10;留成一张屏保。</text>
+    <text class="weread-lede">从微信读书取回一段阅读轨迹，在花生片 Pro 的 3.68 英寸 E6 纸面上慢慢显影。</text>
+    <view class="weread-spec"><text>E6 PRO</text><text>792 × 528</text><text>六色 / 最多 48 种观感</text></view>
+  </view>
+
+  <view class="weread-rail">
+    <view class="rail-item {{phase === 'fetching' ? 'is-current' : ''}} {{phase !== 'idle' && phase !== 'failed' && phase !== 'choose' ? 'is-done' : ''}}"><text>01</text><text>取回</text></view>
+    <view class="rail-item {{phase === 'choose' ? 'is-current' : ''}} {{phase === 'typesetting' || phase === 'developing' || phase === 'keep' || phase === 'pending' ? 'is-done' : ''}}"><text>02</text><text>排版</text></view>
+    <view class="rail-item {{phase === 'developing' ? 'is-current' : ''}} {{phase === 'keep' || phase === 'pending' ? 'is-done' : ''}}"><text>03</text><text>显影</text></view>
+    <view class="rail-item {{phase === 'keep' || phase === 'pending' ? 'is-current' : ''}}"><text>04</text><text>留下</text></view>
+  </view>
+
+  <view class="weread-card">
+    <view class="card-heading"><text class="card-index">01</text><view><text class="card-title">先接上你的阅读</text><text class="card-subtitle">临时取回 · 不入库</text></view></view>
+    <view class="field-label">花生片服务地址</view>
+    <view class="input-row"><input class="paper-input" value="{{apiBaseUrl}}" placeholder="https://你的服务地址" bindinput="onApiInput" bindblur="saveApiBase" /><view class="address-actions"><button class="mini-action" bindtap="saveApiBase">保存</button><button class="mini-action clear-action" bindtap="clearApiBase">清除</button></view></view>
+    <text class="field-help">微信小程序只访问你配置的花生片服务；开发者工具可填 http://127.0.0.1:8787。</text>
+    <view class="field-label key-label">微信读书 Skill Key</view>
+    <input class="paper-input key-input" password value="{{skillKey}}" placeholder="wrk-…" bindinput="onKeyInput" />
+    <text class="field-help">Key 只放请求头，默认不保存、不写入 URL 或本地记录。</text>
+    <view class="connect-row"><button class="btn-secondary" disabled="{{busy}}" bindtap="connectSource">连接书架</button><button class="btn-secondary demo-button" disabled="{{busy}}" bindtap="loadDemo">先看示例</button></view>
+  </view>
+
+  <view class="weread-card choice-card">
+    <view class="card-heading"><text class="card-index">02</text><view><text class="card-title">选一张纸</text><text class="card-subtitle">让阅读变成每天会遇见的画面</text></view></view>
+    <view class="choice-label">时间范围</view>
+    <view class="choice-grid two-col">
+      <button class="choice-button {{mode == 'weekly' ? 'is-active' : ''}}" data-mode="weekly" bindtap="choosePeriod">本周读书</button>
+      <button class="choice-button {{mode == 'monthly' ? 'is-active' : ''}}" data-mode="monthly" bindtap="choosePeriod">本月读书</button>
+    </view>
+    <picker wx:if="{{mode == 'monthly'}}" mode="date" fields="month" value="{{month}}" bindchange="onMonthChange">
+      <view class="month-picker"><text>月报月份</text><text>{{month || '选择月份'}}　›</text></view>
+    </picker>
+    <view class="choice-label">壁纸场景</view>
+    <view class="scene-list">
+      <button class="scene-button {{scene == 'weekly_receipt' ? 'is-active' : ''}}" data-scene="weekly_receipt" bindtap="chooseScene"><text class="scene-mark">A</text><view class="scene-copy"><text class="scene-title">本周小票</text><text class="scene-detail">把一周阅读打印出来</text></view></button>
+      <button class="scene-button {{scene == 'monthly_calendar' ? 'is-active' : ''}}" data-scene="monthly_calendar" bindtap="chooseScene"><text class="scene-mark">B</text><view class="scene-copy"><text class="scene-title">本月日历</text><text class="scene-detail">每天读的书连成一条线</text></view></button>
+      <button class="scene-button {{scene == 'bookshelf' ? 'is-active' : ''}}" data-scene="bookshelf" bindtap="chooseScene"><text class="scene-mark">C</text><view class="scene-copy"><text class="scene-title">书架标本</text><text class="scene-detail">让书脊排成一面墙</text></view></button>
+      <button class="scene-button {{scene == 'reading_card' ? 'is-active' : ''}}" data-scene="reading_card" bindtap="chooseScene"><text class="scene-mark">D</text><view class="scene-copy"><text class="scene-title">我的读书卡</text><text class="scene-detail">为一本正在读的书留一页</text></view></button>
+    </view>
+    <picker wx:if="{{scene == 'reading_card' && books.length > 0}}" mode="selector" range="{{books}}" range-key="label" value="{{selectedBookIndex}}" bindchange="onBookChange">
+      <view class="book-picker"><text>读书卡对象</text><text>{{books[selectedBookIndex].label || '选择一本书'}}　›</text></view>
+    </picker>
+    <view class="choice-label">六色显影方式</view>
+    <view class="choice-grid render-grid">
+      <button wx:for="{{renderingModes}}" wx:key="id" class="render-button {{item.id == renderingMode ? 'is-active' : ''}}" data-mode="{{item.id}}" bindtap="chooseMode"><text>{{item.label}}</text><text>{{item.shortLabel}}</text></button>
+    </view>
+    <text class="render-note">{{renderingModeNote}}</text>
+    <text class="color-note">六种物理墨水是基础，不是颜色上限。叠色、网点和抖动把明暗与过渡织出来；画面停住后，电子纸不需要持续点亮。</text>
+    <button class="btn-primary fetch-button" disabled="{{busy}}" bindtap="fetchSnapshot">{{busy ? '正在显影…' : '取回并显影'}}</button>
+  </view>
+
+  <view class="status-box {{statusTone ? 'is-' + statusTone : ''}}" role="status">{{status}}</view>
+
+  <view wx:if="{{stats.bookCount > 0}}" class="stats-row">
+    <view><text>{{stats.readingMinutes}}</text><text>阅读分钟</text></view>
+    <view><text>{{stats.readingDays}}</text><text>阅读天数</text></view>
+    <view><text>{{stats.bookCount}}</text><text>读过的书</text></view>
+    <view><text>{{stats.noteCount}}</text><text>笔记划线</text></view>
+  </view>
+
+  <view class="preview-heading"><view><text class="weread-kicker">PAPER / LOCAL DEVELOPING</text><text class="preview-title">{{hasPreview ? '这一页已经显影' : '一页还未显影'}}</text></view><text class="preview-size">PRO · 792 × 528</text></view>
+  <view class="preview-paper"><view class="canvas-wrap"><canvas type="2d" id="weread-canvas" class="weread-canvas"></canvas></view><text class="preview-caption">{{phaseLabel}} · {{renderingMode == 'layer' ? '叠色层次' : renderingMode == 'dots' ? '有序网点' : '误差抖动'}}</text></view>
+  <view class="output-note"><text class="output-mark">6 × 8</text><text>六种物理墨水 · 最多 48 种色彩观感&#10;画面停住后不需要持续点亮</text></view>
+  <view class="output-actions"><button class="btn-secondary" disabled="{{!hasPreview}}" bindtap="savePreview">保存 PNG</button><button class="btn-primary" disabled="{{!hasFilm}}" bindtap="sendToDevice">发送到 Pro</button></view>
+
+  <view wx:if="{{showTransfer}}" class="transfer-overlay">
+    <view class="transfer-modal" catchtap="noop">
+      <view class="flight-area"><view class="airplane {{transferOutcome === 'uncertain' ? 'airplane-uncertain' : ''}} {{transferProgress >= 100 ? 'airplane-done' : ''}}"></view><view class="flight-trail"></view></view>
+      <view class="transfer-kicker">{{transferPhaseLabel}}</view><view class="transfer-title">{{transferTitle}}</view>
+      <view wx:if="{{transferRenderingDetail}}" class="transfer-rendering">显影方式 · {{transferRenderingDetail}}</view>
+      <view class="transfer-percent">{{transferProgress}}%</view><view class="transfer-msg">{{transferStatus}}</view>
+      <view class="modal-progress-bar"><view class="modal-progress-fill" style="width: {{transferProgress}}%"></view></view>
+      <view class="transfer-actions" wx:if="{{transferCanRetry || transferCanClose}}"><button wx:if="{{transferCanRetry}}" class="btn-primary" bindtap="retryTransfer">再试一次</button><button wx:if="{{transferCanClose}}" class="btn-secondary" bindtap="closeTransfer">稍后处理</button></view>
+    </view>
+  </view>
+
+  <view class="tab-bar-spacer"></view>
+</view>

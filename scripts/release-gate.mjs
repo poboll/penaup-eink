@@ -144,6 +144,11 @@ const requiredPaths = [
   , 'apps/web/css/studio-responsive.css'
   , 'server/src/modules/weread.js'
   , 'docs/device-tool/firmware-updates.md'
+  , 'apps/wechat/miniprogram/pages/weread/index.js'
+  , 'apps/wechat/miniprogram/pages/weread/index.wxml'
+  , 'apps/wechat/miniprogram/pages/weread/index.wxss'
+  , 'apps/wechat/miniprogram/utils/weread-api.js'
+  , 'apps/wechat/miniprogram/test/weread-page-contract.test.js'
   , 'firmware/penaup/releases/manifest.schema.json'
   , 'firmware/penaup/releases/README.md'
   , 'scripts/create-firmware-manifest.mjs'
@@ -191,6 +196,17 @@ const wechatUploadSurface = [
   read('apps/wechat/miniprogram/pages/frame/upload/index.js'),
   read('apps/wechat/miniprogram/utils/film-utils.js')
 ].join('\n');
+const wechatWereadSurface = [
+  JSON.stringify(json('apps/wechat/miniprogram/app.json')),
+  read('apps/wechat/miniprogram/pages/weread/index.wxml'),
+  read('apps/wechat/miniprogram/pages/weread/index.js'),
+  read('apps/wechat/miniprogram/utils/weread-api.js')
+].join('\n');
+assertMatch('WeChat WeRead page route', wechatWereadSurface, /pages\/weread\/index/);
+assertMatch('WeChat WeRead Pro output', wechatWereadSurface, /PENAUP_PRO|792 × 528/);
+assertMatch('WeChat WeRead key header boundary', wechatWereadSurface, /X-Penaup-WeRead-Key/);
+if (/wrk-[A-Za-z0-9_-]{32,}/.test(wechatWereadSurface)) fail('WeChat WeRead secret hygiene', 'a long Skill Key appears in source');
+else pass('WeChat WeRead secret hygiene');
 for (const mode of COLOR_RENDERING_MODE_DEFINITIONS) {
   assertMatch(`Web rendering mode ${mode.id}`, webStudioSurface, new RegExp(`data-rendering-mode="${mode.id}"`));
   assertMatch(`WeChat rendering mode ${mode.id}`, wechatUploadSurface, new RegExp(`['"]${mode.id}['"]|data-mode="\\{\\{item.id\\}\\}"`));

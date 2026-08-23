@@ -9,10 +9,10 @@
 }
 
 :root {
-    --paper: #f7f3ea;
-    --paper-bright: #fffdf7;
-    --paper-raised: #fcfaf3;
-    --paper-shadow: #e8e1d3;
+    --paper: #fbf8f0;
+    --paper-bright: #fffefa;
+    --paper-raised: #fdfbf5;
+    --paper-shadow: #ebe4d8;
     --ink: #262521;
     --ink-soft: #67645c;
     --ink-faint: #969087;
@@ -37,9 +37,10 @@ body {
     min-height: 100vh;
     color: var(--ink);
     background:
-        radial-gradient(circle at 12% -10%, rgba(255, 253, 247, .94), transparent 35%),
-        radial-gradient(circle at 92% 6%, rgba(212, 169, 47, .08), transparent 28%),
-        linear-gradient(180deg, #faf7f0 0%, var(--paper) 48%, #f0eadf 100%);
+        radial-gradient(circle at 12% -10%, rgba(255, 254, 250, .98), transparent 35%),
+        radial-gradient(circle at 92% 6%, rgba(212, 169, 47, .055), transparent 28%),
+        repeating-linear-gradient(0deg, rgba(84, 70, 48, .01) 0 1px, transparent 1px 6px),
+        linear-gradient(180deg, #fffefa 0%, var(--paper) 48%, #f4eee4 100%);
     font-family: var(--font-body);
     font-size: 16px;
 }
@@ -756,10 +757,10 @@ button.primary-button i, button.secondary-button i, a.primary-button i, a.second
 /* 2026-08-23 wallpaper lab: pale rice paper, a quiet editorial grid, and
  * one touch-safe control language across desktop and phone. */
 :root {
-    --paper: #f8f4eb;
-    --paper-bright: #fffdf8;
-    --paper-raised: #fcfaf3;
-    --paper-shadow: #e9e1d3;
+    --paper: #fbf8f0;
+    --paper-bright: #fffefa;
+    --paper-raised: #fdfbf5;
+    --paper-shadow: #ebe4d8;
     --ink: #292722;
     --ink-soft: #6f6a60;
     --ink-faint: #9b9489;
@@ -774,9 +775,10 @@ button.primary-button i, button.secondary-button i, a.primary-button i, a.second
 
 body {
     background:
-        radial-gradient(circle at 8% -12%, rgba(255, 255, 251, .98), transparent 34%),
-        radial-gradient(circle at 93% 3%, rgba(212, 165, 46, .075), transparent 26%),
-        linear-gradient(180deg, #fdfaf3 0%, var(--paper) 52%, #f1eadf 100%);
+        radial-gradient(circle at 8% -12%, rgba(255, 254, 250, .99), transparent 34%),
+        radial-gradient(circle at 93% 3%, rgba(212, 165, 46, .055), transparent 26%),
+        repeating-linear-gradient(0deg, rgba(84, 70, 48, .01) 0 1px, transparent 1px 6px),
+        linear-gradient(180deg, #fffefa 0%, var(--paper) 52%, #f4eee4 100%);
 }
 
 body::before {
@@ -1603,10 +1605,10 @@ body::before {
  * and the same pale rice-paper surface at every responsive width. */
 body {
     background:
-        radial-gradient(circle at 8% -12%, rgba(255, 255, 252, .98), transparent 34%),
-        radial-gradient(circle at 93% 3%, rgba(212, 165, 46, .055), transparent 25%),
-        repeating-linear-gradient(0deg, rgba(84, 70, 48, .012) 0 1px, transparent 1px 6px),
-        linear-gradient(180deg, #fefcf7 0%, #f8f4eb 54%, #f2ebe0 100%);
+        radial-gradient(circle at 8% -12%, rgba(255, 254, 250, .99), transparent 34%),
+        radial-gradient(circle at 93% 3%, rgba(212, 165, 46, .05), transparent 25%),
+        repeating-linear-gradient(0deg, rgba(84, 70, 48, .01) 0 1px, transparent 1px 6px),
+        linear-gradient(180deg, #fffefa 0%, #fbf8f0 54%, #f4eee4 100%);
 }
 
 body::before {
@@ -1715,8 +1717,18 @@ body::before {
 }
 
 .weread-actions > * {
-    min-height: 56px !important;
+    min-height: 58px !important;
     font-size: 15px;
+    line-height: 1.25;
+}
+
+.weread-key-field p,
+.weread-book-field p,
+.weread-render-note,
+.weread-enrichment-note,
+.weread-preview-meta,
+.weread-output-note {
+    line-height: 1.65;
 }
 
 @keyframes paper-phase-breathe {
@@ -1737,7 +1749,7 @@ body::before {
     }
 
     .weread-actions > * {
-        min-height: 54px !important;
+        min-height: 56px !important;
     }
 }
 

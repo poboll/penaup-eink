@@ -39,7 +39,7 @@
 }
 
 .weread-demo-row .secondary-button {
-    min-height: 48px;
+    min-height: 52px;
     justify-self: start;
 }
 
@@ -191,7 +191,7 @@ a.secondary-button {
     .weread-fetch-button,
     .weread-connect-row .secondary-button {
         width: 100%;
-        min-height: 54px !important;
+        min-height: 56px !important;
     }
 
     .weread-preview-panel {
@@ -209,7 +209,7 @@ a.secondary-button {
     }
 
     .app-brand em {
-        font-size: 10px;
+        font-size: 11px;
     }
 
     .device-tool-link {

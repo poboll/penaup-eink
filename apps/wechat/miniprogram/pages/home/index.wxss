@@ -53,6 +53,12 @@
 .color-study-modes { display: flex; gap: 10rpx; margin-top: 20rpx; }
 .color-study-modes text { flex: 1; padding: 10rpx 8rpx; color: #f7f7f2; border: 2rpx solid rgba(247, 247, 242, .22); font: 18rpx/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; text-align: center; }
 .color-study-copy { display: block; margin-top: 18rpx; color: rgba(247, 247, 242, .64); font: 22rpx/1.65 Georgia, "Songti SC", serif; }
+.weread-entry { display: flex; min-height: 150rpx; align-items: center; justify-content: space-between; gap: 18rpx; margin-top: 18rpx; padding: 24rpx; border: 2rpx solid #bdb1a1; border-left: 8rpx solid #416f99; border-radius: 4rpx 12rpx 12rpx 4rpx; background: #fffefa; box-shadow: 8rpx 9rpx 0 rgba(205, 193, 174, .2); }
+.weread-entry-copy { min-width: 0; }
+.weread-entry-kicker { display: block; color: #416f99; font: 600 18rpx/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 1rpx; }
+.weread-entry-title { display: block; margin-top: 12rpx; color: #292722; font: 400 31rpx/1.25 Georgia, "Songti SC", serif; }
+.weread-entry-detail { display: block; margin-top: 9rpx; color: #817a70; font-size: 20rpx; }
+.weread-entry-arrow { color: #416f99; font: 32rpx/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .tpl-row { display: flex; gap: 14rpx; }
 .tpl { flex: 1; min-height: 154rpx; padding: 16rpx; }
 .t-ic { display: flex; align-items: center; justify-content: center; height: 84rpx; }

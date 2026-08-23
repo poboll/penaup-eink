@@ -9,28 +9,35 @@
 | 领域 | 本机状态 | 证据 |
 | --- | --- | --- |
 | Node 运行时 | PASS | `node --version` = `v24.19.0`；根包和 `server` 都限制 `24.x` |
-| JavaScript / 契约 | PASS | Node 24 环境下 `npm run check` 通过；加载 ESP-IDF 后严格门禁为 `205 passed / 0 pending / 0 failed` |
-| 自动化测试 | PASS | `npm test`：server 36、film-core 7、微信 12、发布工具 3 全部通过 |
+| JavaScript / 契约 | PASS | Node 24 环境下 `npm run check` 通过；本轮为 `214 passed / 1 pending / 0 failed`，pending 是未导出 ESP-IDF 的外部门禁 |
+| 自动化测试 | PASS | `npm test`：server 36、film-core 7、微信 16、Web/发布工具 6 全部通过 |
 | 依赖安全 | PASS | `npm run audit`：官方 registry 生产依赖 `0 vulnerabilities` |
 | 安装可重复性 | PASS | 根目录和 `server/` 的 `npm ci --dry-run` 均通过；原生 `better-sqlite3` 安装脚本仍需在部署机按 Node 24 审批 |
 | 运行时探针 | PASS | 8787 实例的 `/`、`/studio/`、`/health`、`/readyz` 均返回 200 |
 | Caddy 配置 | PASS | `PENAUP_DOMAIN=penaup.example.com caddy validate --config deploy/Caddyfile --adapter caddyfile` |
 | Mosquitto 配置语法 | PASS | `mosquitto --test-config -c deploy/mqtt/mosquitto.conf.example` 报告配置文件有效；未启动公网 broker |
 | 微信开发者工具登录 | PARTIAL | CLI `islogin` 返回 `login: true`；打开当前项目被微信返回 code 10：登录用户不是该小程序开发者 |
-| ESP-IDF 三机型构建 | PASS | ESP-IDF v5.5.2；`build_gate_std` 应用余量 13%（0x30b30），`build_gate_pro` 余量 12%（0x2fe80），`build_gate_max` 余量 14%（0x33ef0）；实体刷写仍 pending |
+| ESP-IDF 三机型构建 | PASS（上次证据）/ 本轮待重跑 | 上次记录为 ESP-IDF v5.5.2：`build_gate_std` 应用余量 13%（0x30b30），`build_gate_pro` 余量 12%（0x2fe80），`build_gate_max` 余量 14%（0x33ef0）；本轮 shell 未导出 IDF，实体刷写仍 pending |
 | 旧 FastAPI 正式导入 | PENDING | 本机未找到旧 `filmhub.db`；不能用当前 Penaup 目标库冒充旧源库 |
 | 真实 BLE / OTA / 刷屏 | PENDING | 需要实体 STD、Pro、Max 和重新广播后的状态回读 |
 | 正式邮件、Caddy 公网 TLS、MQTT ACL | PENDING | 需要部署机、真实域名/证书、邮件 provider 和设备账号 |
 | 合同/字体/图片/第三方资产权利 | PENDING | 需要逐文件来源和外包权利转让材料复核 |
 
-严格发布门禁（2026-08-23，本机）已经通过：
+本轮可复现的代码与安全门禁（2026-08-23，本机）如下：
 
 ```text
-npm run release:gate -- --strict-external
-Contract gate: 205 passed, 0 pending, 0 failed
-server 36 passed · film-core 7 passed · 微信 12 passed · Web/release 6 passed
-npm audit --omit=dev: 0 vulnerabilities
+npm run check
+Contract gate: 214 passed, 1 pending, 0 failed
+pending: ESP-IDF idf.py（本轮 shell 未导出 ESP-IDF 5.5.2）
+
+npm test
+server 36 passed · film-core 7 passed · 微信 16 passed · Web/release 6 passed
+
+npm run audit
+found 0 vulnerabilities
 ```
+
+因此普通本地门禁已经通过；`--strict-external` 仍应在导出 ESP-IDF 环境后重跑，不能把当前的 pending 当作三机型固件重新验收。
 
 ## 可重复命令
 
