@@ -7,6 +7,7 @@
     <link id="style-sheet" rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/penaup-shared.css">
     <link rel="stylesheet" href="../css/studio-paper.css">
+    <link rel="stylesheet" href="../css/studio-responsive.css">
 </head>
 <body>
     <div id="penaup-splash" class="penaup-splash" role="dialog" aria-modal="true" aria-labelledby="splash-title" aria-describedby="splash-caption">
@@ -470,6 +471,10 @@
                                     <button type="button" class="secondary-button" id="weread-connect"><i class="material-icons">menu_book</i>连接书架</button>
                                     <span id="weread-source-summary" class="weread-source-summary" hidden>还没有连接</span>
                                 </div>
+                                <div class="weread-demo-row">
+                                    <button type="button" class="secondary-button" id="weread-demo"><i class="material-icons">visibility</i>用示例数据预览</button>
+                                    <span>不用 Key · 不会请求微信读书</span>
+                                </div>
 
                                 <fieldset class="weread-scene-fieldset">
                                     <legend>选择一张纸的样子</legend>
@@ -517,6 +522,12 @@
                                     <span class="weread-size-tag">PRO · 792 × 528</span>
                                 </div>
                                 <div id="weread-phase-indicator" class="weread-phase-indicator" data-phase="idle" role="status" aria-live="polite"><span class="weread-phase-dot" aria-hidden="true"></span><strong id="weread-phase-label">纸面在等一段阅读</strong><span>本地排版 · E6 Pro</span></div>
+                                <ol class="weread-phase-trail" aria-label="本地显影阶段">
+                                    <li data-weread-phase-step="fetching"><span>01</span><b>取回</b></li>
+                                    <li data-weread-phase-step="typesetting"><span>02</span><b>排版</b></li>
+                                    <li data-weread-phase-step="developing"><span>03</span><b>显影</b></li>
+                                    <li data-weread-phase-step="done"><span>04</span><b>留下</b></li>
+                                </ol>
                                 <div class="polaroid-frame weread-polaroid">
                                     <div class="polaroid-inner weread-polaroid-inner">
                                         <canvas id="weread-canvas" width="792" height="528" role="img" aria-label="微信读书 3.68 英寸电子纸屏保预览"></canvas>

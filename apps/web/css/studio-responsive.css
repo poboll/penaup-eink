@@ -1,0 +1,257 @@
+/* Copyright (c) 2026 poboll · final responsive paper pass */
+
+/* Keep the last responsive decisions in one place. The older studio sheet
+ * still owns the visual language; this file only prevents controls from
+ * fighting each other at narrow widths. */
+
+#page-content,
+.page,
+.frame-container,
+.frame-tab-content,
+.weread-tab-content,
+.weread-layout,
+.weread-controls,
+.weread-preview-panel {
+    min-width: 0;
+}
+
+.frame-tab,
+.weread-scene,
+.weread-render,
+.weread-period,
+.weread-actions > *,
+.weread-connect-row > *,
+.weread-demo-row > * {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.weread-demo-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    margin: -10px 0 25px;
+    padding: 10px 12px;
+    border: 1px dashed var(--line-strong);
+    border-radius: 9px;
+    background: rgba(255, 253, 248, .42);
+}
+
+.weread-demo-row .secondary-button {
+    min-height: 48px;
+    justify-self: start;
+}
+
+.weread-demo-row > span {
+    color: var(--ink-faint);
+    font: 12px/1.4 var(--font-mono);
+    text-align: right;
+}
+
+.weread-phase-trail {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+}
+
+.weread-phase-trail li {
+    display: grid;
+    min-width: 0;
+    min-height: 51px;
+    align-content: center;
+    gap: 4px;
+    padding: 8px 9px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink-faint);
+    background: rgba(255, 253, 248, .38);
+    transition: color .24s ease, border-color .24s ease, background .24s ease, transform .24s var(--paper-ease);
+}
+
+.weread-phase-trail li > span {
+    color: inherit;
+    font: 10px/1 var(--font-mono);
+    letter-spacing: .05em;
+}
+
+.weread-phase-trail li b {
+    color: inherit;
+    font: 400 15px/1.2 var(--font-display);
+}
+
+.weread-phase-trail li.is-current {
+    color: var(--blue);
+    border-color: rgba(65, 111, 153, .55);
+    background: rgba(65, 111, 153, .08);
+    transform: translateY(-1px);
+}
+
+.weread-phase-trail li.is-complete {
+    color: var(--green);
+    border-color: rgba(85, 118, 94, .4);
+    background: rgba(85, 118, 94, .06);
+}
+
+.weread-phase-indicator[data-phase="downloading"] .weread-phase-dot,
+.weread-phase-indicator[data-phase="transferring"] .weread-phase-dot {
+    border-color: var(--blue);
+    background: var(--blue);
+    animation: paper-phase-breathe 1.25s ease-in-out infinite;
+}
+
+.weread-phase-indicator[data-phase="preview"] .weread-phase-dot {
+    border-color: var(--blue);
+    background: var(--blue);
+}
+
+.weread-preview-panel[aria-busy="true"] .weread-phase-trail li.is-current {
+    box-shadow: 0 5px 16px rgba(65, 111, 153, .1);
+}
+
+button.primary-button,
+button.secondary-button,
+a.primary-button,
+a.secondary-button {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 1024px) {
+    .weread-layout {
+        gap: 28px;
+    }
+
+    .weread-controls {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 720px) {
+    .app-topbar,
+    .story-progress {
+        padding-right: max(16px, env(safe-area-inset-right));
+        padding-left: max(16px, env(safe-area-inset-left));
+    }
+
+    #page-content {
+        padding-right: max(16px, env(safe-area-inset-right));
+        padding-left: max(16px, env(safe-area-inset-left));
+    }
+
+    .frame-tabs {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .frame-tab {
+        min-height: 60px;
+        padding: 7px 2px;
+        line-height: 1.15;
+    }
+
+    .weread-controls {
+        padding: 22px 18px;
+    }
+
+    .weread-demo-row {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+
+    .weread-demo-row .secondary-button,
+    .weread-demo-row > span {
+        width: 100%;
+        justify-self: stretch;
+        text-align: left;
+    }
+
+    .weread-phase-trail {
+        gap: 5px;
+    }
+
+    .weread-phase-trail li {
+        min-height: 48px;
+        padding: 7px 6px;
+        text-align: center;
+    }
+
+    .weread-phase-trail li b {
+        font-size: 14px;
+    }
+
+    .weread-key-input-row {
+        grid-template-columns: minmax(0, 1fr) 48px;
+    }
+
+    .weread-actions > *,
+    .weread-fetch-button,
+    .weread-connect-row .secondary-button {
+        width: 100%;
+        min-height: 54px !important;
+    }
+
+    .weread-preview-panel {
+        overflow: hidden;
+    }
+
+    .weread-polaroid {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 420px) {
+    .app-brand strong {
+        font-size: 18px;
+    }
+
+    .app-brand em {
+        font-size: 10px;
+    }
+
+    .device-tool-link {
+        font-size: 11px;
+    }
+
+    .frame-tabs {
+        gap: 3px;
+        padding: 3px;
+    }
+
+    .frame-tab {
+        min-height: 57px;
+        font-size: 11px;
+    }
+
+    .weread-controls {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    .weread-phase-indicator {
+        gap: 7px;
+        font-size: 12px;
+    }
+
+    .weread-phase-indicator > span:last-child {
+        margin-left: 16px;
+        font-size: 10px;
+    }
+
+    .weread-output-note {
+        align-items: flex-start;
+        font-size: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .weread-phase-trail li,
+    .weread-phase-indicator[data-phase="downloading"] .weread-phase-dot,
+    .weread-phase-indicator[data-phase="transferring"] .weread-phase-dot {
+        animation: none;
+        transition: none;
+    }
+}

@@ -141,6 +141,7 @@ const requiredPaths = [
   , 'server/package-lock.json'
   , 'docs/integrations/weread-wallpaper.md'
   , 'apps/web/fonts/huiwen-mincho.woff2'
+  , 'apps/web/css/studio-responsive.css'
   , 'server/src/modules/weread.js'
   , 'docs/device-tool/firmware-updates.md'
   , 'firmware/penaup/releases/manifest.schema.json'

@@ -10,21 +10,28 @@ async function read(relativePath) {
 }
 
 test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async () => {
-  const [html, script, styles] = await Promise.all([
+  const [html, script, styles, responsiveStyles] = await Promise.all([
     read('studio/index.html'),
     read('js/weread-wallpaper.js'),
-    read('css/studio-paper.css')
+    read('css/studio-paper.css'),
+    read('css/studio-responsive.css')
   ]);
 
   assert.match(html, /id="weread-preview-panel"/);
   assert.match(html, /canvas id="weread-canvas" width="792" height="528"/);
   assert.match(html, /id="weread-phase-indicator"/);
+  assert.match(html, /id="weread-demo"/);
+  assert.match(html, /data-weread-phase-step="typesetting"/);
   assert.match(script, /document\.fonts\.load/);
   assert.match(script, /PENAUP_PRO/);
+  assert.match(script, /createDemoSnapshot/);
+  assert.match(script, /loadDemoSnapshot/);
   assert.match(script, /setDevelopmentPhase\('pending'/);
   assert.match(styles, /font-family:\s*"Huiwen Mincho"/);
   assert.match(styles, /--paper:\s*#f8f4eb/);
   assert.match(styles, /prefers-reduced-motion/);
+  assert.match(responsiveStyles, /\.weread-phase-trail/);
+  assert.match(responsiveStyles, /@media \(max-width: 420px\)/);
 });
 
 test('BLE transfer exposes an uncertain-device result instead of false success', async () => {

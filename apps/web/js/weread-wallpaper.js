@@ -31,7 +31,9 @@
         shelf: null,
         card: null,
         film: null,
-        renderRevision: 0
+        renderRevision: 0,
+        source: 'live',
+        phaseIndex: 0
     };
     var wallpaperFontPromise = null;
 
@@ -54,6 +56,39 @@
     }
 
     function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
+
+    function pad2(value) { return String(value).padStart(2, '0'); }
+
+    // 示例数据完全在浏览器内生成，方便第一次打开实验室时先理解流程。
+    // 它不模拟真实上游响应，也不应被当作微信读书数据。
+    function createDemoSnapshot() {
+        var now = new Date();
+        var year = now.getFullYear();
+        var month = now.getMonth() + 1;
+        var day = now.getDate();
+        var minutes = [42, 18, 66, 31, 87, 24, 53];
+        var books = [
+            { bookId: 'demo-book-01', title: '山茶文具店', author: '小川糸', readingMinutes: 186, progress: 72, summary: '有些话不必急着说出口，写下来，便有了再次抵达的时间。' },
+            { bookId: 'demo-book-02', title: '云边有个小卖部', author: '张嘉佳', readingMinutes: 124, progress: 48, summary: '每个人都有自己的路要走，慢一点也没有关系。' },
+            { bookId: 'demo-book-03', title: '设计中的设计', author: '原研哉', readingMinutes: 93, progress: 36, summary: '留白不是空缺，而是让事物重新呼吸的地方。' }
+        ];
+        return {
+            source: 'demo',
+            periodKey: year + '-' + pad2(month),
+            periodLabel: year + ' 年 ' + pad2(month) + ' 月 · 示例阅读',
+            readingMinutes: minutes.reduce(function (total, value) { return total + value; }, 0),
+            readingDays: 6,
+            bookCount: books.length,
+            noteCount: 12,
+            dailyReading: minutes.map(function (value, index) {
+                return { day: Math.max(1, day - 6 + index), readingMinutes: value };
+            }),
+            topBooks: books.map(function (book) { return book.title; }),
+            topBookDetails: books,
+            quote: '把读过的书留给今天，明天再慢慢想起。',
+            enrichment: 'demo'
+        };
+    }
 
     function roundedRect(ctx, x, y, width, height, radius) {
         var r = Math.min(radius, width / 2, height / 2);
@@ -403,9 +438,19 @@
         var indicator = byId('weread-phase-indicator');
         var phaseLabel = byId('weread-phase-label');
         var panel = byId('weread-preview-panel');
+        var phaseIndexes = { fetching: 0, typesetting: 1, developing: 2, preview: 2, downloading: 3, transferring: 3, pending: 3, done: 3 };
+        if (Object.prototype.hasOwnProperty.call(phaseIndexes, phase)) state.phaseIndex = phaseIndexes[phase];
+        document.querySelectorAll('[data-weread-phase-step]').forEach(function (item) {
+            var index = Object.prototype.hasOwnProperty.call(phaseIndexes, item.dataset.wereadPhaseStep) ? phaseIndexes[item.dataset.wereadPhaseStep] : 0;
+            var isCurrent = index === state.phaseIndex;
+            item.classList.toggle('is-current', isCurrent);
+            item.classList.toggle('is-complete', index < state.phaseIndex || (phase === 'done' && index === state.phaseIndex));
+            if (isCurrent) item.setAttribute('aria-current', 'step');
+            else item.removeAttribute('aria-current');
+        });
         if (indicator) indicator.dataset.phase = phase || 'idle';
         if (phaseLabel) phaseLabel.textContent = label || '纸面待命';
-        if (panel) panel.setAttribute('aria-busy', ['fetching', 'typesetting', 'developing', 'transferring'].indexOf(phase) >= 0 ? 'true' : 'false');
+        if (panel) panel.setAttribute('aria-busy', ['fetching', 'typesetting', 'developing', 'downloading', 'transferring'].indexOf(phase) >= 0 ? 'true' : 'false');
     }
 
     function setOutputButtons(options) {
@@ -637,6 +682,7 @@
             return;
         }
         saveKeyIfNeeded();
+        state.source = 'live';
         if (button) { button.disabled = true; button.classList.add('is-busy'); button.textContent = '正在连接书架'; }
         setDevelopmentPhase('fetching', '正在确认微信读书书架');
         setStatus('正在确认 Skill，并只读取书架数量。');
@@ -665,6 +711,7 @@
             return;
         }
         saveKeyIfNeeded();
+        state.source = 'live';
         state.film = null;
         state.card = null;
         setOutputButtons({ preview: false, film: false });
@@ -698,6 +745,34 @@
         }
     }
 
+    async function loadDemoSnapshot() {
+        var button = byId('weread-demo');
+        state.source = 'demo';
+        state.snapshot = createDemoSnapshot();
+        state.card = state.snapshot.topBookDetails[0];
+        state.film = null;
+        setOutputButtons({ preview: false, film: false });
+        if (button) { button.disabled = true; button.classList.add('is-busy'); button.textContent = '正在铺开示例相纸'; }
+        var source = byId('weread-source-summary');
+        if (source) {
+            source.hidden = false;
+            source.textContent = '示例数据 · ' + state.snapshot.bookCount + ' 本书 · 不连接微信读书';
+        }
+        updateStats(state.snapshot);
+        updateBookSelect(state.snapshot);
+        syncSceneUi();
+        updateStage('choose');
+        setDevelopmentPhase('fetching', '示例阅读轨迹已就位');
+        setStatus('示例数据已准备好；接下来会在浏览器本地排版和显影。', 'success');
+        try {
+            var ready = await renderWallpaper(state.snapshot);
+            if (ready) setStatus('示例相纸已经显影。无需 Key，也可以下载或查看完整流程。', 'success');
+            else setStatus('示例预览已完成，但本机六色 Worker 未就绪；可先查看排版结果。', 'error');
+        } finally {
+            if (button) { button.disabled = false; button.classList.remove('is-busy'); button.innerHTML = '<i class="material-icons">visibility</i>用示例数据预览'; }
+        }
+    }
+
     function downloadBlob(blob, filename) {
         var url = URL.createObjectURL(blob);
         var link = document.createElement('a');
@@ -714,8 +789,16 @@
     function downloadPng() {
         var canvas = byId('weread-canvas');
         if (!canvas || !state.snapshot) return;
+        setDevelopmentPhase('downloading', '正在准备 PNG 下载');
         canvas.toBlob(function (blob) {
-            if (blob) downloadBlob(blob, 'penaup-weread-' + state.scene + '-' + state.snapshot.periodKey + '.png');
+            if (blob) {
+                downloadBlob(blob, 'penaup-weread-' + state.scene + '-' + state.snapshot.periodKey + '.png');
+                setDevelopmentPhase('done', 'PNG 已准备好，可以继续发送');
+                setStatus('PNG 已下载；本地显影结果仍保留在这张纸上。', 'success');
+            } else {
+                setDevelopmentPhase('failed', 'PNG 下载失败，可重新尝试');
+                setStatus('PNG 暂时没有生成成功，请重新尝试。', 'error');
+            }
         }, 'image/png');
     }
 
@@ -725,10 +808,14 @@
     }
 
     async function downloadFilm() {
+        setDevelopmentPhase('downloading', '正在准备 .film 下载');
         try {
             var film = await buildFilm();
             downloadBlob(new Blob([film], { type: 'application/octet-stream' }), 'penaup-weread-' + state.scene + '-' + state.snapshot.periodKey + '.film');
+            setDevelopmentPhase('done', '.film 已准备好，可以写入 Pro');
+            setStatus('.film 已下载；你也可以直接发送到已连接的 Pro。', 'success');
         } catch (error) {
+            setDevelopmentPhase('failed', 'film 下载失败，可保留预览后重试');
             setStatus('六色 film 还没有准备好；请先完成本地显影。', 'error');
         }
     }
@@ -817,6 +904,8 @@
         });
         byId('weread-connect').addEventListener('click', connectSource);
         byId('weread-fetch').addEventListener('click', fetchSnapshot);
+        var demoButton = byId('weread-demo');
+        if (demoButton) demoButton.addEventListener('click', loadDemoSnapshot);
         byId('weread-clear-key').addEventListener('click', function () {
             var input = byId('weread-skill-key');
             if (input) input.value = '';
