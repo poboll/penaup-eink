@@ -13,9 +13,9 @@
   var PERCEIVED_COLOR_FEEL_COUNT = FILM_COLOR_COUNT * COLOR_FEEL_LAYERS;
   var COLOR_RENDERING_MODES = ['layer', 'dots', 'dither'];
   var COLOR_RENDERING_MODE_DEFINITIONS = [
-    { id: 'layer', label: '叠色层次', shortLabel: '叠色', description: '用自适应显影保留柔和的明暗过渡。', ditherType: 'adaptive', defaultStrength: 1 },
-    { id: 'dots', label: '网点', shortLabel: '网点', description: '用有序色点铺开中间调，颗粒更清楚。', ditherType: 'bayer', defaultStrength: 1.1 },
-    { id: 'dither', label: '抖动', shortLabel: '抖动', description: '把误差分散到邻近像素，尽量保留细节。', ditherType: 'floydSteinberg', defaultStrength: 1 }
+    { id: 'layer', label: '叠色层次', shortLabel: '叠色', description: '用自适应显影保留柔和的明暗过渡，六色基底最多形成 48 种色彩观感。', ditherType: 'adaptive', defaultStrength: 1 },
+    { id: 'dots', label: '网点', shortLabel: '网点', description: '用有序色点铺开中间调，颗粒更清楚；六色基底最多形成 48 种色彩观感。', ditherType: 'bayer', defaultStrength: 1.1 },
+    { id: 'dither', label: '抖动', shortLabel: '抖动', description: '把误差分散到邻近像素，尽量保留细节；六色基底最多形成 48 种色彩观感。', ditherType: 'floydSteinberg', defaultStrength: 1 }
   ];
   var BLE_CHUNK_SIZE = 192;
   var COLOR_TABLE = [0x00, 0xff, 0xfc, 0xe0, 0x03, 0x1c];

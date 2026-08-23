@@ -552,7 +552,7 @@
         var note = byId('weread-render-note');
         var definitions = window.PenaupFilmCore && window.PenaupFilmCore.COLOR_RENDERING_MODE_DEFINITIONS;
         var definition = definitions && definitions.find(function (item) { return item.id === state.renderMode; });
-        if (note) note.textContent = definition ? definition.description : '六种基础墨水通过相邻像素组织更多层次。';
+        if (note) note.textContent = definition ? definition.description : '六种基础墨水通过叠色、网点与抖动，最多形成 48 种色彩观感。';
     }
 
     function renderingSettings() {

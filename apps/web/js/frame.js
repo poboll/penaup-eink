@@ -45,6 +45,8 @@ function initFrameTabSwitch() {
             if (tabId !== 'frame-camera' && frameCameraStream) {
                 frameStopCamera();
             }
+            var pageContent = document.getElementById('page-content');
+            if (pageContent) pageContent.scrollTo({ top: 0, left: 0, behavior: 'auto' });
             setTimeout(function() {
                 updateCanvasScale();
             }, 50);

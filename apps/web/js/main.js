@@ -32,6 +32,12 @@ function initStyleSwitcher() {
 }
 
 // 页面导航功能
+function resetPageContentScroll() {
+    var pageContent = document.getElementById('page-content');
+    if (!pageContent) return;
+    pageContent.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+}
+
 function initNavigation() {
     const navItems = document.querySelectorAll('.nav-item');
     const pages = document.querySelectorAll('.page');
@@ -55,6 +61,7 @@ function initNavigation() {
             // 更新页面显示
             pages.forEach(page => page.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
+            resetPageContentScroll();
             window.requestAnimationFrame(() => {
                 if (typeof updateCanvasScale === 'function') updateCanvasScale();
             });
@@ -96,6 +103,7 @@ function initDeepLink() {
     var wereadTab = document.querySelector('.frame-tab[data-frame-tab="frame-weread"]');
     if (frameNav) frameNav.click();
     if (wereadTab) wereadTab.click();
+    resetPageContentScroll();
 }
 
 // 页面加载完成后初始化

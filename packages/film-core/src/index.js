@@ -18,7 +18,7 @@ export const COLOR_RENDERING_MODE_DEFINITIONS = Object.freeze([
     id: 'layer',
     label: '叠色层次',
     shortLabel: '叠色',
-    description: '用自适应显影保留柔和的明暗过渡。',
+    description: '用自适应显影保留柔和的明暗过渡，六色基底最多形成 48 种色彩观感。',
     ditherType: 'adaptive',
     defaultStrength: 1
   }),
@@ -26,7 +26,7 @@ export const COLOR_RENDERING_MODE_DEFINITIONS = Object.freeze([
     id: 'dots',
     label: '网点',
     shortLabel: '网点',
-    description: '用有序色点铺开中间调，颗粒更清楚。',
+    description: '用有序色点铺开中间调，颗粒更清楚；六色基底最多形成 48 种色彩观感。',
     ditherType: 'bayer',
     defaultStrength: 1.1
   }),
@@ -34,7 +34,7 @@ export const COLOR_RENDERING_MODE_DEFINITIONS = Object.freeze([
     id: 'dither',
     label: '抖动',
     shortLabel: '抖动',
-    description: '把误差分散到邻近像素，尽量保留细节。',
+    description: '把误差分散到邻近像素，尽量保留细节；六色基底最多形成 48 种色彩观感。',
     ditherType: 'floydSteinberg',
     defaultStrength: 1
   })

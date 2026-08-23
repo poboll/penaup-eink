@@ -22,6 +22,7 @@ test('six physical colors expose the shared 48-feel rendering contract', () => {
   assert.deepEqual(COLOR_RENDERING_MODES, ['layer', 'dots', 'dither']);
   assert.deepEqual(COLOR_RENDERING_MODE_DEFINITIONS.map((mode) => mode.id), COLOR_RENDERING_MODES);
   assert.equal(COLOR_RENDERING_MODE_DEFINITIONS[1].ditherType, 'bayer');
+  assert.ok(COLOR_RENDERING_MODE_DEFINITIONS.every((mode) => mode.description.includes('48')));
 });
 
 test('all Penaup profiles produce and validate the documented sizes', () => {

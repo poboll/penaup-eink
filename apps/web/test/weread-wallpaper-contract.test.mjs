@@ -69,9 +69,10 @@ test('BLE transfer exposes an uncertain-device result instead of false success',
 });
 
 test('paper story exposes a direct reading-wallpaper entry point', async () => {
-  const [html, main, styles] = await Promise.all([
+  const [html, main, frame, styles] = await Promise.all([
     read('index.html'),
     read('js/main.js'),
+    read('js/frame.js'),
     read('css/story.css')
   ]);
 
@@ -80,6 +81,8 @@ test('paper story exposes a direct reading-wallpaper entry point', async () => {
   assert.match(html, /PRO \/ 792 × 528/);
   assert.match(main, /initDeepLink/);
   assert.match(main, /frame-weread/);
+  assert.match(main, /resetPageContentScroll/);
+  assert.match(frame, /scrollTo\(\{ top: 0, left: 0, behavior: 'auto' \}\)/);
   assert.match(styles, /whole narrative stays on a pale rice/);
   assert.match(styles, /\.feature-section\s*\{[\s\S]*?background:/);
 });
