@@ -1,3 +1,4 @@
+// Copyright (c) 2026 poboll · Penaup template metadata
 // template-core.js - 模板通用工具与注册表元数据
 // 所有模板渲染器统一依赖本模块：6 色安全色板、文本换行、圆角路径、模板中心元数据
 var filmUtils = require('./film-utils');
@@ -12,6 +13,14 @@ var COLORS = {
   yellow: '#ffd400'
 };
 
+// Templates are authored for the main Penaup Pro paper. The firmware file
+// remains landscape-compatible, but every preview and layout decision starts
+// from the physical 3.68-inch portrait surface.
+var TEMPLATE_OUTPUT = {
+  profile: 'PENAUP_PRO',
+  label: '3.68 英寸 · 528 × 792 竖向'
+};
+
 // 模板中心元数据（页面列表用）
 var TEMPLATE_LIST = [
   {
@@ -19,6 +28,7 @@ var TEMPLATE_LIST = [
     name: '日历',
     emoji: '📅',
     desc: '月历 · 农历 · 节气 · 今日高亮',
+    format: TEMPLATE_OUTPUT.label,
     gradient: 'linear-gradient(135deg, #FF6B6B, #FF9F6B)',
     accent: '#FF6B6B'
   },
@@ -27,6 +37,7 @@ var TEMPLATE_LIST = [
     name: '每日一签',
     emoji: '🎋',
     desc: '今日签语 · 宜忌 · 幸运色',
+    format: TEMPLATE_OUTPUT.label,
     gradient: 'linear-gradient(135deg, #845EC2, #6B45A6)',
     accent: '#845EC2'
   },
@@ -35,6 +46,7 @@ var TEMPLATE_LIST = [
     name: '天气',
     emoji: '⛅',
     desc: '实时温度 · 天气图标 · 未来 3 天',
+    format: TEMPLATE_OUTPUT.label,
     gradient: 'linear-gradient(135deg, #4D96FF, #2F6FD8)',
     accent: '#4D96FF'
   },
@@ -43,6 +55,7 @@ var TEMPLATE_LIST = [
     name: '纪念日倒数',
     emoji: '💝',
     desc: '大日子倒数 · 爱心天数',
+    format: TEMPLATE_OUTPUT.label,
     gradient: 'linear-gradient(135deg, #FF8FC7, #FF6B6B)',
     accent: '#FF6B6B'
   },
@@ -51,6 +64,7 @@ var TEMPLATE_LIST = [
     name: '备忘录',
     emoji: '📝',
     desc: '今日备忘 · 勾选完成',
+    format: TEMPLATE_OUTPUT.label,
     gradient: 'linear-gradient(135deg, #4ECDC4, #2EB6AC)',
     accent: '#2EB6AC'
   }
@@ -83,6 +97,7 @@ function roundRect(ctx, x, y, w, h, r) {
 
 module.exports = {
   COLORS: COLORS,
+  TEMPLATE_OUTPUT: TEMPLATE_OUTPUT,
   TEMPLATE_LIST: TEMPLATE_LIST,
   pad: pad,
   wrapText: wrapText,

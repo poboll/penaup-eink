@@ -11,6 +11,7 @@
       <text class="tpl-emoji">{{item.emoji}}</text>
       <text class="tpl-name">{{item.name}}</text>
       <text class="tpl-desc">{{item.desc}}</text>
+      <text class="tpl-format">{{item.format}}</text>
       <text class="tpl-go">去看看 →</text>
     </view>
   </view>

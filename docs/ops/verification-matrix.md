@@ -20,7 +20,7 @@
 | 备份/恢复演练 | PASS（本机 fixture） | `bash -n deploy/backup.sh deploy/restore.sh`；`node --test server/test/backup.test.js` 通过，验证 SQLite 一致性备份、媒体归档、恢复和 `--force` 回滚目录；生产 timer 尚未在 Linux systemd 主机启动 |
 | FastAPI 关系迁移 fixture | PASS（本机 fixture） | `node --test server/test/migration.test.js` 5 passed，验证用户、设备、模板、片单、设置、推送关系、越界媒体路径和源库不变；真实旧库仍未找到 |
 | 微信开发者工具登录 | PARTIAL | CLI `islogin` 返回 `login: true`；打开当前项目被微信返回 code 10：登录用户不是该小程序开发者 |
-| ESP-IDF 三机型构建 | PASS（代码构建） | ESP-IDF 5.5.2 + Python 3.14.2 已导出；当前提交 `b2894f7` 的隔离干净构建中，STD/Pro/Max 均 `idf.py build` 通过，应用分区余量分别为 13%/12%/14%；实体刷写、刷新和功耗仍 pending |
+| ESP-IDF 三机型构建 | PASS（代码构建） | ESP-IDF 5.5.2 + Python 3.14.2 已导出；固件构建输入提交 `41e1ea6` 的隔离干净构建中，STD/Pro/Max 均 `idf.py build` 通过，应用分区余量分别为 13%/12%/14%；本轮后续仅修改 Web/小程序/文档，实体刷写、刷新和功耗仍 pending |
 | 旧 FastAPI 正式导入 | PENDING | 本机未找到旧 `filmhub.db`；不能用当前 Penaup 目标库冒充旧源库 |
 | 真实 BLE / OTA / 刷屏 | PENDING | 需要实体 STD、Pro、Max 和重新广播后的状态回读 |
 | 正式邮件、Caddy 公网 TLS、MQTT ACL | PENDING | 需要部署机、真实域名/证书、邮件 provider 和设备账号 |
@@ -64,7 +64,7 @@ source /Users/Apple/.espressif/frameworks/esp-idf-v5.5.2/export.sh
 npm run release:gate -- --strict-external
 ```
 
-本轮构建证据（临时隔离源码副本，源码提交为当前 `b2894f7`）：
+本轮构建证据（临时隔离源码副本，固件构建输入提交为 `41e1ea6`）：
 
 | 机型 | `penaup.bin` | 最小应用分区余量 | `idf.py size` 总镜像 | 结果 |
 | --- | ---: | ---: | ---: | --- |

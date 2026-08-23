@@ -102,3 +102,13 @@ test('Bayer rendering keeps the output inside the six-color palette', () => {
     assert.equal(palette.includes(imageData.data[pixel] + ',' + imageData.data[pixel + 1] + ',' + imageData.data[pixel + 2]), true);
   }
 });
+
+test('template center labels every template as the Pro portrait paper', () => {
+  const templates = require('../utils/template-core');
+  assert.equal(templates.TEMPLATE_OUTPUT.profile, 'PENAUP_PRO');
+  assert.equal(templates.TEMPLATE_OUTPUT.label, '3.68 英寸 · 528 × 792 竖向');
+  assert.equal(templates.TEMPLATE_LIST.length, 5);
+  assert.ok(templates.TEMPLATE_LIST.every(function (item) {
+    return item.format === templates.TEMPLATE_OUTPUT.label;
+  }));
+});

@@ -10,6 +10,8 @@ page {
   background-image:
     radial-gradient(circle at 8% -12%, rgba(255, 255, 255, .98), transparent 34%),
     radial-gradient(circle at 94% 4%, rgba(196, 154, 36, .026), transparent 24%),
+    repeating-linear-gradient(104deg, rgba(70, 70, 65, .010) 0 1px, transparent 1px 19px),
+    repeating-linear-gradient(16deg, rgba(70, 70, 65, .007) 0 1px, transparent 1px 13px),
     linear-gradient(180deg, #ffffff 0%, #f5f5f1 62%, #ebebe8 100%);
 }
 
@@ -24,7 +26,7 @@ page {
 
 .paper-surface-card {
   border: 2rpx solid rgba(32, 33, 31, .16);
-  border-radius: 8rpx 10rpx 7rpx 9rpx;
+  border-radius: 8rpx 11rpx 7rpx 10rpx;
   background: rgba(255, 255, 252, .88);
   box-shadow: 4rpx 5rpx 0 rgba(42, 41, 36, .045), 0 18rpx 36rpx rgba(41, 42, 38, .04);
 }
@@ -36,7 +38,7 @@ page {
 .choice-button,
 .scene-button,
 .render-button {
-  border-radius: 8rpx;
+  border-radius: 6rpx 8rpx 5rpx 7rpx;
   box-shadow: 0 9rpx 18rpx rgba(42, 41, 36, .06), 4rpx 5rpx 0 rgba(42, 41, 36, .045);
 }
 

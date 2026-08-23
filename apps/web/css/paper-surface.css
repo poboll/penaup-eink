@@ -54,6 +54,8 @@ body {
     background-image:
         radial-gradient(circle at 8% -14%, rgba(255, 255, 255, .98), transparent 34%),
         radial-gradient(circle at 94% 4%, rgba(196, 154, 36, .026), transparent 24%),
+        repeating-linear-gradient(104deg, rgba(70, 70, 65, .010) 0 1px, transparent 1px 19px),
+        repeating-linear-gradient(16deg, rgba(70, 70, 65, .007) 0 1px, transparent 1px 13px),
         linear-gradient(180deg, var(--penaup-paper-white) 0%, var(--penaup-paper-ivory) 62%, var(--penaup-paper-rice) 100%);
 }
 
@@ -64,7 +66,7 @@ body::after {
     inset: 0;
     pointer-events: none;
     content: "";
-    opacity: .07;
+    opacity: .095;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='penaup-paper-grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23penaup-paper-grain)' opacity='.34'/%3E%3C/svg%3E");
     background-size: 240px 240px;
     mix-blend-mode: multiply;
@@ -73,7 +75,7 @@ body::after {
 /* The older page sheets carry their own grain layer. Keep it present, but
  * quiet enough that the surface reads as pale paper instead of graph paper. */
 body::before {
-    opacity: .035;
+    opacity: .045;
 }
 
 .story-shell,
@@ -193,7 +195,7 @@ body .nav-cta {
     gap: 8px;
     padding-inline: 17px;
     border: 1px solid rgba(32, 33, 31, .54);
-    border-radius: 7px;
+    border-radius: 5px 7px 4px 6px;
     box-shadow: 0 7px 18px rgba(42, 41, 36, .06), 4px 5px 0 rgba(42, 41, 36, .045);
     text-decoration: none;
     transition: color .22s ease, background-color .22s ease, border-color .22s ease, box-shadow .22s ease, transform .22s cubic-bezier(.22, .75, .25, 1);
