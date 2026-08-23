@@ -136,6 +136,9 @@ const requiredPaths = [
   'docs/api/ios-integration.md',
   'docs/api/transfer-state.md',
   'docs/legal/provenance.md'
+  , 'docs/ops/verification-matrix.md'
+  , 'package-lock.json'
+  , 'server/package-lock.json'
   , 'docs/integrations/weread-wallpaper.md'
   , 'apps/web/fonts/huiwen-mincho.woff2'
   , 'server/src/modules/weread.js'

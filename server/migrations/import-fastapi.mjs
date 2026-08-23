@@ -11,21 +11,45 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import Database from 'better-sqlite3';
 import { PenaupDatabase } from '../src/db.js';
 import { validateFilmBuffer } from '../../packages/film-core/src/index.js';
 
 function args(argv) {
-  const result = { dryRun: false, json: false };
+  const result = { dryRun: false, json: false, help: false, unknown: [] };
   for (let i = 0; i < argv.length; i += 1) {
     const value = argv[i];
-    if (value === '--dry-run') result.dryRun = true;
+    if (value === '--help' || value === '-h') result.help = true;
+    else if (value === '--dry-run') result.dryRun = true;
     else if (value === '--json') result.json = true;
     else if (value.startsWith('--') && argv[i + 1] && !argv[i + 1].startsWith('--')) {
       result[value.slice(2).replaceAll('-', '_')] = argv[++i];
+    } else if (value.startsWith('-') || value.trim()) {
+      result.unknown.push(value);
     }
   }
   return result;
+}
+
+function printHelp() {
+  console.log(`Usage: node server/migrations/import-fastapi.mjs [options]
+
+Import the historical FastAPI SQLite database without modifying the source.
+Run --dry-run first. Defaults are resolved from the server directory, not the
+current shell directory.
+
+Options:
+  --source-db PATH    Legacy SQLite database (default: server/data/filmhub.db)
+  --source-data PATH  Legacy media root (default: directory containing source DB)
+  --target-data PATH  Penaup data root (default: server/data)
+  --target-db PATH    Target SQLite database (default: target-data/penaup.db)
+  --dry-run           Validate and report without writing imported data
+  --json              Print the full machine-readable report
+  -h, --help          Show this help
+
+The source database and target database must be different files. The source
+database and legacy media are never deleted by this command.`);
 }
 
 async function sha256(file) {
@@ -86,6 +110,11 @@ function sourcePath(sourceData, value) {
   return file ? (path.isAbsolute(file) ? file : path.join(sourceData, file)) : null;
 }
 
+function pathsOverlap(left, right) {
+  const relative = path.relative(path.resolve(left), path.resolve(right));
+  return relative === '' || (!relative.startsWith(`..${path.sep}`) && relative !== '..' && !path.isAbsolute(relative));
+}
+
 function isFilmFile(file) { return String(file || '').toLowerCase().endsWith('.film'); }
 
 function mimeForFile(file) {
@@ -104,12 +133,21 @@ function safeImportedName(rowId, file, suffix = '') {
 
 async function main() {
   const options = args(process.argv.slice(2));
-  const sourceDb = path.resolve(options.source_db || path.join(process.cwd(), '..', 'server', 'data', 'filmhub.db'));
+  if (options.help) {
+    printHelp();
+    return;
+  }
+  if (options.unknown.length) throw new Error(`unknown option: ${options.unknown.join(', ')}`);
+  const serverRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const sourceDb = path.resolve(options.source_db || path.join(serverRoot, 'data', 'filmhub.db'));
   const sourceData = path.resolve(options.source_data || path.dirname(sourceDb));
-  const targetData = path.resolve(options.target_data || path.join(process.cwd(), 'data'));
+  const targetData = path.resolve(options.target_data || path.join(serverRoot, 'data'));
   const explicitTargetDb = path.resolve(options.target_db || path.join(targetData, 'penaup.db'));
   if (!(await exists(sourceDb))) throw new Error(`source database not found: ${sourceDb}`);
   if (sourceDb === explicitTargetDb) throw new Error('source and target database must be different; source was not modified');
+  if (pathsOverlap(sourceData, targetData) || pathsOverlap(sourceData, explicitTargetDb)) {
+    throw new Error('source and target paths overlap; choose a separate target data directory so legacy media remains untouched');
+  }
 
   const source = new Database(sourceDb, { readonly: true });
   const sourceTables = tables(source);

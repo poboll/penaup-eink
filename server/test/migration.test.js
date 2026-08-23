@@ -33,6 +33,37 @@ function runMigration(args) {
   });
 }
 
+test('FastAPI import exposes help and rejects unknown options before opening a database', async () => {
+  const help = await runMigration(['--help']);
+  assert.equal(help.code, 0, help.stderr);
+  assert.match(help.stdout, /Usage: node server\/migrations\/import-fastapi\.mjs/);
+  assert.match(help.stdout, /--source-db PATH/);
+
+  const unknown = await runMigration(['--not-a-real-option']);
+  assert.equal(unknown.code, 1);
+  assert.match(unknown.stderr, /unknown option: --not-a-real-option/);
+});
+
+test('FastAPI import refuses a target inside the legacy source tree', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'penaup-migration-overlap-'));
+  const sourceData = path.join(root, 'legacy-data');
+  const sourceDb = path.join(sourceData, 'filmhub.db');
+  try {
+    await fs.mkdir(sourceData, { recursive: true });
+    const legacy = new Database(sourceDb);
+    legacy.exec('CREATE TABLE users (id INTEGER PRIMARY KEY, email TEXT);');
+    legacy.close();
+    const result = await runMigration([
+      '--source-db', sourceDb, '--source-data', sourceData,
+      '--target-data', path.join(sourceData, 'target'), '--dry-run'
+    ]);
+    assert.equal(result.code, 1);
+    assert.match(result.stderr, /source and target paths overlap/);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
+
 test('FastAPI import keeps original and valid film as separate media records', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'penaup-migration-'));
   const sourceData = path.join(root, 'legacy-data');

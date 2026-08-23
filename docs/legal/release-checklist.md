@@ -3,12 +3,16 @@
 ## 本机验证记录（2026-08-23）
 
 - Node.js `v24.19.0` 已确认；根包与服务端均限制在 `24.x`。
-- `npm run test:server`：26 passed；`npm run test:film-core`：7 passed；`npm run test:wechat`：12 passed。
-- 默认 shell 的 `npm run check:contracts`：187 passed，1 pending；加载 ESP-IDF 后执行 `source /Users/Apple/.espressif/frameworks/esp-idf-v5.5.2/export.sh && npm run release:gate -- --strict-external`：188 passed，0 pending，0 failed。
-- `npm --prefix server run check`、定向 JavaScript 语法检查和 `git diff --check` 已通过。
-- 重启后的 8787 实例已加载当前代码；`/`、`/studio/`、`/health`、`/readyz` 均返回 200，默认限流第 121 次 API 请求返回 `429 + Retry-After: 60`，设备心跳仍返回 200。
+- `npm test`：server 36、film-core 7、微信 12、发布工具 3，全部通过。
+- `npm run check`：93 个 JavaScript 文件语法通过；契约检查 `204 passed / 1 pending / 0 failed`。唯一 pending 是当前 shell 没有 `idf.py`，不能把它写成 ESP-IDF 构建成功。
+- `npm run audit`：官方 registry 的生产依赖 `0 vulnerabilities`；`git diff --check` 通过。
+- 根目录和 `server/` 的 `npm ci --dry-run` 均通过；`better-sqlite3` 的原生安装脚本需在部署机按 Node 24 的脚本审批策略执行。
+- 8787 实例当前 `/`、`/studio/`、`/health`、`/readyz` 均返回 200；Caddy `validate` 通过；Mosquitto `--test-config` 报告模板配置有效，但没有在本机启动公网 broker。
+- `node server/migrations/import-fastapi.mjs --help` 和未知选项回归测试通过；本机未找到旧 `filmhub.db`，只对当前目标库的只读副本做了 dry-run，未执行正式导入。
+- 微信 DevTools CLI `islogin` 返回已登录，但打开仓库项目被微信返回 code 10（账号不是当前 AppID 的开发者）；因此没有把 DevTools 编译、真实 AppID、真机 BLE、三机型耗电/刷新写成通过。
 - Playwright 已验证首页在 390/768/1440px 下渲染、Studio 上传、三种显影模式切换、无横向溢出和无页面异常；真实 BLE 设备、键盘/VoiceOver 和 Reduced Motion 仍需发布机做最终验收。
-- 微信 DevTools 编译、真实 AppID、真机 BLE、三机型耗电/刷新、Caddy 公网 TLS、真实邮件和恢复演练仍属于发布前外部门禁。
+
+完整的命令、输出摘要和外部门禁见 [`docs/ops/verification-matrix.md`](../ops/verification-matrix.md)。
 
 - [ ] 外包合同、交付验收和源码权利转让/许可逐文件归档；
 - [ ] `firmware/penaup/` 中历史 `kiritro / GPL-3.0-or-later` 文件和第三方驱动未被根许可证覆盖；
