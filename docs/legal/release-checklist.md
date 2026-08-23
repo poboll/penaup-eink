@@ -3,14 +3,14 @@
 ## 本机验证记录（2026-08-23）
 
 - Node.js `v24.19.0` 已确认；根包与服务端均限制在 `24.x`。
-- `npm test`：server 36、film-core 7、微信 16、Web/发布工具 6，全部通过。
-- `npm run check`：98 个 JavaScript 文件语法通过，严格契约门禁为 `215 passed / 0 pending / 0 failed`；ESP-IDF 5.5.2 下 STD / Pro / Max 构建均已重跑。最近一次证据见 [`docs/ops/verification-matrix.md`](../ops/verification-matrix.md)。
+- `npm test`：server 38、film-core 7、微信 16、Web/发布工具 7，全部通过。
+- `npm run check`：99 个 JavaScript 文件语法通过，契约门禁为 `214 passed / 1 pending / 0 failed`；当前 shell 未导出 `idf.py`，因此不能把当前环境写成 ESP-IDF 三机型已通过。历史隔离构建证据和发布机命令见 [`docs/ops/verification-matrix.md`](../ops/verification-matrix.md)。
 - `npm run audit`：官方 registry 的生产依赖 `0 vulnerabilities`；`git diff --check` 通过。
 - 根目录和 `server/` 的 `npm ci --dry-run` 均通过；`better-sqlite3` 的原生安装脚本需在部署机按 Node 24 的脚本审批策略执行。
-- 8787 实例当前 `/`、`/studio/`、`/health`、`/readyz` 均返回 200；Caddy `validate` 通过；Mosquitto `--test-config` 报告模板配置有效，但没有在本机启动公网 broker。
+- 8787 实例当前 `/`、`/studio/`、`/health`、`/readyz` 均返回 200；Caddy `validate` 通过；Mosquitto `--test-config` 退出码为 0 并报告模板配置有效，本机仅出现缺少 `/var/lib/mosquitto/` 的非致命持久化提示，没有启动公网 broker。
 - `node server/migrations/import-fastapi.mjs --help` 和未知选项回归测试通过；本机未找到旧 `filmhub.db`，只对当前目标库的只读副本做了 dry-run，未执行正式导入。
 - 微信 DevTools CLI `islogin` 返回已登录，但打开仓库项目被微信返回 code 10（账号不是当前 AppID 的开发者）；因此没有把 DevTools 编译、真实 AppID、真机 BLE、三机型耗电/刷新写成通过。
-- Playwright 已验证首页在 390/768/1440px 下渲染、Studio 上传、三种显影模式切换、无横向溢出和无页面异常；真实 BLE 设备、键盘/VoiceOver 和 Reduced Motion 仍需发布机做最终验收。
+- 浏览器已验证首页/工作台在 390/768/1024/1440px 下渲染、Studio 上传、三种显影模式切换、无横向溢出和无页面异常；平板/桌面底栏不再遮挡编辑区，手机保留固定安全区底栏；真实 BLE 设备、键盘/VoiceOver 和 Reduced Motion 仍需发布机做最终验收。
 
 完整的命令、输出摘要和外部门禁见 [`docs/ops/verification-matrix.md`](../ops/verification-matrix.md)。
 

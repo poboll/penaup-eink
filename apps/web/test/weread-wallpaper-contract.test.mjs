@@ -34,6 +34,8 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.match(responsiveStyles, /\.weread-key-row \.text-button/);
   assert.match(responsiveStyles, /min-width:\s*44px/);
   assert.match(responsiveStyles, /@media \(max-width: 420px\)/);
+  assert.match(responsiveStyles, /@media \(min-width: 721px\)[\s\S]*?\.container[\s\S]*?height:\s*100vh/);
+  assert.match(responsiveStyles, /@media \(min-width: 721px\)[\s\S]*?\.bottom-nav[\s\S]*?position:\s*static/);
   const convert = await read('js/convert.js');
   assert.match(convert, /\.polaroid-inner:not\(\.weread-polaroid-inner\)/);
   assert.match(styles, /\.weread-polaroid-inner canvas\s*\{[\s\S]*?top:\s*0;[\s\S]*?left:\s*0;/);

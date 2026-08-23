@@ -255,6 +255,33 @@ a.secondary-button {
     }
 }
 
+/* Desktop and tablet navigation belongs to the paper flow. A fixed bar at
+ * these widths covers the active editor while the page's own content area
+ * scrolls; only the compact phone layout needs an always-reachable bottom bar. */
+@media (min-width: 721px) {
+    .container {
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+    }
+
+    #page-content {
+        min-height: 0;
+        padding-bottom: 44px;
+    }
+
+    .bottom-nav {
+        position: static;
+        inset: auto;
+        flex: 0 0 auto;
+        width: min(680px, calc(100% - 32px));
+        margin: 0 auto 32px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: 0 10px 24px rgba(70, 57, 40, .08);
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .weread-phase-trail li,
     .weread-phase-indicator[data-phase="downloading"] .weread-phase-dot,
