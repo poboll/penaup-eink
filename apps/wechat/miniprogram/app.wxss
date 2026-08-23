@@ -1,7 +1,9 @@
 /* Copyright (c) 2026 poboll · Penaup mini program paper system */
 
+@import "./styles/paper-surface.wxss";
+
 page {
-  background: linear-gradient(180deg, #fffef9 0%, #fcfaf4 56%, #f7f1e7 100%);
+  background-color: #faf7ef;
   color: #1a1b18;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", sans-serif;
   line-height: 1.55;
@@ -17,10 +19,10 @@ button { margin: 0; font-family: inherit; }
 .btn-primary,
 .btn-secondary,
 .btn-disconnect {
-  min-height: 88rpx;
+  min-height: 92rpx;
   padding: 20rpx 28rpx;
   border-radius: 8rpx;
-  font-size: 27rpx;
+  font-size: 28rpx;
   font-weight: 600;
   letter-spacing: .4rpx;
 }

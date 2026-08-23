@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../css/penaup-shared.css">
     <link rel="stylesheet" href="../css/studio-paper.css">
     <link rel="stylesheet" href="../css/studio-responsive.css">
+    <link rel="stylesheet" href="../css/paper-surface.css">
 </head>
 <body>
     <div id="penaup-splash" class="penaup-splash" role="dialog" aria-modal="true" aria-labelledby="splash-title" aria-describedby="splash-caption">
@@ -317,6 +318,11 @@
             <!-- Frame页面 -->
             <div id="frame-page" class="page">
                 <div class="frame-container">
+                    <div class="frame-format-note" role="note">
+                        <span class="mono-label">PRIMARY PAPER / E6 PRO</span>
+                        <strong>3.68 英寸 · 528 × 792 竖向视觉</strong>
+                        <small>写入设备时仍使用 792 × 528 的兼容 film 协议</small>
+                    </div>
                     <div class="frame-tabs" role="tablist" aria-label="花生片创作方式">
                         <button type="button" class="frame-tab active" data-frame-tab="frame-upload" role="tab" aria-selected="true" aria-controls="frame-upload">
                             <i class="material-icons">photo_library</i>
@@ -344,7 +350,7 @@
                         </button>
                         <div class="polaroid-frame">
                             <div class="polaroid-inner">
-                                <canvas id="frame-canvas" width="600" height="400" role="img" aria-label="照片电子纸预览"></canvas>
+                                <canvas id="frame-canvas" width="792" height="528" role="img" aria-label="花生片 Pro 3.68 英寸竖向照片预览"></canvas>
                             </div>
                         </div>
                         <div class="frame-hint-row"><p class="info frame-hint">选择照片后自动转换；拖动或双指调整构图</p><button type="button" class="icon-button frame-reset-btn" id="frame-reset-upload" title="重置构图" aria-label="重置构图" disabled>↺</button></div>
@@ -374,7 +380,7 @@
                         </div>
                         <div class="polaroid-frame">
                             <div class="polaroid-inner">
-                                <canvas id="frame-camera-canvas" width="600" height="400" role="img" aria-label="相机照片电子纸预览"></canvas>
+                                <canvas id="frame-camera-canvas" width="792" height="528" role="img" aria-label="花生片 Pro 3.68 英寸竖向相机预览"></canvas>
                             </div>
                         </div>
                         <div class="frame-hint-row"><p class="info frame-hint">拍照后自动转换；拖动或双指调整构图</p><button type="button" class="icon-button frame-reset-btn" id="frame-reset-camera" title="重置构图" aria-label="重置构图" disabled>↺</button></div>
@@ -410,7 +416,7 @@
                         </div>
                         <div class="polaroid-frame">
                             <div class="polaroid-inner">
-                                <canvas id="frame-quote-canvas" width="600" height="400" role="img" aria-label="一言电子纸预览"></canvas>
+                                <canvas id="frame-quote-canvas" width="792" height="528" role="img" aria-label="花生片 Pro 3.68 英寸竖向一言预览"></canvas>
                             </div>
                         </div>
                         <button type="button" class="primary-button frame-send-btn" id="frameQuoteUploadBtn">
@@ -438,12 +444,12 @@
                             <div>
                                 <p class="section-kicker">READING WALLPAPER LAB / PENAUP PRO</p>
                                 <h2 id="weread-title">把读过的书，<em>留成一张屏保。</em></h2>
-                                <p class="weread-lede">从微信读书取回一段真实的阅读轨迹，排成一张 3.68 英寸 E6 Pro 的纸。先连接，再选一种你想每天看见的样子。</p>
+                                <p class="weread-lede">从微信读书取回一段真实的阅读轨迹，排成一张 3.68 英寸 E6 Pro 的竖向纸面。先连接，再选一种你想每天看见的样子。</p>
                             </div>
                             <div class="weread-pro-spec" aria-label="花生片 Pro 屏幕规格">
                                 <span class="weread-live-dot" aria-hidden="true"></span>
                                 <span>E6 / 3.68 INCH</span>
-                                <strong>792 × 528</strong>
+                                <strong>528 × 792</strong>
                             </div>
                         </div>
                         <ol class="weread-story-rail" aria-label="壁纸生成流程">
@@ -519,7 +525,7 @@
                             <section id="weread-preview-panel" class="weread-preview-panel" aria-labelledby="weread-preview-title" aria-busy="false">
                                 <div class="weread-preview-head">
                                     <div><p class="preview-kicker">PAPER / LOCAL DEVELOPING</p><h3 id="weread-preview-title">一页还未显影</h3></div>
-                                    <span class="weread-size-tag">PRO · 792 × 528</span>
+                                    <span class="weread-size-tag">PRO · 528 × 792 视觉</span>
                                 </div>
                                 <div id="weread-phase-indicator" class="weread-phase-indicator" data-phase="idle" role="status" aria-live="polite"><span class="weread-phase-dot" aria-hidden="true"></span><strong id="weread-phase-label">纸面在等一段阅读</strong><span>本地排版 · E6 Pro</span></div>
                                 <ol class="weread-phase-trail" aria-label="本地显影阶段">
@@ -530,12 +536,12 @@
                                 </ol>
                                 <div class="polaroid-frame weread-polaroid">
                                     <div class="polaroid-inner weread-polaroid-inner">
-                                        <canvas id="weread-canvas" width="792" height="528" role="img" aria-label="微信读书 3.68 英寸电子纸屏保预览"></canvas>
+                                        <canvas id="weread-canvas" width="528" height="792" role="img" aria-label="微信读书 3.68 英寸竖向电子纸屏保预览"></canvas>
                                         <div id="weread-empty" class="weread-empty"><span class="weread-empty-mark">◌</span><strong>纸面在等一段阅读</strong><span>连接书架并取回记录后，这里会出现你的阅读轨迹。</span></div>
                                     </div>
                                 </div>
                                 <div id="weread-preview-meta" class="weread-preview-meta">汇文明朝体、纸面纹理和本地六色显影会在这里相遇。</div>
-                                <div class="weread-output-note"><span class="weread-output-mark" aria-hidden="true">6 × 8</span><span>六种物理墨水 · 最多 48 种色彩观感<br>画面停住后不需要持续点亮</span></div>
+                                <div class="weread-output-note"><span class="weread-output-mark" aria-hidden="true">6 × 8</span><span>视觉相纸 528 × 792 · film 协议 792 × 528<br>六种物理墨水 · 最多 48 种色彩观感 · 画面停住后不需要持续点亮</span></div>
                                 <div class="weread-actions">
                                     <button type="button" class="secondary-button" id="weread-download-png" disabled><i class="material-icons">download</i>下载 PNG</button>
                                     <button type="button" class="secondary-button" id="weread-download-jpg" disabled><i class="material-icons">image</i>下载 JPG</button>
@@ -636,7 +642,7 @@
 
                         <div class="polaroid-frame">
                             <div class="polaroid-inner">
-                                <canvas id="canvas" width="600" height="400"></canvas>
+                                <canvas id="canvas" width="792" height="528"></canvas>
                             </div>
                         </div>
 

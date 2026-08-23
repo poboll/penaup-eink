@@ -10,6 +10,28 @@ test('Penaup device aliases resolve to the three firmware profiles', () => {
   assert.equal(film.getDeviceTypeFromName('old-framefilm-max'), 'PENAUPMAX');
 });
 
+test('the no-device default is the Pro portrait visual paper', () => {
+  film.setDeviceType(film.DEFAULT_DEVICE_TYPE);
+  const config = film.getDeviceConfig();
+  assert.equal(film.getDeviceType(), 'PENAUPPRO');
+  assert.deepEqual(
+    {
+      canvasWidth: config.canvasWidth,
+      canvasHeight: config.canvasHeight,
+      screenWidth: config.screenWidth,
+      screenHeight: config.screenHeight,
+      totalSize: config.totalSize
+    },
+    {
+      canvasWidth: 528,
+      canvasHeight: 792,
+      screenWidth: 792,
+      screenHeight: 528,
+      totalSize: 209120
+    }
+  );
+});
+
 test('Max uses the firmware file orientation and exact film size', () => {
   film.setDeviceType('PENAUPMAX');
   const config = film.getDeviceConfig();
@@ -36,6 +58,15 @@ test('Max uses the firmware file orientation and exact film size', () => {
   const header = film.generateFilmHeader();
   assert.equal(header.length, 32);
   assert.deepEqual(Array.from(header.slice(0, 9)), [0x00, 0xA6, 0x0E, 0x00, 0xB0, 0x04, 0x40, 0x06, 0x06]);
+});
+
+test('Pro keeps a portrait visual canvas and rotates only at film packing', () => {
+  film.setDeviceType('PENAUPPRO');
+  var config = film.getDeviceConfig();
+  assert.equal(config.canvasWidth, 528);
+  assert.equal(config.canvasHeight, 792);
+  assert.equal(config.isPortraitPanel, true);
+  assert.equal(film.getFilmFileTotalSize(), 209120);
 });
 
 test('legacy default still produces the STD film size', () => {

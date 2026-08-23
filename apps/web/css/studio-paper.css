@@ -240,6 +240,32 @@ button.primary-button i, button.secondary-button i, a.primary-button i, a.second
     padding: 18px 0 26px;
 }
 
+.frame-format-note {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin: 0 0 16px;
+    padding: 11px 14px;
+    border: 1px dashed var(--line-strong);
+    border-radius: 9px;
+    background: rgba(255, 253, 248, .56);
+}
+
+.frame-format-note .mono-label {
+    color: var(--blue);
+}
+
+.frame-format-note strong {
+    color: var(--ink);
+    font: 600 15px/1.3 var(--font-display);
+}
+
+.frame-format-note small {
+    color: var(--ink-faint);
+    font: 12px/1.4 var(--font-mono);
+}
+
 .frame-tabs {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -566,7 +592,7 @@ button.primary-button i, button.secondary-button i, a.primary-button i, a.second
 }
 
 .weread-polaroid-inner {
-    aspect-ratio: 3 / 2;
+    aspect-ratio: 2 / 3;
     background: #ede7dc;
 }
 
@@ -1385,7 +1411,7 @@ body::before {
 
 .weread-polaroid-inner::after {
     color: var(--ink-faint);
-    content: "PENAUP / E6 PRO / 792 × 528";
+    content: "PENAUP / E6 PRO / 528 × 792 VISUAL";
 }
 
 .weread-polaroid-inner canvas {

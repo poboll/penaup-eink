@@ -29,9 +29,9 @@
     { id: 'green', name: '绿色', hex: '#29cc14', r: 41, g: 204, b: 20, index: 5, value: 0x1c, epdCode: 0x66 }
   ];
   var profiles = [
-    { id: 'std', key: 'PENAUP_STD', aliases: ['PENAUP', 'PENAUPSTD', 'STD', 'FRAMEFILM', 'FRAMEFILMSTD', '600X400'], displayName: '花生片', modelName: 'Penaup STD', screenWidth: 600, screenHeight: 400, canvasWidth: 400, canvasHeight: 600, pixelLayout: 'rotated', bodySize: 120000, totalSize: 120032, panel: 'E6 3.6 inch' },
-    { id: 'pro', key: 'PENAUP_PRO', aliases: ['PENAUPPRO', 'PRO', 'FRAMEFILMPRO', '792X528'], displayName: '花生片 Pro', modelName: 'Penaup Pro', screenWidth: 792, screenHeight: 528, canvasWidth: 528, canvasHeight: 792, pixelLayout: 'row-major', bodySize: 209088, totalSize: 209120, panel: 'E6 3.68 inch' },
-    { id: 'max', key: 'PENAUP_MAX', aliases: ['PENAUPMAX', 'MAX', 'FRAMEFILMMAX', '1200X1600', '1600X1200'], displayName: '花生片 Max', modelName: 'Penaup Max', screenWidth: 1200, screenHeight: 1600, canvasWidth: 1200, canvasHeight: 1600, pixelLayout: 'row-major', bodySize: 960000, totalSize: 960032, panel: 'E6 7.09 inch dual panel' }
+    { id: 'std', key: 'PENAUP_STD', aliases: ['PENAUP', 'PENAUPSTD', 'STD', 'FRAMEFILM', 'FRAMEFILMSTD', '600X400'], displayName: '花生片', modelName: 'Penaup STD', screenWidth: 600, screenHeight: 400, canvasWidth: 400, canvasHeight: 600, pixelLayout: 'rotated', bodySize: 120000, totalSize: 120032, panel: 'E6 3.6 inch', visualRotation: 'clockwise' },
+    { id: 'pro', key: 'PENAUP_PRO', aliases: ['PENAUPPRO', 'PRO', 'FRAMEFILMPRO', '792X528'], displayName: '花生片 Pro', modelName: 'Penaup Pro', screenWidth: 792, screenHeight: 528, canvasWidth: 528, canvasHeight: 792, pixelLayout: 'row-major', bodySize: 209088, totalSize: 209120, panel: 'E6 3.68 inch', visualRotation: 'clockwise' },
+    { id: 'max', key: 'PENAUP_MAX', aliases: ['PENAUPMAX', 'MAX', 'FRAMEFILMMAX', '1200X1600', '1600X1200'], displayName: '花生片 Max', modelName: 'Penaup Max', screenWidth: 1200, screenHeight: 1600, canvasWidth: 1200, canvasHeight: 1600, pixelLayout: 'row-major', bodySize: 960000, totalSize: 960032, panel: 'E6 7.09 inch dual panel', visualRotation: 'none' }
   ];
   var aliases = {};
   var PROFILES = {};
@@ -71,6 +71,17 @@
     var profile = getProfile(profileOrKey);
     if (x % 1 || y % 1 || x < 0 || y < 0 || x >= profile.screenWidth || y >= profile.screenHeight) throw new RangeError('pixel coordinate outside film profile');
     return profile.pixelLayout === 'rotated' ? (x * profile.screenHeight) + (profile.screenHeight - 1 - y) : (y * profile.screenWidth) + x;
+  }
+  function canvasPixelIndex(x, y, profileOrKey, canvasWidth, canvasHeight) {
+    var profile = getProfile(profileOrKey);
+    var visual = canvasWidth === profile.canvasWidth && canvasHeight === profile.canvasHeight && (canvasWidth !== profile.screenWidth || canvasHeight !== profile.screenHeight);
+    if (visual && profile.visualRotation === 'clockwise') return pixelIndex(y, profile.screenHeight - 1 - x, profile);
+    return pixelIndex(x, y, profile);
+  }
+  function screenToVisualCoordinate(x, y, profileOrKey) {
+    var profile = getProfile(profileOrKey);
+    if (profile.visualRotation === 'clockwise' && profile.canvasWidth !== profile.screenWidth) return { x: profile.screenHeight - 1 - y, y: x };
+    return { x: x, y: y };
   }
   function createFilmHeader(profileOrKey) {
     var profile = getProfile(profileOrKey);
@@ -149,5 +160,5 @@
     var number = function (value) { return Math.max(0, Number(value) || 0); };
     return { transfer_id: String(input.transfer_id || input.transferId || ''), device_id: String(input.device_id || input.deviceId || ''), phase: phase, completed_bytes: number(input.completed_bytes == null ? input.completedBytes : input.completed_bytes), total_bytes: number(input.total_bytes == null ? input.totalBytes : input.total_bytes), progress_hint: Math.max(0, Math.min(1, Number(input.progress_hint == null ? input.progressHint : input.progress_hint) || 0)), outcome: input.outcome || (phase === 'succeeded' ? 'success' : phase === 'failed' ? 'failure' : phase === 'device_state_uncertain' ? 'uncertain' : 'pending'), detail: String(input.detail || ''), updated_at: input.updated_at || input.updatedAt || new Date().toISOString(), card_title: String(input.card_title || input.cardTitle || '花生片正在显影'), rendering_detail: String(input.rendering_detail || input.renderingDetail || '') };
   }
-  return { FILM_HEADER_SIZE: FILM_HEADER_SIZE, FILM_COLOR_COUNT: FILM_COLOR_COUNT, COLOR_FEEL_LAYERS: COLOR_FEEL_LAYERS, PERCEIVED_COLOR_FEEL_COUNT: PERCEIVED_COLOR_FEEL_COUNT, COLOR_RENDERING_MODES: COLOR_RENDERING_MODES, COLOR_RENDERING_MODE_DEFINITIONS: COLOR_RENDERING_MODE_DEFINITIONS, BLE_CHUNK_SIZE: BLE_CHUNK_SIZE, COLOR_TABLE: COLOR_TABLE, EPD_COLOR_CODES: EPD_COLOR_CODES, PALETTE: PALETTE, PROFILES: PROFILES, TRANSFER_PHASES: TRANSFER_PHASES, TERMINAL_TRANSFER_PHASES: TERMINAL_TRANSFER_PHASES, normalizeProfileKey: normalizeProfileKey, getProfile: getProfile, pixelIndex: pixelIndex, createFilmHeader: createFilmHeader, createFilmFile: createFilmFile, parseFilmHeader: parseFilmHeader, validateFilmBuffer: validateFilmBuffer, packColorIndexes: packColorIndexes, unpackColorIndexes: unpackColorIndexes, toTransferEvent: toTransferEvent, isTerminalTransferPhase: isTerminalTransferPhase, isTransferPhaseAdvance: isTransferPhaseAdvance };
+  return { FILM_HEADER_SIZE: FILM_HEADER_SIZE, FILM_COLOR_COUNT: FILM_COLOR_COUNT, COLOR_FEEL_LAYERS: COLOR_FEEL_LAYERS, PERCEIVED_COLOR_FEEL_COUNT: PERCEIVED_COLOR_FEEL_COUNT, COLOR_RENDERING_MODES: COLOR_RENDERING_MODES, COLOR_RENDERING_MODE_DEFINITIONS: COLOR_RENDERING_MODE_DEFINITIONS, BLE_CHUNK_SIZE: BLE_CHUNK_SIZE, COLOR_TABLE: COLOR_TABLE, EPD_COLOR_CODES: EPD_COLOR_CODES, PALETTE: PALETTE, PROFILES: PROFILES, TRANSFER_PHASES: TRANSFER_PHASES, TERMINAL_TRANSFER_PHASES: TERMINAL_TRANSFER_PHASES, normalizeProfileKey: normalizeProfileKey, getProfile: getProfile, pixelIndex: pixelIndex, canvasPixelIndex: canvasPixelIndex, screenToVisualCoordinate: screenToVisualCoordinate, createFilmHeader: createFilmHeader, createFilmFile: createFilmFile, parseFilmHeader: parseFilmHeader, validateFilmBuffer: validateFilmBuffer, packColorIndexes: packColorIndexes, unpackColorIndexes: unpackColorIndexes, toTransferEvent: toTransferEvent, isTerminalTransferPhase: isTerminalTransferPhase, isTransferPhaseAdvance: isTransferPhaseAdvance };
 }));

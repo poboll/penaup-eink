@@ -97,7 +97,7 @@ Page({
 
   _syncFromGlobal: function () {
     var g = app.globalData;
-    filmUtils.setDeviceType(g.deviceType || 'PENAUP');
+    filmUtils.setDeviceType(g.deviceType || filmUtils.DEFAULT_DEVICE_TYPE);
     var deviceConfig = filmUtils.getDeviceConfig();
     var currentFile = '';
     var list = g.fileList || [];

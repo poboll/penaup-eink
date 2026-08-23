@@ -4,7 +4,8 @@ App({
   globalData: {
     deviceId: '',
     deviceName: '',
-    deviceType: 'PENAUP',
+    // 主产品是 E6 Pro 3.68 英寸；连接后按广播名切换 STD/Max。
+    deviceType: 'PENAUPPRO',
     isConnected: false,
     batteryLevel: 0,
     fileList: [],

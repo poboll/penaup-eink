@@ -3,7 +3,7 @@
     <text class="weread-kicker">PENAUP / READING WALLPAPER LAB</text>
     <text class="weread-title">把读过的书，&#10;留成一张屏保。</text>
     <text class="weread-lede">从微信读书取回一段阅读轨迹，在花生片 Pro 的 3.68 英寸 E6 纸面上慢慢显影。</text>
-    <view class="weread-spec"><text>E6 PRO</text><text>792 × 528</text><text>六色 / 最多 48 种观感</text></view>
+    <view class="weread-spec"><text>E6 PRO</text><text>528 × 792 视觉</text><text>六色 / 最多 48 种观感</text></view>
   </view>
 
   <view class="weread-rail">
@@ -62,9 +62,9 @@
     <view><text>{{stats.noteCount}}</text><text>笔记划线</text></view>
   </view>
 
-  <view class="preview-heading"><view><text class="weread-kicker">PAPER / LOCAL DEVELOPING</text><text class="preview-title">{{hasPreview ? '这一页已经显影' : '一页还未显影'}}</text></view><text class="preview-size">PRO · 792 × 528</text></view>
+  <view class="preview-heading"><view><text class="weread-kicker">PAPER / LOCAL DEVELOPING</text><text class="preview-title">{{hasPreview ? '这一页已经显影' : '一页还未显影'}}</text></view><text class="preview-size">PRO · 528 × 792 视觉</text></view>
   <view class="preview-paper"><view class="canvas-wrap"><canvas type="2d" id="weread-canvas" class="weread-canvas"></canvas></view><text class="preview-caption">{{phaseLabel}} · {{renderingMode == 'layer' ? '叠色层次' : renderingMode == 'dots' ? '有序网点' : '误差抖动'}}</text></view>
-  <view class="output-note"><text class="output-mark">6 × 8</text><text>六种物理墨水 · 最多 48 种色彩观感&#10;画面停住后不需要持续点亮</text></view>
+  <view class="output-note"><text class="output-mark">6 × 8</text><text>视觉相纸 528 × 792 · film 协议 792 × 528&#10;六种物理墨水 · 最多 48 种色彩观感 · 画面停住后不需要持续点亮</text></view>
   <view class="output-actions"><button class="btn-secondary" disabled="{{!hasPreview}}" bindtap="savePreview">保存 PNG</button><button class="btn-primary" disabled="{{!hasFilm}}" bindtap="sendToDevice">发送到 Pro</button></view>
 
   <view wx:if="{{showTransfer}}" class="transfer-overlay">

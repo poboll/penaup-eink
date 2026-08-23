@@ -39,7 +39,7 @@ function toWechatConfig(profile) {
   return {
     id: profile.id, key: profile.key, screenWidth: profile.screenWidth, screenHeight: profile.screenHeight,
     canvasWidth: profile.canvasWidth, canvasHeight: profile.canvasHeight, displayName: profile.displayName,
-    isPortraitPanel: profile.id !== 'max', pixelLayout: profile.pixelLayout,
+    isPortraitPanel: profile.visualRotation === 'clockwise', pixelLayout: profile.pixelLayout,
     bodySize: profile.bodySize, totalSize: profile.totalSize
   };
 }
@@ -54,7 +54,8 @@ DEVICE_CONFIGS.PENAUP = DEVICE_CONFIGS.FRAMEFILM;
 DEVICE_CONFIGS.PENAUPPRO = DEVICE_CONFIGS.FRAMEFILMPRO;
 DEVICE_CONFIGS.PENAUPMAX = DEVICE_CONFIGS.FRAMEFILMMAX;
 
-var currentDeviceType = 'PENAUP';
+var DEFAULT_DEVICE_TYPE = 'PENAUPPRO';
+var currentDeviceType = DEFAULT_DEVICE_TYPE;
 
 function normalizeDeviceType(type) {
   var value = String(type || '').toUpperCase();
@@ -95,13 +96,13 @@ function getScreenHeight() { return getDeviceConfig().screenHeight; }
 function getFilmPixelDataSize() { return (getScreenWidth() * getScreenHeight()) / 2; }
 function getFilmFileTotalSize() { return FILM_HEADER_SIZE + getFilmPixelDataSize(); }
 
-// 保留旧常量作为默认值（标准版），供已有页面顶部 var 引用
-const CANVAS_WIDTH = 400;
-const CANVAS_HEIGHT = 600;
-const FILM_SCREEN_WIDTH = 600;
-const FILM_SCREEN_HEIGHT = 400;
-const FILM_PIXEL_DATA_SIZE = FilmCore.PROFILES.PENAUP_STD.bodySize;
-const FILM_FILE_TOTAL_SIZE = FilmCore.PROFILES.PENAUP_STD.totalSize;
+// 动态 getter 是新代码首选；这些常量保留给旧页面引用，但现在以主产品 Pro 为默认。
+const CANVAS_WIDTH = FilmCore.PROFILES.PENAUP_PRO.canvasWidth;
+const CANVAS_HEIGHT = FilmCore.PROFILES.PENAUP_PRO.canvasHeight;
+const FILM_SCREEN_WIDTH = FilmCore.PROFILES.PENAUP_PRO.screenWidth;
+const FILM_SCREEN_HEIGHT = FilmCore.PROFILES.PENAUP_PRO.screenHeight;
+const FILM_PIXEL_DATA_SIZE = FilmCore.PROFILES.PENAUP_PRO.bodySize;
+const FILM_FILE_TOTAL_SIZE = FilmCore.PROFILES.PENAUP_PRO.totalSize;
 
 // 颜色编码索引
 const COLOR_CODE_BLACK = 0x00;
@@ -534,13 +535,14 @@ function applyDitherByType(imageData, type, strength) {
   }
 }
 
-// 从竖屏画布提取横屏数据（标准版90°旋转）或直接提取（Pro版无需旋转）
+// 从视觉竖屏画布提取协议横屏数据。STD / Pro 都保留历史协议方向；
+// Max 的视觉与协议方向相同，直接读取即可。
 function extractLandscapeData(portraitCanvas) {
   var cfg = getDeviceConfig();
   var sw = cfg.screenWidth;
   var sh = cfg.screenHeight;
   if (cfg.isPortraitPanel) {
-    // 标准版：竖屏面板，需要旋转90°得到横屏数据
+    // 视觉画布顺时针旋转后对应协议画布，输入前逆时针展开。
     var landscapeCanvas = wx.createOffscreenCanvas({ type: '2d', width: sw, height: sh });
     var ctx = landscapeCanvas.getContext('2d');
     ctx.save();
@@ -550,7 +552,7 @@ function extractLandscapeData(portraitCanvas) {
     ctx.restore();
     return ctx.getImageData(0, 0, sw, sh);
   } else {
-    // Pro版：横屏面板，画布已是横屏方向，直接提取
+    // Max 的视觉与协议方向一致，直接提取。
     return portraitCanvas.getContext('2d').getImageData(0, 0, sw, sh);
   }
 }
@@ -619,7 +621,9 @@ function processImageData(imageData) {
       const closest = findClosestColor(data[index], data[index + 1], data[index + 2]);
       const code = closest.code;
       var newIndex;
-      newIndex = FilmCore.pixelIndex(x, y, cfg);
+      newIndex = FilmCore.canvasPixelIndex
+        ? FilmCore.canvasPixelIndex(x, y, cfg, width, height)
+        : FilmCore.pixelIndex(x, y, cfg);
       const byteIndex = Math.floor(newIndex / 2);
       if (newIndex % 2 === 0) {
         processedData[byteIndex] = (code << 4) | (processedData[byteIndex] & 0x0F);
@@ -637,7 +641,9 @@ function decodeProcessedData(processedData, width, height) {
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       var newIndex;
-      newIndex = FilmCore.pixelIndex(x, y, cfg);
+      newIndex = FilmCore.canvasPixelIndex
+        ? FilmCore.canvasPixelIndex(x, y, cfg, width, height)
+        : FilmCore.pixelIndex(x, y, cfg);
       const byteIndex = Math.floor(newIndex / 2);
       const byte = processedData[byteIndex];
       const code = (newIndex % 2 === 0) ? (byte >> 4) & 0x0F : byte & 0x0F;
@@ -697,8 +703,8 @@ function decodeFilmFile(fileData) {
   var sw = fileData[4] | (fileData[5] << 8);
   var sh = fileData[6] | (fileData[7] << 8);
   if (!sw || !sh) return null;
-  // 标准版(600x400)为列优先翻转布局，Pro(792x528)为行优先
-  var portrait = (sw === 600 && sh === 400);
+  // STD / Pro 的视觉相纸都是竖向；Max 的协议与视觉同向。
+  var portrait = (sw === 600 && sh === 400) || (sw === 792 && sh === 528);
   var pixelData = fileData.subarray(FILM_HEADER_SIZE);
   var pixels = new Uint8ClampedArray(sw * sh * 4);
   for (var y = 0; y < sh; y++) {
@@ -726,7 +732,7 @@ function renderFilmThumbnail(fileData, callback, maxSize) {
   try {
     var sw = decoded.width;
     var sh = decoded.height;
-    // 按展示方向渲染完整画面（标准版竖屏旋转 90°，Pro 横屏直出）
+    // 按展示方向渲染完整画面（STD / Pro 旋转 90°，Max 直出）
     var dispW = decoded.portrait ? sh : sw;
     var dispH = decoded.portrait ? sw : sh;
     var srcCanvas = wx.createOffscreenCanvas({ type: '2d', width: sw, height: sh });
@@ -808,7 +814,7 @@ function imageToFilmData(src, callback) {
 }
 
 module.exports = {
-  CANVAS_WIDTH, CANVAS_HEIGHT,
+  DEFAULT_DEVICE_TYPE, CANVAS_WIDTH, CANVAS_HEIGHT,
   FILM_SCREEN_WIDTH, FILM_SCREEN_HEIGHT,
   FILM_HEADER_SIZE, FILM_PIXEL_DATA_SIZE, FILM_FILE_TOTAL_SIZE,
   DEVICE_CONFIGS,

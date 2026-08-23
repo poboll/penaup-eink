@@ -100,17 +100,10 @@ Page({
     var scheme = frameColorSchemes[Math.floor(Math.random() * frameColorSchemes.length)];
     var CW = filmUtils.getCanvasWidth();
     var CH = filmUtils.getCanvasHeight();
-    // 对于标准版（竖屏面板），在竖屏画布上绘制
-    // 对于Pro（横屏面板），在横屏画布上绘制
-    var cfg = filmUtils.getDeviceConfig();
-    var w, h;
-    if (cfg.isPortraitPanel) {
-      w = CW;  // 400
-      h = CH;  // 600
-    } else {
-      w = CW;  // 792
-      h = CH;  // 528
-    }
+    // 模板始终在视觉相纸上绘制；Pro 是 528 × 792 竖向，film
+    // 协议的 792 × 528 旋转只在 extractLandscapeData() 中发生。
+    var w = CW;
+    var h = CH;
 
     ctx.clearRect(0, 0, CW, CH);
 

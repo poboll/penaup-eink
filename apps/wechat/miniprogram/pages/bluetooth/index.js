@@ -445,7 +445,7 @@ Page({
     app.stopBleNotify();
     app.globalData.deviceId = '';
     app.globalData.deviceName = '';
-    app.globalData.deviceType = 'PENAUP';
+    app.globalData.deviceType = filmUtils.DEFAULT_DEVICE_TYPE;
     app.globalData.isConnected = false;
     app.globalData.batteryLevel = 0;
     app.globalData.fileList = [];
@@ -459,7 +459,7 @@ Page({
     app.globalData._characteristicId = '';
 
     // 重置设备类型
-    filmUtils.setDeviceType('PENAUP');
+    filmUtils.setDeviceType(filmUtils.DEFAULT_DEVICE_TYPE);
 
     // 关闭蓝牙适配器，确保下次扫描能正常工作
     wx.closeBluetoothAdapter({

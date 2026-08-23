@@ -109,6 +109,7 @@ const requiredPaths = [
   'apps/web/index.html',
   'apps/web/device/index.html',
   'apps/web/css/device-tool.css',
+  'apps/web/css/paper-surface.css',
   'apps/web/js/ble-protocol.js',
   'apps/web/js/device-reconnect-guard.js',
   'apps/web/js/device-tool.js',
@@ -153,6 +154,7 @@ const requiredPaths = [
   , 'apps/wechat/miniprogram/pages/weread/index.js'
   , 'apps/wechat/miniprogram/pages/weread/index.wxml'
   , 'apps/wechat/miniprogram/pages/weread/index.wxss'
+  , 'apps/wechat/miniprogram/styles/paper-surface.wxss'
   , 'apps/wechat/miniprogram/utils/weread-api.js'
   , 'apps/wechat/miniprogram/test/weread-page-contract.test.js'
   , 'firmware/penaup/releases/manifest.schema.json'

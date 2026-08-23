@@ -12,6 +12,8 @@ import {
   createFilmFile,
   validateFilmBuffer,
   pixelIndex,
+  canvasPixelIndex,
+  screenToVisualCoordinate,
   toTransferEvent
 } from '../src/index.js';
 
@@ -41,6 +43,16 @@ test('legacy profile aliases and STD rotated index remain compatible', () => {
   assert.equal(getProfile('1600 x 1200').key, 'PENAUP_MAX');
   assert.equal(pixelIndex(0, 0, 'STD'), 399);
   assert.equal(pixelIndex(0, 399, 'STD'), 0);
+});
+
+test('portrait visual coordinates rotate into the unchanged Pro film protocol', () => {
+  const profile = getProfile('PENAUP_PRO');
+  assert.equal(profile.canvasWidth, 528);
+  assert.equal(profile.canvasHeight, 792);
+  assert.equal(canvasPixelIndex(0, 0, profile, profile.canvasWidth, profile.canvasHeight), pixelIndex(0, 527, profile));
+  assert.equal(canvasPixelIndex(527, 0, profile, profile.canvasWidth, profile.canvasHeight), 0);
+  assert.deepEqual(screenToVisualCoordinate(0, 527, profile), { x: 0, y: 0 });
+  assert.deepEqual(screenToVisualCoordinate(0, 0, profile), { x: 527, y: 0 });
 });
 
 test('film validator rejects malformed headers and palette nibbles', () => {

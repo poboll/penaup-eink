@@ -129,7 +129,7 @@ GET /api/v1/device/film/latest.film
 
 四个微信读书入口都使用一次性请求头 `X-Penaup-WeRead-Key`：`connect` 只验证并返回书架数量，
 `bookshelf` 返回用于书架场景的最小字段，`snapshot` 支持 `weekly` / `monthly` 并返回
-`PENAUP_PRO` 的 `792 × 528` 屏保摘要，`reading-card` 返回一本书的简介、进度和最多两条
+`PENAUP_PRO` 的 `528 × 792` 竖向视觉屏保摘要（`.film` 仍为 `792 × 528` 协议），`reading-card` 返回一本书的简介、进度和最多两条
 划线/批注。Key 不进 URL、数据库、响应或 MQTT；所有路由返回 `Cache-Control: no-store`。
 `snapshot` 的 `enrich: true` 只在固定上限内补充书架和进度，补充失败会返回 `enrichment: partial`。
 完整字段、字体和隐私边界见

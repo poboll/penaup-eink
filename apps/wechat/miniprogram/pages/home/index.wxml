@@ -68,7 +68,7 @@
   </view>
 
   <view class="weread-entry" bindtap="goWeread">
-    <view class="weread-entry-copy"><text class="weread-entry-kicker">READING WALLPAPER LAB</text><text class="weread-entry-title">把读过的书，留成一张屏保。</text><text class="weread-entry-detail">微信读书 × 花生片 Pro · 792 × 528</text></view>
+    <view class="weread-entry-copy"><text class="weread-entry-kicker">READING WALLPAPER LAB</text><text class="weread-entry-title">把读过的书，留成一张屏保。</text><text class="weread-entry-detail">微信读书 × 花生片 Pro · 528 × 792 视觉</text></view>
     <text class="weread-entry-arrow">↗</text>
   </view>
 

@@ -237,7 +237,7 @@ function initBluetooth() {
 
 function onDisconnected(event) {
     filmTransState = BLE_FILM_TRANS_STATE_IDLE;
-    setDeviceType('FRAMEFILM');
+    setDeviceType(DEFAULT_DEVICE_TYPE);
     var status = document.getElementById('connection-status');
     if (status) {
         status.textContent = pendingMaintenanceAction ? `${pendingMaintenanceAction} · 状态待确认` : '设备已断开';

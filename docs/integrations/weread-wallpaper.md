@@ -12,11 +12,11 @@
 → 下载 PNG / JPG / .film 或发送到 Pro
 ```
 
-网页入口是 `/studio/?mode=weread`；微信小程序入口是 `apps/wechat/miniprogram/pages/weread/index`。两端共享 `PENAUP_PRO`、`792 × 528`、三种显影方式和 `device_state_uncertain` 传输语义，但小程序使用自己的 Canvas 2D 和临时文件路径，不把 PNG 或 `.film` 长期转成 base64 存储。小程序的服务地址可以保存在本机设置中，Skill Key 只在当前页面内存中使用。
+网页入口是 `/studio/?mode=weread`；微信小程序入口是 `apps/wechat/miniprogram/pages/weread/index`。两端共享 `PENAUP_PRO`、`528 × 792` 竖向视觉画布、`792 × 528` film 协议、三种显影方式和 `device_state_uncertain` 传输语义，但小程序使用自己的 Canvas 2D 和临时文件路径，不把 PNG 或 `.film` 长期转成 base64 存储。小程序的服务地址可以保存在本机设置中，Skill Key 只在当前页面内存中使用。
 
 “用示例数据预览”完全在浏览器内生成三本虚构书籍和一段虚构阅读轨迹，不会发送请求，也不会把示例当作微信读书数据。它与真实流程共用同一套汇文明朝体、本地 Worker、Pro 尺寸和状态提示，适合第一次打开页面时先体验。
 
-固定输出契约为 `PENAUP_PRO`、`792 × 528`、`E6 3.68 inch`。物理屏幕仍然只有六种基础墨水；叠色、抖动和相邻像素共同形成更多色彩观感，页面文案使用“最多 48 种色彩观感”，不把它描述成 48 种原生墨水。
+固定输出契约为 `PENAUP_PRO`、视觉 `528 × 792`、film 头部 `792 × 528`、`E6 3.68 inch`。排版和预览始终以竖向相纸为准，最后由 `film-core` 将视觉坐标转换为兼容协议；不能直接修改固件头部宽高。物理屏幕仍然只有六种基础墨水；叠色、抖动和相邻像素共同形成更多色彩观感，页面文案使用“最多 48 种色彩观感”，不把它描述成 48 种原生墨水。
 
 ## 四种壁纸场景
 
@@ -82,7 +82,7 @@ gateway 必须是 HTTPS 地址，默认只允许 `i.weread.qq.com`；如果部�
 
 屏保排版优先使用 `apps/web/fonts/huiwen-mincho.woff2`（汇文明朝体的 Web 子集），正文和技术标签使用系统无衬线/等宽字体。该字体由本机 `/Users/Apple/Downloads/Huiwenmingchaoti/汇文明朝体.otf` 生成，仓库只提交 Web 所需子集，不提交原始 OTF；字体授权和再分发边界仍要在发布前逐项复核，见 [权利与来源说明](../legal/provenance.md)。
 
-浏览器会明确展示“取回 → 排版 → 显影 → 留下”四个阶段：先生成普通画布预览，再复用 `PenaupImageWorker` 的 `PENAUP_PRO` 配置生成 `.film`。Worker 不可用时可以看预览，但下载和发送按钮不会伪造一个未经显影的 `.film`。PNG / JPG / `.film` 下载会短暂进入“准备下载”状态；BLE 写入后保持“待确认”，不会把写入进度当成刷新成功。
+浏览器会明确展示“取回 → 排版 → 显影 → 留下”四个阶段：先在 `528 × 792` 竖向画布生成普通预览，再复用 `PenaupImageWorker` 的 `PENAUP_PRO` 配置生成 `792 × 528` 协议 `.film`。Worker 不可用时可以看预览，但下载和发送按钮不会伪造一个未经显影的 `.film`。PNG / JPG / `.film` 下载会短暂进入“准备下载”状态；BLE 写入后保持“待确认”，不会把写入进度当成刷新成功。
 
 Canvas 会在首次绘制前等待 `Huiwen Mincho` WebFont 加载，避免首张屏保因为字体竞态回退到系统字体。BLE 写入完成后页面使用“等待电子纸刷新确认”状态；写入进度不等同于设备已经刷新成功。
 

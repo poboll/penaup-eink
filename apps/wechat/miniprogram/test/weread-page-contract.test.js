@@ -14,9 +14,14 @@ test('WeRead mini program page keeps the Pro wallpaper and key boundary', () => 
   const page = read('pages/weread/index.wxml');
   const script = read('pages/weread/index.js');
   const styles = read('pages/weread/index.wxss');
+  const appStyles = read('app.wxss');
+  const paperSurface = read('styles/paper-surface.wxss');
 
   assert.ok(app.pages.includes('pages/weread/index'));
-  assert.match(page, /PENAUP_PRO|792 × 528/);
+  assert.equal(app.window.backgroundColor, '#F5F5F1');
+  assert.equal(app.window.navigationBarBackgroundColor, '#F5F5F1');
+  assert.equal(app.tabBar.backgroundColor, '#FDFDFB');
+  assert.match(page, /PENAUP_PRO|528 × 792/);
   assert.match(page, /data-mode="weekly"/);
   assert.match(page, /data-mode="monthly"/);
   assert.match(page, /saveApiBase/);
@@ -28,7 +33,13 @@ test('WeRead mini program page keeps the Pro wallpaper and key boundary', () => 
   assert.match(script, /_invalidatePreview/);
   assert.match(script, /nextMode === 'monthly' && nextScene === 'weekly_receipt'/);
   assert.match(script, /nextMode === 'weekly' && nextScene === 'monthly_calendar'/);
-  assert.match(script, /Math\.ceil\(\(new Date\(year, month - 1, 1\)\.getDay\(\) \+ totalDays\) \/ 7\)/);
+  assert.match(script, /var first = new Date\(year, month - 1, 1\)\.getDay\(\);/);
+  assert.match(script, /var rows = Math\.ceil\(\(first \+ totalDays\) \/ 7\);/);
   assert.match(styles, /prefers-reduced-motion/);
+  assert.match(styles, /@media \(max-width: 380px\)/);
+  assert.match(styles, /\.field-help[\s\S]*font-size: 23rpx/);
+  assert.match(appStyles, /@import "\.\/styles\/paper-surface\.wxss"/);
+  assert.match(paperSurface, /#f5f5f1/);
+  assert.match(paperSurface, /repeating-linear-gradient/);
   assert.doesNotMatch(script, /wrk-[A-Za-z0-9]{12,}/);
 });

@@ -1730,9 +1730,10 @@ async function downloadFilmFile() {
 }
 
 function updateCanvasScale() {
-    // The WeRead lab owns a fixed landscape Pro canvas (792 × 528). It is a
+    // The WeRead lab owns a fixed portrait Pro canvas (528 × 792). It is a
     // finished wallpaper preview, not an editable photo canvas, so it must
-    // not inherit the legacy STD/Pro portrait presentation transform below.
+    // not inherit the legacy photo presentation transform below. The worker
+    // rotates only when packing the legacy 792 × 528 film payload.
     // Keeping it out of this shared scaler prevents the generated reading
     // sheet from being rotated after the worker puts pixels back.
     var containers = document.querySelectorAll('.polaroid-inner:not(.weread-polaroid-inner)');

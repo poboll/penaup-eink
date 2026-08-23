@@ -12,7 +12,7 @@
 | 用户名称 | 历史编译宏 | `sdkconfig` | EPD | 输入 | Flash / PSRAM |
 |---|---|---|---|---|---|
 | Penaup / STD | `FRAMEFILM_STD` | `sdkconfig_std` | E6 3.6"，600 × 400，WFT | 旋转编码器 + 按键 | 16 MB / Octal SPI |
-| Penaup Pro | `FRAMEFILM_PRO` | `sdkconfig_pro` | E6 3.68"，792 × 528，SE0368-C | 上 / 下 / 确认三按键 | 4 MB / Quad SPI |
+| Penaup Pro | `FRAMEFILM_PRO` | `sdkconfig_pro` | E6 3.68"，视觉 528 × 792 / film 792 × 528，SE0368-C | 上 / 下 / 确认三按键 | 4 MB / Quad SPI |
 | Penaup Max | `FRAMEFILM_MAX` | `sdkconfig_max` | E6 7.09"，固件 1200 × 1600，GDEB0709E01 双面板 | 上 / 下 / 确认三按键 | 16 MB / Octal SPI |
 
 用户-facing 文案使用“花生片 Penaup”。`FrameFilm`、`frame_film` 和 `FRAMEFILM_*` 是旧硬件、NVS 与协议的兼容面，不能因为换品牌就删除。
@@ -34,7 +34,7 @@ Wi-Fi、蓝牙共存、天线距离、下载功耗和三机型的射频表现需
 | 机型 | 固件 EPD 宽 × 高 | 驱动 | SPI / 面板 | Film 主体 |
 |---|---:|---|---|---:|
 | STD | 600 × 400 | `hal_epd_360.c` | SPI2 四线 | 120,000 B |
-| Pro | 792 × 528 | `hal_epd_368.c` | SPI2 四线 | 209,088 B |
+| Pro | 视觉 528 × 792；协议 792 × 528 | `hal_epd_368.c` | SPI2 四线 | 209,088 B |
 | Max | 1200 × 1600 | `hal_epd_709.c` | 双 CS，双面板 | 960,000 B |
 
 EPD 输出使用 4-bit 成对色码：

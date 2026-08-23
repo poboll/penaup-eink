@@ -1,0 +1,78 @@
+/* Copyright (c) 2026 poboll · Penaup mini program paper surface */
+
+/*
+ * The mini program shares the Web story page's pale rice-paper direction.
+ * Keep the texture in CSS so it is local, cacheable, and cheap to paint.
+ */
+page {
+  color: #292722;
+  background-color: #f5f5f1;
+  background-image:
+    radial-gradient(circle at 8% -12%, rgba(255, 255, 255, .98), transparent 34%),
+    radial-gradient(circle at 94% 4%, rgba(196, 154, 36, .035), transparent 28%),
+    repeating-linear-gradient(102deg, transparent 0 18px, rgba(58, 59, 54, .035) 18px 19px, transparent 19px 39px),
+    repeating-linear-gradient(7deg, transparent 0 6px, rgba(38, 40, 36, .018) 6px 7px, transparent 7px 14px),
+    linear-gradient(180deg, #ffffff 0%, #f5f5f1 54%, #eeeeea 100%);
+}
+
+/* The Web app owns the bundled Huiwen Mincho subset; mini program canvas
+ * safely falls back to Songti when a device does not expose the face. */
+.paper-title,
+.paper-display,
+.paper-canvas-text {
+  font-family: "Huiwen Mincho", "Songti SC", "STSong", Georgia, serif;
+  font-weight: 400;
+}
+
+.paper-surface-card {
+  border: 2rpx solid rgba(115, 96, 70, .22);
+  border-radius: 8rpx;
+  background: rgba(253, 253, 251, .84);
+  box-shadow: 8rpx 9rpx 0 rgba(54, 55, 51, .1), 0 18rpx 36rpx rgba(41, 42, 38, .05);
+}
+
+/* Paper-cut controls: a white card, a dark hairline and a tiny offset. */
+.btn-primary,
+.btn-secondary,
+.mini-action,
+.choice-button,
+.scene-button,
+.render-button {
+  border-radius: 2rpx;
+  box-shadow: 4rpx 4rpx 0 rgba(32, 33, 31, .1);
+}
+
+.btn-secondary,
+.mini-action,
+.choice-button,
+.scene-button,
+.render-button {
+  background: #fdfdfb;
+}
+
+.btn-primary {
+  color: #20211f;
+  background: #fdfdfb;
+  border-color: #20211f;
+}
+
+.btn-primary:active,
+.btn-secondary:active,
+.mini-action:active,
+.choice-button:active,
+.scene-button:active,
+.render-button:active {
+  box-shadow: 1rpx 1rpx 0 rgba(32, 33, 31, .14);
+}
+
+.paper-focus:focus,
+.paper-focus:focus-visible {
+  outline: 4rpx solid rgba(65, 111, 153, .28);
+  outline-offset: 4rpx;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  page {
+    background-image: linear-gradient(180deg, #ffffff 0%, #f5f5f1 54%, #eeeeea 100%);
+  }
+}

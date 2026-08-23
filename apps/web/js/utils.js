@@ -11,7 +11,9 @@ DEVICE_CONFIGS.PENAUP = DEVICE_CONFIGS.FRAMEFILM;
 DEVICE_CONFIGS.PENAUPPRO = DEVICE_CONFIGS.FRAMEFILMPRO;
 DEVICE_CONFIGS.PENAUPMAX = DEVICE_CONFIGS.FRAMEFILMMAX;
 
-var currentDeviceType = 'PENAUP';
+// 花生片当前主产品是 E6 Pro 3.68 英寸；STD/Max 仍可在连接后显式切换。
+var DEFAULT_DEVICE_TYPE = 'PENAUPPRO';
+var currentDeviceType = DEFAULT_DEVICE_TYPE;
 
 function getDeviceConfig() {
     return DEVICE_CONFIGS[currentDeviceType] || DEVICE_CONFIGS['PENAUP'];
@@ -29,7 +31,7 @@ function escapeHtml(value) {
     });
 }
 
-// 是否竖屏设备（画布高 > 宽），如 Max 版 1200x1600
+// 物理协议屏幕是否竖向；STD/Pro 的视觉相纸会在预览中另行旋转。
 function isPortraitDevice() {
     var cfg = getDeviceConfig();
     return cfg.screenHeight > cfg.screenWidth;
@@ -50,6 +52,7 @@ function onDeviceTypeChanged() {
     var cfg = getDeviceConfig();
     var canvases = document.querySelectorAll('canvas[id]');
     for (var i = 0; i < canvases.length; i++) {
+        if (canvases[i].closest && canvases[i].closest('.weread-polaroid-inner')) continue;
         canvases[i].width = cfg.screenWidth;
         canvases[i].height = cfg.screenHeight;
     }
@@ -85,13 +88,14 @@ function getCanvasHeight() {
 function fitPolaroidCanvas(container, canvas) {
     if (!container || !canvas) return;
 
-    var logicalWidth = getCanvasWidth();
-    var logicalHeight = getCanvasHeight();
-    var portrait = logicalHeight > logicalWidth;
-    var visualWidth = portrait ? logicalWidth : logicalHeight;
-    var visualHeight = portrait ? logicalHeight : logicalWidth;
+    var profile = getDeviceConfig();
+    var logicalWidth = profile.screenWidth;
+    var logicalHeight = profile.screenHeight;
+    var visualWidth = profile.canvasWidth || logicalWidth;
+    var visualHeight = profile.canvasHeight || logicalHeight;
+    var needsRotation = logicalWidth !== visualWidth || logicalHeight !== visualHeight;
 
-    container.style.aspectRatio = logicalWidth + ' / ' + logicalHeight;
+    container.style.aspectRatio = visualWidth + ' / ' + visualHeight;
     container.style.minHeight = '0';
 
     var containerWidth = container.clientWidth;
@@ -106,7 +110,7 @@ function fitPolaroidCanvas(container, canvas) {
     canvas.style.height = logicalHeight + 'px';
     canvas.style.maxWidth = 'none';
     canvas.style.maxHeight = 'none';
-    canvas.style.transform = 'translate(-50%, -50%)' + (portrait ? '' : ' rotate(90deg)') + ' scale(' + scale + ')';
+    canvas.style.transform = 'translate(-50%, -50%)' + (needsRotation ? ' rotate(90deg)' : '') + ' scale(' + scale + ')';
     canvas.dataset.displayScale = String(scale);
 }
 
@@ -124,7 +128,9 @@ function getFilmFileTotalSize() {
 
 // 根据设备类型返回正确的像素索引
 function getPixelIndex(x, y, width, height) {
-    return FilmCore.pixelIndex(x, y, getDeviceConfig());
+    var profile = getDeviceConfig();
+    if (FilmCore.canvasPixelIndex) return FilmCore.canvasPixelIndex(x, y, profile, width, height);
+    return FilmCore.pixelIndex(x, y, profile);
 }
 
 // 显示消息提示

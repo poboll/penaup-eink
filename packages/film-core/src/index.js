@@ -79,7 +79,8 @@ const PROFILE_LIST = [
     pixelLayout: 'rotated',
     bodySize: 120000,
     totalSize: 120032,
-    panel: 'E6 3.6 inch'
+    panel: 'E6 3.6 inch',
+    visualRotation: 'clockwise'
   },
   {
     id: 'pro',
@@ -94,7 +95,8 @@ const PROFILE_LIST = [
     pixelLayout: 'row-major',
     bodySize: 209088,
     totalSize: 209120,
-    panel: 'E6 3.68 inch'
+    panel: 'E6 3.68 inch',
+    visualRotation: 'clockwise'
   },
   {
     id: 'max',
@@ -109,7 +111,8 @@ const PROFILE_LIST = [
     pixelLayout: 'row-major',
     bodySize: 960000,
     totalSize: 960032,
-    panel: 'E6 7.09 inch dual panel'
+    panel: 'E6 7.09 inch dual panel',
+    visualRotation: 'none'
   }
 ];
 
@@ -178,6 +181,27 @@ export function pixelIndex(x, y, profileOrKey) {
   }
   if (profile.pixelLayout === 'rotated') return (x * profile.screenHeight) + (profile.screenHeight - 1 - y);
   return (y * profile.screenWidth) + x;
+}
+
+// The public-facing canvas can be portrait while the historical file header
+// remains landscape. Convert visual coordinates to protocol coordinates here
+// so Web, WeChat and Node do not each invent a subtly different rotation.
+export function canvasPixelIndex(x, y, profileOrKey, canvasWidth, canvasHeight) {
+  const profile = getProfile(profileOrKey);
+  const isVisualCanvas = canvasWidth === profile.canvasWidth && canvasHeight === profile.canvasHeight
+    && (canvasWidth !== profile.screenWidth || canvasHeight !== profile.screenHeight);
+  if (isVisualCanvas && profile.visualRotation === 'clockwise') {
+    return pixelIndex(y, profile.screenHeight - 1 - x, profile);
+  }
+  return pixelIndex(x, y, profile);
+}
+
+export function screenToVisualCoordinate(x, y, profileOrKey) {
+  const profile = getProfile(profileOrKey);
+  if (profile.visualRotation === 'clockwise' && profile.canvasWidth !== profile.screenWidth) {
+    return { x: profile.screenHeight - 1 - y, y: x };
+  }
+  return { x, y };
 }
 
 function toUint8Array(value) {

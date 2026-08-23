@@ -1,6 +1,5 @@
 @import "../../../styles/template-preview.wxss";
 
-page { background: #f4f3ed; }
 .set-card { display: flex; align-items: center; gap: 14rpx; margin-bottom: 18rpx; padding: 8rpx 18rpx; }
 .set-input { flex: 1; min-width: 0; height: 70rpx; padding: 0 6rpx; color: #1a1b18; background: transparent; font-size: 24rpx; }
 .set-picker { display: flex; align-items: center; gap: 8rpx; padding: 12rpx; color: #4d75b6; border-left: 2rpx solid #d8d8cf; font: 20rpx ui-monospace, SFMono-Regular, Menlo, monospace; }

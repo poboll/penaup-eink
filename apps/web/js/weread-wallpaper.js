@@ -8,8 +8,10 @@
     'use strict';
 
     var PROFILE = 'PENAUP_PRO';
-    var WIDTH = 792;
-    var HEIGHT = 528;
+    // Keep the editor in the physical visual orientation. The legacy .film
+    // protocol remains 792 × 528 and is rotated only by the film adapter.
+    var WIDTH = 528;
+    var HEIGHT = 792;
     var COLORS = {
         ink: '#262521',
         quiet: '#6d6a62',
@@ -150,7 +152,7 @@
         ctx.fillStyle = COLORS.paper;
         ctx.fillRect(0, 0, WIDTH, HEIGHT);
         var grain = ['rgba(38,37,33,.045)', 'rgba(212,169,47,.045)', 'rgba(63,111,155,.03)'];
-        for (var index = 0; index < 330; index += 1) {
+        for (var index = 0; index < 440; index += 1) {
             var x = (index * 67) % WIDTH;
             var y = (index * 43) % HEIGHT;
             ctx.fillStyle = grain[index % grain.length];
@@ -178,7 +180,7 @@
         ctx.fillStyle = COLORS.quiet;
         ctx.font = '13px "SF Pro Text", sans-serif';
         ctx.fillText(safeText(subtitle, '把读过的书留给今天。'), 38, 101);
-        drawPalette(ctx, WIDTH - 172, 27, 136, 9);
+        drawPalette(ctx, WIDTH - 156, 27, 120, 9);
         ctx.strokeStyle = COLORS.line;
         ctx.beginPath();
         ctx.moveTo(36, 122);
@@ -189,15 +191,15 @@
     function drawFooter(ctx, snapshot, label) {
         ctx.strokeStyle = COLORS.line;
         ctx.beginPath();
-        ctx.moveTo(36, 475);
-        ctx.lineTo(WIDTH - 36, 475);
+        ctx.moveTo(36, 718);
+        ctx.lineTo(WIDTH - 36, 718);
         ctx.stroke();
         ctx.fillStyle = COLORS.quiet;
-        ctx.font = '11px ui-monospace, Menlo, monospace';
-        ctx.fillText(label || '6 BASE INKS · UP TO 48 COLOR FEELS · E6 PRO', 36, 500);
+        ctx.font = '10px ui-monospace, Menlo, monospace';
+        ctx.fillText(label || '6 BASE INKS · UP TO 48 COLOR FEELS · E6 PRO', 36, 744);
         ctx.textAlign = 'right';
         ctx.fillStyle = COLORS.blue;
-        ctx.fillText(String(snapshot.bookCount || 0) + ' BOOKS  /  ' + String(snapshot.noteCount || 0) + ' NOTES', WIDTH - 36, 500);
+        ctx.fillText(String(snapshot.bookCount || 0) + ' BOOKS  /  ' + String(snapshot.noteCount || 0) + ' NOTES', WIDTH - 36, 744);
         ctx.textAlign = 'left';
     }
 
@@ -224,60 +226,60 @@
 
     function drawWeekly(ctx, snapshot) {
         drawHeading(ctx, '本周读书', snapshot.periodLabel, 'PENAUP / WEEKLY RECEIPT');
-        var statX = WIDTH - 220;
+        var statX = 36;
         ctx.fillStyle = COLORS.ink;
         ctx.font = '400 34px "Huiwen Mincho", "Songti SC", serif';
-        ctx.fillText(String(snapshot.readingMinutes || 0), statX, 155);
+        ctx.fillText(String(snapshot.readingMinutes || 0), statX, 171);
         ctx.fillStyle = COLORS.quiet;
         ctx.font = '11px ui-monospace, Menlo, monospace';
-        ctx.fillText('MINUTES', statX + 1, 174);
+        ctx.fillText('MINUTES', statX + 1, 190);
         ctx.fillStyle = COLORS.ink;
         ctx.font = '400 26px "Huiwen Mincho", "Songti SC", serif';
-        ctx.fillText(String(snapshot.readingDays || 0), statX + 112, 155);
+        ctx.fillText(String(snapshot.readingDays || 0), statX + 142, 171);
         ctx.fillStyle = COLORS.quiet;
         ctx.font = '11px ui-monospace, Menlo, monospace';
-        ctx.fillText('DAYS', statX + 113, 174);
-        ctx.fillText('LAST SEVEN DAYS', statX, 201);
-        drawReadingBars(ctx, snapshot, statX, 210, 184, 55, 7);
+        ctx.fillText('DAYS', statX + 143, 190);
+        ctx.fillText('LAST SEVEN DAYS', statX + 260, 159);
+        drawReadingBars(ctx, snapshot, statX + 260, 166, 232, 53, 7);
 
         ctx.fillStyle = COLORS.ink;
         ctx.font = '600 12px ui-monospace, Menlo, monospace';
-        ctx.fillText('BOOKS IN THE MARGIN', 36, 151);
-        var books = (snapshot.topBookDetails || []).slice(0, 5);
+        ctx.fillText('BOOKS IN THE MARGIN', 36, 258);
+        var books = (snapshot.topBookDetails || []).slice(0, 4);
         if (!books.length) {
             ctx.fillStyle = COLORS.quiet;
             ctx.font = '400 18px "Huiwen Mincho", "Songti SC", serif';
-            ctx.fillText('这一页还在等你的阅读记录。', 36, 200);
+            ctx.fillText('这一页还在等你的阅读记录。', 36, 302);
         } else {
             books.forEach(function (book, index) {
-                var y = 184 + index * 50;
+                var y = 294 + index * 56;
                 ctx.fillStyle = COLORS.ink;
                 ctx.font = '400 18px "Huiwen Mincho", "Songti SC", serif';
                 ctx.fillText(String(index + 1).padStart(2, '0'), 36, y);
-                ctx.fillText(safeText(book.title, '未命名书籍').slice(0, 17), 72, y);
+                ctx.fillText(safeText(book.title, '未命名书籍').slice(0, 19), 72, y);
                 ctx.fillStyle = COLORS.quiet;
                 ctx.font = '12px "SF Pro Text", sans-serif';
                 ctx.fillText(safeText(book.author, '作者未知'), 72, y + 19);
                 ctx.textAlign = 'right';
                 ctx.fillStyle = COLORS.blue;
                 ctx.font = '11px ui-monospace, Menlo, monospace';
-                ctx.fillText(book.readingMinutes ? book.readingMinutes + ' MIN' : (book.progress ? book.progress + '%' : '—'), 382, y + 6);
+                ctx.fillText(book.readingMinutes ? book.readingMinutes + ' MIN' : (book.progress ? book.progress + '%' : '—'), WIDTH - 36, y + 6);
                 ctx.textAlign = 'left';
                 ctx.fillStyle = 'rgba(38,37,33,.12)';
-                ctx.fillRect(72, y + 29, 310, 3);
+                ctx.fillRect(72, y + 29, WIDTH - 108, 3);
                 ctx.fillStyle = COLORS.yellow;
-                ctx.fillRect(72, y + 29, 310 * (book.readingMinutes ? clamp(book.readingMinutes / 360, .04, 1) : clamp(book.progress / 100, .04, 1)), 3);
+                ctx.fillRect(72, y + 29, (WIDTH - 108) * (book.readingMinutes ? clamp(book.readingMinutes / 360, .04, 1) : clamp(book.progress / 100, .04, 1)), 3);
             });
         }
         var excerpt = books.find(function (book) { return book.summary; });
         ctx.fillStyle = COLORS.red;
-        ctx.fillRect(430, 304, 3, 72);
+        ctx.fillRect(36, 548, 3, 72);
         ctx.fillStyle = COLORS.ink;
-        ctx.font = '400 23px "Huiwen Mincho", "Songti SC", serif';
-        var excerptLines = drawTextLines(ctx, excerpt ? excerpt.summary : safeText(snapshot.quote, '读过的每一页，都会在某天回来。'), 450, 326, 288, 29, 2);
+        ctx.font = '400 22px "Huiwen Mincho", "Songti SC", serif';
+        var excerptLines = drawTextLines(ctx, excerpt ? excerpt.summary : safeText(snapshot.quote, '读过的每一页，都会在某天回来。'), 54, 570, WIDTH - 90, 29, 2);
         ctx.fillStyle = COLORS.quiet;
         ctx.font = '12px "SF Pro Text", sans-serif';
-        ctx.fillText(excerpt ? '摘录 · ' + safeText(excerpt.title, '此刻') : '花生片 / Penaup', 450, 326 + excerptLines * 29 + 17);
+        ctx.fillText(excerpt ? '摘录 · ' + safeText(excerpt.title, '此刻') : '花生片 / Penaup', 54, 570 + excerptLines * 29 + 17);
         drawFooter(ctx, snapshot);
     }
 
@@ -292,14 +294,14 @@
         var title = parts[0] + ' / ' + String(parts[1] || 1).padStart(2, '0');
         drawHeading(ctx, title, '每天读的书，在日历上连成线。', 'PENAUP / MONTHLY CALENDAR');
         var left = 36;
-        var top = 145;
+        var top = 150;
         var width = WIDTH - 72;
         var cellWidth = width / 7;
         var totalDays = daysInMonth(month);
         var firstDay = new Date(Date.UTC(parts[0], (parts[1] || 1) - 1, 1)).getUTCDay();
         firstDay = firstDay === 0 ? 6 : firstDay - 1;
         var rows = Math.ceil((firstDay + totalDays) / 7);
-        var cellHeight = Math.min(43, 250 / rows);
+        var cellHeight = Math.min(52, 292 / rows);
         var dayMap = Object.create(null);
         (snapshot.dailyReading || []).forEach(function (item) { dayMap[item.day] = item.readingMinutes; });
         ctx.font = '11px ui-monospace, Menlo, monospace';
@@ -333,10 +335,10 @@
         var books = (snapshot.topBooks || []).slice(0, 4);
         ctx.fillStyle = COLORS.quiet;
         ctx.font = '11px ui-monospace, Menlo, monospace';
-        ctx.fillText('READING THREADS', left, 408);
+        ctx.fillText('READING THREADS', left, 492);
         ctx.fillStyle = COLORS.ink;
         ctx.font = '400 17px "Huiwen Mincho", "Songti SC", serif';
-        drawTextLines(ctx, books.length ? books.join('  ·  ') : '等待书名落在日历边缘。', left, 430, 540, 22, 2);
+        drawTextLines(ctx, books.length ? books.join('  ·  ') : '等待书名落在日历边缘。', left, 520, WIDTH - 72, 26, 3);
         drawFooter(ctx, snapshot, '6 BASE INKS · MONTHLY TRACE · E6 PRO');
     }
 
@@ -344,21 +346,21 @@
         drawHeading(ctx, '书架标本', snapshot.periodLabel || '读过的书，排成一面安静的墙。', 'PENAUP / BOOKSHELF SPECIMEN');
         ctx.fillStyle = COLORS.quiet;
         ctx.font = '11px ui-monospace, Menlo, monospace';
-        ctx.fillText(String(snapshot.bookCount || 0) + ' BOOKS / A SMALL WALL OF READING', 36, 148);
-        var books = (snapshot.topBookDetails || []).slice(0, 11);
+        ctx.fillText(String(snapshot.bookCount || 0) + ' BOOKS / A SMALL WALL OF READING', 36, 150);
+        var books = (snapshot.topBookDetails || []).slice(0, 9);
         var palette = [COLORS.ink, COLORS.blue, COLORS.red, COLORS.green, COLORS.yellow, '#8f8061'];
-        var shelves = [188, 306, 424];
+        var shelves = [300, 466, 632];
         shelves.forEach(function (shelfY, shelfIndex) {
             ctx.fillStyle = 'rgba(38,37,33,.18)';
             ctx.fillRect(36, shelfY, WIDTH - 72, 5);
             ctx.fillStyle = 'rgba(38,37,33,.08)';
             ctx.fillRect(36, shelfY + 5, WIDTH - 72, 3);
-            var start = shelfIndex * 4;
-            var rowBooks = books.slice(start, start + 4);
+            var start = shelfIndex * 3;
+            var rowBooks = books.slice(start, start + 3);
             var x = 58;
             rowBooks.forEach(function (book, index) {
-                var bookWidth = 36 + ((safeText(book.title, '').length * 7 + index * 13) % 36);
-                var height = 72 + ((index * 19 + shelfIndex * 13) % 27);
+                var bookWidth = 45 + ((safeText(book.title, '').length * 7 + index * 13) % 42);
+                var height = 108 + ((index * 19 + shelfIndex * 13) % 31);
                 var y = shelfY - height;
                 ctx.fillStyle = palette[(index + shelfIndex) % palette.length];
                 roundedRect(ctx, x, y, bookWidth, height, 3);
@@ -381,10 +383,10 @@
             if (shelfIndex === 0) {
                 ctx.fillStyle = COLORS.green;
                 ctx.beginPath();
-                ctx.arc(WIDTH - 92, shelfY - 38, 27, 0, Math.PI * 2);
+                ctx.arc(WIDTH - 74, shelfY - 32, 22, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.fillStyle = COLORS.ink;
-                ctx.fillRect(WIDTH - 97, shelfY - 11, 10, 11);
+                ctx.fillRect(WIDTH - 78, shelfY - 10, 8, 10);
             }
         });
         drawFooter(ctx, snapshot, '6 BASE INKS · BOOKSHELF STUDY · E6 PRO');
@@ -396,41 +398,44 @@
         var author = safeText(card && card.author || book.author, '作者未知');
         drawHeading(ctx, '我的读书卡', '为一本正在读的书留一页。', 'PENAUP / READING CARD');
         ctx.fillStyle = COLORS.red;
-        roundedRect(ctx, 42, 150, 190, 250, 4);
+        roundedRect(ctx, 36, 154, 184, 270, 4);
         ctx.fill();
         ctx.fillStyle = COLORS.paperBright;
         ctx.font = '400 26px "Huiwen Mincho", "Songti SC", serif';
-        drawTextLines(ctx, title, 60, 220, 154, 34, 4);
+        drawTextLines(ctx, title, 54, 224, 148, 34, 5);
         ctx.fillStyle = 'rgba(255,253,247,.72)';
         ctx.font = '12px "SF Pro Text", sans-serif';
-        ctx.fillText(author, 60, 365);
+        ctx.fillText(author, 54, 394);
         ctx.fillStyle = COLORS.ink;
         ctx.font = '11px ui-monospace, Menlo, monospace';
-        ctx.fillText('ONE BOOK / ONE PAGE', 270, 158);
+        ctx.fillText('ONE BOOK / ONE PAGE', 244, 164);
         ctx.fillStyle = COLORS.ink;
         ctx.font = '400 31px "Huiwen Mincho", "Songti SC", serif';
-        drawTextLines(ctx, title, 270, 205, 448, 38, 2);
+        drawTextLines(ctx, title, 244, 212, WIDTH - 280, 38, 3);
         ctx.fillStyle = COLORS.quiet;
         ctx.font = '14px "SF Pro Text", sans-serif';
-        ctx.fillText(author + (card && card.category ? '  ·  ' + card.category : ''), 272, 284);
+        ctx.fillText(author + (card && card.category ? '  ·  ' + card.category : ''), 244, 334);
         var cardProgress = card && Number(card.progress);
         var bookProgress = Number(book.progress);
         var progress = clamp(Number.isFinite(cardProgress) ? cardProgress : Number.isFinite(bookProgress) ? bookProgress : 0, 0, 100);
         ctx.fillStyle = 'rgba(38,37,33,.12)';
-        ctx.fillRect(272, 312, 420, 7);
+        ctx.fillRect(244, 366, WIDTH - 280, 7);
         ctx.fillStyle = COLORS.yellow;
-        ctx.fillRect(272, 312, 420 * progress / 100, 7);
+        ctx.fillRect(244, 366, (WIDTH - 280) * progress / 100, 7);
         ctx.fillStyle = COLORS.quiet;
         ctx.font = '11px ui-monospace, Menlo, monospace';
-        ctx.fillText('READING PROGRESS', 272, 339);
+        ctx.fillText('READING PROGRESS', 244, 394);
         ctx.textAlign = 'right';
         ctx.fillStyle = COLORS.blue;
-        ctx.fillText(progress + '%', 692, 339);
+        ctx.fillText(progress + '%', WIDTH - 36, 394);
         ctx.textAlign = 'left';
         var quote = safeText(card && (card.excerpt || card.summary) || book.summary || snapshot.quote, '读过的每一页，都会在某天回来。');
         ctx.fillStyle = COLORS.ink;
-        ctx.font = '400 19px "Huiwen Mincho", "Songti SC", serif';
-        drawTextLines(ctx, '“' + quote + '”', 270, 382, 420, 27, 2);
+        ctx.font = '400 22px "Huiwen Mincho", "Songti SC", serif';
+        ctx.fillStyle = COLORS.red;
+        ctx.fillRect(36, 488, 3, 96);
+        ctx.fillStyle = COLORS.ink;
+        drawTextLines(ctx, '“' + quote + '”', 54, 516, WIDTH - 90, 30, 3);
         drawFooter(ctx, snapshot, '6 BASE INKS · READING CARD · E6 PRO');
     }
 
@@ -457,14 +462,16 @@
         var indicator = byId('weread-phase-indicator');
         var phaseLabel = byId('weread-phase-label');
         var panel = byId('weread-preview-panel');
-        var phaseIndexes = { fetching: 0, typesetting: 1, developing: 2, preview: 2, downloading: 3, transferring: 3, pending: 3, done: 3 };
+        var phaseIndexes = { idle: 0, fetching: 0, typesetting: 1, developing: 2, preview: 2, downloading: 3, transferring: 3, pending: 3, done: 3 };
         if (phase === 'idle') state.phaseIndex = 0;
+        else if (phase === 'failed' && !Number.isInteger(state.phaseIndex)) state.phaseIndex = 0;
         else if (Object.prototype.hasOwnProperty.call(phaseIndexes, phase)) state.phaseIndex = phaseIndexes[phase];
         document.querySelectorAll('[data-weread-phase-step]').forEach(function (item) {
             var index = Object.prototype.hasOwnProperty.call(phaseIndexes, item.dataset.wereadPhaseStep) ? phaseIndexes[item.dataset.wereadPhaseStep] : 0;
             var isCurrent = index === state.phaseIndex;
             item.classList.toggle('is-current', isCurrent);
             item.classList.toggle('is-complete', index < state.phaseIndex || (phase === 'done' && index === state.phaseIndex));
+            item.classList.toggle('is-failed', phase === 'failed' && isCurrent);
             if (isCurrent) item.setAttribute('aria-current', 'step');
             else item.removeAttribute('aria-current');
         });
@@ -946,7 +953,7 @@
     async function sendToDevice() {
         var deviceConfig = typeof getDeviceConfig === 'function' ? getDeviceConfig() : null;
         if (!deviceConfig || deviceConfig.key !== PROFILE) {
-            setStatus('这张屏保固定为 Pro 版 792 × 528，请先连接花生片 Pro。', 'error');
+            setStatus('这张屏保固定为 Pro 版 528 × 792 竖向相纸（film 协议 792 × 528），请先连接花生片 Pro。', 'error');
             return;
         }
         if (typeof frameUploadViaBle !== 'function') {

@@ -43,7 +43,7 @@ Page({
 
   onLoad: function () {
     // 片单缩略图/预览渲染按当前设备类型
-    filmUtils.setDeviceType(app.globalData.deviceType || 'PENAUP');
+    filmUtils.setDeviceType(app.globalData.deviceType || filmUtils.DEFAULT_DEVICE_TYPE);
   },
 
   onShow: function () {
@@ -80,7 +80,7 @@ Page({
 
   _syncFromGlobal: function () {
     var g = app.globalData;
-    filmUtils.setDeviceType(g.deviceType || 'PENAUP');
+    filmUtils.setDeviceType(g.deviceType || filmUtils.DEFAULT_DEVICE_TYPE);
     var deviceConfig = filmUtils.getDeviceConfig();
     var that = this;
     this.setData({
@@ -175,7 +175,7 @@ Page({
       success: function (res) {
         var files = res.tempFiles;
         if (!files || !files.length) return;
-        filmUtils.setDeviceType(app.globalData.deviceType || 'PENAUP');
+        filmUtils.setDeviceType(app.globalData.deviceType || filmUtils.DEFAULT_DEVICE_TYPE);
         var paths = [];
         for (var i = 0; i < files.length; i++) {
           paths.push(files[i].tempFilePath);

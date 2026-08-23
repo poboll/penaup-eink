@@ -1,0 +1,298 @@
+/* Copyright (c) 2026 poboll · Penaup shared paper surface */
+
+/*
+ * A single, deliberately pale rice-paper layer for the story page, studio,
+ * and device tool. The texture is CSS-only so it adds no network request and
+ * remains cheap to paint on small screens.
+ */
+@font-face {
+    font-family: "Huiwen Mincho";
+    src: url("../fonts/huiwen-mincho.woff2") format("woff2");
+    font-display: swap;
+    font-style: normal;
+    font-weight: 400;
+}
+
+:root {
+    --penaup-paper-white: #ffffff;
+    --penaup-paper-ivory: #f5f5f1;
+    --penaup-paper-rice: #eeeeea;
+    --penaup-paper-fiber: rgba(58, 59, 54, .035);
+    --penaup-paper-ink: #20211f;
+    --penaup-paper-blue: #4d73ad;
+    --penaup-paper-yellow: #c49a24;
+    --penaup-paper-line: rgba(38, 40, 36, .18);
+
+    /* Alias the older studio tokens so every page shares one surface. */
+    --paper: var(--penaup-paper-ivory);
+    --paper-bright: #fdfdfb;
+    --paper-raised: #fafaf7;
+    --paper-shadow: #e5e5df;
+    --ink: var(--penaup-paper-ink);
+    --ink-soft: #60625d;
+    --ink-faint: #858780;
+    --line: rgba(38, 40, 36, .16);
+    --line-strong: rgba(38, 40, 36, .34);
+    --blue: var(--penaup-paper-blue);
+    --yellow: var(--penaup-paper-yellow);
+    --red: #ad5145;
+    --green: #55765e;
+}
+
+html {
+    color-scheme: light;
+    background: var(--penaup-paper-ivory);
+}
+
+body {
+    position: relative;
+    isolation: isolate;
+    background-color: var(--penaup-paper-ivory);
+    background-image:
+        radial-gradient(circle at 7% -12%, rgba(255, 255, 255, .98), transparent 33%),
+        radial-gradient(circle at 92% 3%, rgba(196, 154, 36, .035), transparent 26%),
+        repeating-linear-gradient(102deg, transparent 0 18px, var(--penaup-paper-fiber) 18px 19px, transparent 19px 39px),
+        repeating-linear-gradient(7deg, transparent 0 6px, rgba(38, 40, 36, .018) 6px 7px, transparent 7px 14px),
+        linear-gradient(180deg, var(--penaup-paper-white) 0%, var(--penaup-paper-ivory) 53%, var(--penaup-paper-rice) 100%);
+}
+
+/* A low-frequency grain keeps the surface tactile without making text noisy. */
+body::after {
+    position: fixed;
+    z-index: 70;
+    inset: 0;
+    pointer-events: none;
+    content: "";
+    opacity: .095;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='penaup-paper-grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.34' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23penaup-paper-grain)' opacity='.26'/%3E%3C/svg%3E");
+    background-size: 240px 240px;
+    mix-blend-mode: multiply;
+}
+
+.story-shell,
+.container,
+.device-app {
+    position: relative;
+    z-index: 1;
+}
+
+:where(button, a, input, select, textarea):focus-visible {
+    outline: 3px solid rgba(65, 111, 153, .38);
+    outline-offset: 3px;
+}
+
+/* Keep all important actions aligned to the same touch rhythm. */
+:where(.button, .primary-button, .secondary-button, .button-primary, .button-quiet, .button-danger) {
+    min-height: 50px;
+}
+
+.story-nav,
+.app-topbar,
+.story-progress,
+.bottom-nav,
+.device-topbar {
+    background: rgba(253, 253, 251, .9);
+    border-color: var(--penaup-paper-line);
+}
+
+.app-brand strong,
+.device-brand strong,
+.device-app h1,
+.device-app h2,
+.device-app h3 {
+    font-family: "Huiwen Mincho", "Songti SC", "STSong", Georgia, serif;
+    font-weight: 400;
+}
+
+.device-app {
+    color: var(--penaup-paper-ink);
+}
+
+.device-app .paper-card {
+    background: rgba(253, 253, 251, .84);
+}
+
+.device-app .device-topbar {
+    box-shadow: 0 1px 0 rgba(255, 255, 251, .78);
+}
+
+.weread-controls,
+.weread-polaroid,
+.weread-pro-spec,
+.paper-card {
+    backdrop-filter: blur(4px);
+}
+
+.weread-polaroid-inner {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-color: var(--penaup-paper-rice);
+    background-image:
+        repeating-linear-gradient(101deg, transparent 0 16px, rgba(38, 40, 36, .022) 16px 17px, transparent 17px 34px),
+        linear-gradient(135deg, rgba(255, 255, 255, .56), transparent 54%);
+}
+
+.weread-polaroid-inner::before {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    pointer-events: none;
+    content: "";
+    opacity: .14;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='preview-grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.58' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23preview-grain)' opacity='.2'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+    mix-blend-mode: multiply;
+}
+
+.weread-polaroid-inner canvas {
+    z-index: 1;
+}
+
+.weread-preview-panel[aria-busy="true"] .weread-polaroid-inner::after {
+    position: absolute;
+    z-index: 3;
+    top: -15%;
+    bottom: -15%;
+    left: 0;
+    width: 2px;
+    content: "";
+    background: var(--penaup-paper-yellow);
+    box-shadow: 0 0 18px 3px rgba(212, 165, 46, .32);
+    opacity: .72;
+    animation: penaup-paper-scan 1.8s var(--paper-ease, cubic-bezier(.22, .75, .25, 1)) infinite;
+}
+
+.weread-phase-indicator,
+.weread-status,
+.weread-output-note {
+    background-color: rgba(253, 253, 251, .82);
+}
+
+/* Printed cards: square corners, a hairline keyline, and a small physical
+ * offset. The white surface stays quiet; six-color accents are reserved for
+ * state, labels, and the preview itself. */
+:where(button.primary-button, button.secondary-button, a.primary-button, a.secondary-button) {
+    border-radius: 2px;
+    border-width: 1px;
+    box-shadow: 4px 4px 0 rgba(32, 33, 31, .12);
+}
+
+:where(button.primary-button, a.primary-button) {
+    color: var(--penaup-paper-ink);
+    border-color: var(--penaup-paper-ink);
+    background: var(--paper-bright);
+}
+
+:where(button.primary-button:hover:not(:disabled), button.primary-button:focus-visible:not(:disabled), a.primary-button:hover, a.primary-button:focus-visible) {
+    color: var(--paper-bright);
+    border-color: var(--penaup-paper-ink);
+    background: var(--penaup-paper-ink);
+    box-shadow: 2px 2px 0 rgba(32, 33, 31, .18);
+}
+
+:where(button.secondary-button, a.secondary-button) {
+    color: var(--penaup-paper-ink);
+    border-color: rgba(38, 40, 36, .4);
+    background: rgba(253, 253, 251, .92);
+}
+
+:where(button.secondary-button:hover:not(:disabled), button.secondary-button:focus-visible:not(:disabled), a.secondary-button:hover, a.secondary-button:focus-visible) {
+    color: var(--penaup-paper-ink);
+    border-color: var(--penaup-paper-ink);
+    background: #ffffff;
+    box-shadow: 2px 2px 0 rgba(32, 33, 31, .16);
+}
+
+:where(button.primary-button:disabled, button.secondary-button:disabled) {
+    background: #e7e7e2;
+    box-shadow: none;
+}
+
+.weread-phase-indicator[data-phase="failed"] .weread-phase-dot,
+.weread-status.is-error {
+    color: #ad5145;
+}
+
+.weread-phase-indicator[data-phase="failed"] .weread-phase-dot {
+    border-color: #ad5145;
+    background: #ad5145;
+    box-shadow: 0 0 0 4px rgba(173, 81, 69, .12);
+}
+
+.weread-phase-trail li.is-failed {
+    color: #ad5145;
+    border-color: rgba(173, 81, 69, .46);
+    background: rgba(173, 81, 69, .07);
+}
+
+@keyframes penaup-paper-scan {
+    0% { transform: translateX(-4px); opacity: 0; }
+    18% { opacity: .72; }
+    82% { opacity: .72; }
+    100% { transform: translateX(100%); opacity: 0; }
+}
+
+@media (max-width: 720px) {
+    .story-nav,
+    .app-topbar,
+    .story-progress,
+    .device-topbar {
+        background: rgba(253, 253, 251, .96);
+    }
+
+    .app-motto-detail {
+        display: none;
+    }
+
+    .weread-key-field p,
+    .weread-key-session,
+    .weread-demo-row > span,
+    .weread-scene small,
+    .weread-render small,
+    .weread-render-note,
+    .weread-status,
+    .weread-preview-meta,
+    .weread-output-note {
+        font-size: 14px;
+    }
+
+    .weread-connect-row,
+    .weread-demo-row,
+    .weread-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .weread-connect-row > *,
+    .weread-demo-row > *,
+    .weread-actions > * {
+        width: 100%;
+        min-height: 54px;
+    }
+
+    .device-app .button {
+        min-height: 52px;
+        font-size: 13px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body::after {
+        display: none;
+    }
+
+    .weread-preview-panel[aria-busy="true"] .weread-polaroid-inner::after {
+        animation: none;
+        opacity: .45;
+    }
+}
+
+/* The Pro wallpaper is designed as the object is held: portrait 528 × 792.
+ * Its 792 × 528 film payload is an internal compatibility detail. */
+.weread-polaroid-inner {
+    aspect-ratio: 2 / 3;
+}
+
+.weread-polaroid-inner::after {
+    content: "PENAUP / E6 PRO / 528 × 792 VISUAL";
+}

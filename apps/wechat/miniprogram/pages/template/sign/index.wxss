@@ -1,6 +1,5 @@
 @import "../../../styles/template-preview.wxss";
 
-page { background: #f4f3ed; }
 .tpl-btn { color: #4d75b6; }
 .canvas-container { margin-top: 0; }
 .container > .btn-primary { width: 100%; margin-top: 18rpx; background: #4d75b6; border-color: #4d75b6; }
