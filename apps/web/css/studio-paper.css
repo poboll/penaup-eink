@@ -398,6 +398,11 @@ button.primary-button i, button.secondary-button i, a.primary-button i, a.second
     margin: 4px 0 20px;
 }
 
+.weread-key-session {
+    color: var(--ink-faint);
+    font: 12px/1.45 var(--font-mono);
+}
+
 .weread-check {
     display: inline-flex;
     min-height: 44px;

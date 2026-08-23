@@ -9,7 +9,7 @@
 | 领域 | 本机状态 | 证据 |
 | --- | --- | --- |
 | Node 运行时 | PASS | `node --version` = `v24.19.0`；根包和 `server` 都限制 `24.x` |
-| JavaScript / 契约 | PARTIAL（代码通过，外部待补） | Node 24 环境下 99 个 JavaScript 文件语法通过；契约门禁本轮为 `214 passed / 1 pending / 0 failed`，唯一 pending 是当前 shell 未导出 `idf.py` |
+| JavaScript / 契约 | PASS | Node 24 环境下 99 个 JavaScript 文件语法通过；契约门禁为 `217 passed / 0 pending / 0 failed` |
 | 自动化测试 | PASS | `npm test`：server 38、film-core 7、微信 16、Web/发布工具 7 全部通过 |
 | 依赖安全 | PASS | `npm run audit`：官方 registry 生产依赖 `0 vulnerabilities` |
 | 安装可重复性 | PASS | 根目录和 `server/` 的 `npm ci --dry-run` 均通过；原生 `better-sqlite3` 安装脚本仍需在部署机按 Node 24 审批 |
@@ -17,7 +17,7 @@
 | Caddy 配置 | PASS | `PENAUP_DOMAIN=penaup.example.com caddy validate --config deploy/Caddyfile --adapter caddyfile` |
 | Mosquitto 配置语法 | PASS（配置） | `mosquitto --test-config -c deploy/mqtt/mosquitto.conf.example` 退出码为 0 并报告配置有效；本机缺少 `/var/lib/mosquitto/` 时有非致命持久化目录提示，未启动公网 broker |
 | 微信开发者工具登录 | PARTIAL | CLI `islogin` 返回 `login: true`；打开当前项目被微信返回 code 10：登录用户不是该小程序开发者 |
-| ESP-IDF 三机型构建 | PENDING（当前环境） | 当前 shell 的 `idf.py` 不在 `PATH`；上一轮隔离构建证据仍记录为 STD 余量 13%（0x30b30）、Pro 12%（0x2fe80）、Max 14%（0x33ef0），但不能当作本轮环境已通过；实体刷写仍 pending |
+| ESP-IDF 三机型构建 | PASS（代码构建） | ESP-IDF 5.5.2 + Python 3.13.2 已导出；STD/Pro/Max 均 `idf.py build` 通过，应用分区余量分别为 13%/12%/14%；实体刷写、刷新和功耗仍 pending |
 | 旧 FastAPI 正式导入 | PENDING | 本机未找到旧 `filmhub.db`；不能用当前 Penaup 目标库冒充旧源库 |
 | 真实 BLE / OTA / 刷屏 | PENDING | 需要实体 STD、Pro、Max 和重新广播后的状态回读 |
 | 正式邮件、Caddy 公网 TLS、MQTT ACL | PENDING | 需要部署机、真实域名/证书、邮件 provider 和设备账号 |
@@ -28,7 +28,7 @@
 ```text
 npm run check
 JavaScript syntax OK: 99 files
-Contract gate: 214 passed, 1 pending, 0 failed
+Contract gate: 217 passed, 0 pending, 0 failed
 
 npm test
 server 38 passed · film-core 7 passed · 微信 16 passed · Web/release 7 passed
@@ -37,7 +37,7 @@ npm run audit
 found 0 vulnerabilities
 ```
 
-因此本机代码、测试和依赖门禁已经通过，但严格外部门禁仍有 `idf.py` pending；这不替代实体设备刷新、BLE/OTA、功耗或公网部署验收。
+因此本机代码、测试、依赖和严格外部门禁已经通过；这不替代实体设备刷新、BLE/OTA、功耗或公网部署验收。
 
 ## 可重复命令
 
@@ -53,7 +53,7 @@ mosquitto --test-config -c deploy/mqtt/mosquitto.conf.example
 node server/migrations/import-fastapi.mjs --help
 ```
 
-发布机应在 ESP-IDF 5.5.2 导出环境下执行严格门禁；三机型构建使用对应 `sdkconfig_std/pro/max`，并分别核对应用分区余量：
+本机已在 ESP-IDF 5.5.2 导出环境下执行严格门禁；三机型构建使用对应 `sdkconfig_std/pro/max`，并分别核对应用分区余量：
 
 ```bash
 export IDF_PYTHON_ENV_PATH=/Users/Apple/.espressif/python_env/idf5.5_py3.13_env
@@ -61,7 +61,15 @@ source /Users/Apple/.espressif/frameworks/esp-idf-v5.5.2/export.sh
 npm run release:gate -- --strict-external
 ```
 
-如果另一台机器的 `idf.py` 未出现在 `PATH`，命令失败仍属于环境门禁失败，不能用本机缓存替代该机器的构建证据。
+本轮构建证据（临时隔离 worktree，源码提交均为 `a02a701`）：
+
+| 机型 | `penaup.bin` | 最小应用分区余量 | `idf.py size` 总镜像 | 结果 |
+| --- | ---: | ---: | ---: | --- |
+| STD | 1,373,392 B | 0x30b30 / 13% | 1,373,275 B | PASS |
+| Pro | 1,376,640 B | 0x2fe80 / 12% | 1,376,519 B | PASS |
+| Max | 1,360,144 B | 0x33ef0 / 14% | 1,360,019 B | PASS |
+
+三套构建均使用 `idf.py build`，未执行 `flash`；没有实体设备、串口日志和刷新回读证据前，仍不能宣称硬件升级验收通过。若另一台机器的 `idf.py` 未出现在 `PATH`，命令失败仍属于环境门禁失败，不能用本机缓存替代该机器的构建证据。
 
 ## 数据迁移证据
 

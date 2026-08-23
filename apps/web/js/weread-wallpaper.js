@@ -7,7 +7,6 @@
 (function () {
     'use strict';
 
-    var STORAGE_KEY = 'penaup.weread.skill-key';
     var PROFILE = 'PENAUP_PRO';
     var WIDTH = 792;
     var HEIGHT = 528;
@@ -553,16 +552,6 @@
         }
     }
 
-    function saveKeyIfNeeded() {
-        var input = byId('weread-skill-key');
-        var remember = byId('weread-remember-key');
-        if (!input || !remember) return;
-        try {
-            if (remember.checked && input.value.trim()) localStorage.setItem(STORAGE_KEY, input.value.trim());
-            else localStorage.removeItem(STORAGE_KEY);
-        } catch (error) {}
-    }
-
     function validKey(key) { return /^wrk-[A-Za-z0-9_-]{8,160}$/.test(key); }
 
     function friendlyError(error, fallback) {
@@ -681,7 +670,6 @@
             if (input) input.focus();
             return;
         }
-        saveKeyIfNeeded();
         state.source = 'live';
         if (button) { button.disabled = true; button.classList.add('is-busy'); button.textContent = '正在连接书架'; }
         setDevelopmentPhase('fetching', '正在确认微信读书书架');
@@ -710,7 +698,6 @@
             if (input) input.focus();
             return;
         }
-        saveKeyIfNeeded();
         state.source = 'live';
         state.film = null;
         state.card = null;
@@ -854,13 +841,6 @@
         if (!byId('frame-weread')) return;
         var monthInput = byId('weread-month');
         if (monthInput) monthInput.value = new Date().toISOString().slice(0, 7);
-        try {
-            var saved = localStorage.getItem(STORAGE_KEY);
-            if (saved && validKey(saved)) {
-                byId('weread-skill-key').value = saved;
-                byId('weread-remember-key').checked = true;
-            }
-        } catch (error) {}
         setRenderNote();
         setDevelopmentPhase('idle', '纸面在等一段阅读');
         syncSceneUi();
@@ -909,12 +889,9 @@
         byId('weread-clear-key').addEventListener('click', function () {
             var input = byId('weread-skill-key');
             if (input) input.value = '';
-            try { localStorage.removeItem(STORAGE_KEY); } catch (error) {}
-            if (byId('weread-remember-key')) byId('weread-remember-key').checked = false;
             if (byId('weread-source-summary')) byId('weread-source-summary').hidden = true;
-            setStatus('已清除本机保存的 Key。');
+            setStatus('已清除当前页面里的 Key。');
         });
-        byId('weread-remember-key').addEventListener('change', saveKeyIfNeeded);
         byId('weread-toggle-key').addEventListener('click', function () {
             var input = byId('weread-skill-key');
             if (!input) return;

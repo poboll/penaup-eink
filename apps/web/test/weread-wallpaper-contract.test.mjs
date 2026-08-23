@@ -27,6 +27,9 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.match(script, /createDemoSnapshot/);
   assert.match(script, /loadDemoSnapshot/);
   assert.match(script, /setDevelopmentPhase\('pending'/);
+  assert.match(script, /X-Penaup-WeRead-Key/);
+  assert.doesNotMatch(script, /localStorage\.(?:getItem|setItem|removeItem)/);
+  assert.match(html, /当前页面临时使用/);
   assert.match(styles, /font-family:\s*"Huiwen Mincho"/);
   assert.match(styles, /--paper:\s*#fbf8f0/);
   assert.match(styles, /prefers-reduced-motion/);

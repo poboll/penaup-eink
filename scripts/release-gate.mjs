@@ -186,6 +186,7 @@ assertEqual('Web and WeChat film-core generated source', filmCoreWechat, filmCor
 const webStorySurface = read('apps/web/index.html');
 const webStudioSurface = read('apps/web/studio/index.html');
 const webStudioBleSurface = read('apps/web/js/bluetooth.js');
+const webWereadSurface = read('apps/web/js/weread-wallpaper.js');
 const webDeviceSurface = read('apps/web/device/index.html');
 const wechatSettingsSurface = read('apps/wechat/miniprogram/pages/settings/index.js');
 const webProductSurface = `${webStorySurface}\n${webStudioSurface}\n${webDeviceSurface}`;
@@ -207,6 +208,9 @@ assertMatch('WeChat WeRead Pro output', wechatWereadSurface, /PENAUP_PRO|792 × 
 assertMatch('WeChat WeRead key header boundary', wechatWereadSurface, /X-Penaup-WeRead-Key/);
 if (/wrk-[A-Za-z0-9_-]{32,}/.test(wechatWereadSurface)) fail('WeChat WeRead secret hygiene', 'a long Skill Key appears in source');
 else pass('WeChat WeRead secret hygiene');
+assertMatch('Web WeRead key header boundary', webWereadSurface, /X-Penaup-WeRead-Key/);
+if (/localStorage\.(?:getItem|setItem|removeItem)\([^)]*(?:weread|skill-key)/i.test(webWereadSurface)) fail('Web WeRead secret storage hygiene', 'Skill Key is persisted in browser storage');
+else pass('Web WeRead secret storage hygiene');
 for (const mode of COLOR_RENDERING_MODE_DEFINITIONS) {
   assertMatch(`Web rendering mode ${mode.id}`, webStudioSurface, new RegExp(`data-rendering-mode="${mode.id}"`));
   assertMatch(`WeChat rendering mode ${mode.id}`, wechatUploadSurface, new RegExp(`['"]${mode.id}['"]|data-mode="\\{\\{item.id\\}\\}"`));
