@@ -14,6 +14,7 @@
 8. [API 索引](api/README.md)：用户、设备、媒体、片单、传输和 SSE 接口。
 9. [Transfer 状态契约](api/transfer-state.md)：Web、小程序和未来 iOS 共用的状态与 Live Activity 映射。
 10. [品牌与体验](brand/README.md)：花生片的故事线、六色 token 和状态文案。
+11. [设备工具与固件升级](device-tool/firmware-updates.md)：浏览器 BLE 维护、OTA 门禁和 Web Serial 边界。
 
 ## 文档分区
 
@@ -24,6 +25,7 @@
 - `knowledge/`：给开发者和 AI 工具使用的项目地图；
 - `plans/`：产品、交互和迁移设计；
 - `wifi/`：设备 Wi-Fi 心跳与拉取流程。
+- `device-tool/`：浏览器设备维护、固件清单和刷写验收。
 - `architecture/`：当前运行拓扑、目录真源和失败模式。
 - `legal/`：来源、组合许可和发布前法律/安全检查。
 
@@ -32,6 +34,7 @@
 - 用户-facing 文案使用“花生片 Penaup”；`FrameFilm / 帧影` 只用于兼容说明；
 - 所有规格标注“当前实现”“目标值”或“硬件待验证”中的一种，不把目标当成实测；
 - 协议变更必须同时更新固件、Web、小程序和本文档；
+- 设备工具写入命令必须使用已核实的 BLE 值；写入完成、重启或 `OTA_STOP` 都不能直接渲染成成功；
 - 不在文档中放入密码、Token、私有照片、私有地址或外包合同内容；
 - 新文档版权标注 `Copyright (c) 2026 poboll`，第三方材料保留原始许可。
 

@@ -179,7 +179,7 @@
 
         var status = document.getElementById('connection-status');
         var metaDot = document.querySelector('.meta-dot');
-        var metaText = document.querySelector('.app-meta span:last-child');
+        var metaText = document.querySelector('.app-meta-label');
         function syncConnectionState() {
             if (!status) return;
             var connected = status.classList.contains('connected') || /已连接/.test(status.textContent || '');

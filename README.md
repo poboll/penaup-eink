@@ -18,7 +18,7 @@ Web 和微信小程序优先在端侧处理原图；BLE 继续使用 192 字节�
 ## 仓库结构
 
 ```text
-apps/web/                 产品故事页 /studio/ BLE 创作工作台
+apps/web/                 产品故事页 /studio/ BLE 创作工作台 /device/ 设备工具
 apps/wechat/              微信小程序（ES5 兼容）
 firmware/penaup/          ESP-IDF v5.5.2 三机型单固件真源
 hardware/penaup/          PCB、外壳和历史硬件资料迁移入口
@@ -66,6 +66,8 @@ Node 运行时固定在 24.x（见 `.node-version`）。如果修改 `packages/f
 和 `packages/film-core/dist/` 都是生成物，不能手工分叉维护。
 
 打开 `http://127.0.0.1:8787/` 查看产品故事页，打开 `/studio/` 进入创作工作台。Web Bluetooth 需要 HTTPS 或 localhost，并需要支持 Web Bluetooth 的 Chromium 系浏览器。部署探针使用 `GET /health`（进程存活）和 `GET /readyz`（SQLite 与媒体目录可读写）。
+
+打开 `/device/` 进入浏览器设备工具：它可以读取型号、电量和 Wi-Fi 状态，使用已核实的 BLE 命令清除网络、重启或恢复出厂。命令发送后页面会进入“状态待确认”，只有设备重新广播并成功回读才会结束。固件升级入口会校验 manifest、型号、长度、SHA-256 和签名；当前仓库没有正式 `.bin`，不会把本地构建产物伪装成可刷写发布包。详见 [浏览器固件升级边界](docs/device-tool/firmware-updates.md)。
 
 也可以只托管 `apps/web/`：
 

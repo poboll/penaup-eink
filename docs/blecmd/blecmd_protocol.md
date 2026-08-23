@@ -191,6 +191,17 @@ OTA_START → OTA_DATA × N → OTA_STOP
 
 无长度流程无法在协议层校验完整大小，只有在底层 OTA 服务允许时才使用。OTA 期间不得断电、切换设备或发送 film 命令；`OTA_STOP` 后设备可能重启，客户端必须等待重新广播。
 
+### 5.1 浏览器设备工具
+
+`apps/web/device/` 使用推荐的带长度流程，不发送 `OTA_START`：
+
+```text
+manifest 校验 → OTA_LEN → OTA_DATA × N（DATA ≤ 192 B）→ OTA_STOP
+→ 等待重新广播 → 回读 CTRL_PWRREAD → 才能显示已确认
+```
+
+浏览器的发布清单必须匹配当前 `PENAUP_STD / PENAUP_PRO / PENAUP_MAX` 型号、`ble-v1` 协议、镜像文件名、文件长度和 SHA-256。正式发布还需要 Ed25519 签名和网页固定的 poboll 公钥。只有 BLE 写入完成不代表设备已经启动新固件；断连、重启和回读超时一律映射为 `device_state_uncertain`。
+
 ## 6. 设备控制响应
 
 查询类命令的响应继续使用相同帧格式，响应 `CH` 等于请求 `CH`：

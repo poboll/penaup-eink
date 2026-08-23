@@ -23,7 +23,11 @@
                 <span><strong>花生片</strong> <em>Penaup</em></span>
             </a>
             <p class="app-motto">一张一张，显影成日常 <span class="app-motto-detail">六色基底 · 最多 48 种观感</span></p>
-            <div class="app-meta"><span class="meta-dot"></span><span>本地工作台</span></div>
+            <div class="app-meta">
+                <a class="device-tool-link" href="../device/" aria-label="打开花生片设备工具">设备工具 <span aria-hidden="true">↗</span></a>
+                <span class="meta-dot" aria-hidden="true"></span>
+                <span class="app-meta-label">本地工作台</span>
+            </div>
         </header>
         <nav class="story-progress" aria-label="显影进度" data-story-progress>
             <ol>
@@ -56,32 +60,32 @@
 
                     <!-- 网络配置面板 -->
                     <div id="network-section" class="network-section" style="display:none;">
-                        <div class="network-header" role="button" tabindex="0" onclick="toggleNetworkSection()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggleNetworkSection(); }">
+                        <button type="button" class="network-header" aria-controls="network-content" aria-expanded="false" onclick="toggleNetworkSection()">
                             <i class="material-icons">wifi</i>
                             <span>网络配置</span>
-                            <i class="material-icons network-arrow">expand_less</i>
-                        </div>
-                        <div id="network-content" class="network-content">
+                            <i class="material-icons network-arrow" aria-hidden="true">expand_more</i>
+                        </button>
+                        <div id="network-content" class="network-content" aria-hidden="true">
                             <div class="network-switch-row">
-                                <span class="network-label">WiFi</span>
+                                <label class="network-label" for="wifi-enable-switch">WiFi</label>
                                 <label class="switch">
                                     <input type="checkbox" id="wifi-enable-switch" onchange="toggleWifiSwitch()">
                                     <span class="slider-toggle"></span>
                                 </label>
                             </div>
                             <div class="network-input-group">
-                                <label class="network-label">SSID</label>
+                                <label class="network-label" for="wifi-ssid-input">SSID</label>
                                 <input type="text" id="wifi-ssid-input" placeholder="输入WiFi名称" onchange="applyWifiSsid()">
                             </div>
                             <div class="network-input-group">
-                                <label class="network-label">密码</label>
+                                <label class="network-label" for="wifi-password-input">密码</label>
                                 <input type="password" id="wifi-password-input" placeholder="输入WiFi密码" onchange="applyWifiPassword()">
                             </div>
                             <div class="network-btn-row">
-                                <button class="secondary-button" onclick="onWifiConnect()">
+                                <button type="button" class="secondary-button" onclick="onWifiConnect()">
                                     <i class="material-icons">link</i> 连接
                                 </button>
-                                <button class="secondary-button" onclick="onWifiDisconnect()">
+                                <button type="button" class="secondary-button" onclick="onWifiDisconnect()">
                                     <i class="material-icons">link_off</i> 断开
                                 </button>
                             </div>
@@ -91,32 +95,32 @@
                             </div>
                             <div class="network-divider"></div>
                             <div class="network-input-group">
-                                <label class="network-label">API地址</label>
+                                <label class="network-label" for="film-api-url-input">API地址</label>
                                 <div class="api-url-row">
                                     <input type="text" id="film-api-url-input" placeholder="http://服务器IP:8787">
-                                    <button class="secondary-button" onclick="applyFilmApiUrl()" style="width:auto;padding:8px 14px;">
+                                    <button type="button" class="secondary-button network-inline-action" onclick="applyFilmApiUrl()">
                                         <i class="material-icons">check</i> 设置
                                     </button>
                                 </div>
                                 <div class="api-url-hint">心跳地址会自动拼接（/api/v1/device/heartbeat）</div>
                             </div>
                             <div class="network-input-group">
-                                <label class="network-label">心跳间隔（秒）</label>
+                                <label class="network-label" for="film-heartbeat-interval-input">心跳间隔（秒）</label>
                                 <div class="api-url-row">
                                     <input type="number" id="film-heartbeat-interval-input" placeholder="5-180" min="5" max="180">
-                                    <button class="secondary-button" onclick="applyHeartbeatInterval()" style="width:auto;padding:8px 14px;">
+                                    <button type="button" class="secondary-button network-inline-action" onclick="applyHeartbeatInterval()">
                                         <i class="material-icons">check</i> 设置
                                     </button>
                                 </div>
                                 <div class="api-url-hint">设备主动上报频率，常用 5 秒；服务端默认 60 秒</div>
                             </div>
-                            <button class="secondary-button" onclick="onFilmDownload()" style="width:100%;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:4px;">
+                            <button type="button" class="secondary-button network-full-action network-download-action" onclick="onFilmDownload()">
                                 <i class="material-icons">cloud_download</i> 下载测试
                             </button>
-                            <div class="wifi-status-row" style="margin-top:8px;">
-                                <span id="download-status-text" style="font-size:12px;color:#999;">就绪</span>
+                            <div class="wifi-status-row download-status-row">
+                                <span id="download-status-text">就绪</span>
                             </div>
-                            <button class="secondary-button danger" onclick="onWifiClear()" style="width:100%;margin-top:10px;">
+                            <button type="button" class="secondary-button danger network-full-action" onclick="onWifiClear()">
                                 <i class="material-icons">delete_forever</i> 清除网络配置
                             </button>
                         </div>
@@ -526,8 +530,10 @@
                             <input type="text" id="fileName" value="output.film">
                         </div>
 
-                        <button type="button" class="primary-button" id="download-film-btn" onclick="downloadFilmFile()">下载相纸文件</button>
-                        <button type="button" class="primary-button" id="upload-btn" onclick="uploadToDevice()">蓝牙上传</button>
+                        <div class="conversion-actions">
+                            <button type="button" class="primary-button" id="download-film-btn" onclick="downloadFilmFile()">下载相纸文件</button>
+                            <button type="button" class="primary-button" id="upload-btn" onclick="uploadToDevice()">蓝牙上传</button>
+                        </div>
 
                         <div id="transfer-container" class="transfer-container" style="display: none;">
                             <div id="transfer-status" class="transfer-status" role="status" aria-live="polite">准备传输...</div>

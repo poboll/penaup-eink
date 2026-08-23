@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://penaup.local/schemas/firmware-manifest-v1.json",
+  "title": "Penaup BLE firmware release manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "product",
+    "release_status",
+    "version",
+    "models",
+    "protocol",
+    "filename",
+    "size",
+    "sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "penaup-firmware-manifest/v1"
+    },
+    "product": {
+      "const": "penaup"
+    },
+    "release_status": {
+      "type": "string",
+      "enum": ["draft", "published"]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["PENAUP_STD", "PENAUP_PRO", "PENAUP_MAX"]
+      }
+    },
+    "protocol": {
+      "const": "ble-v1"
+    },
+    "filename": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]+\\.bin$"
+    },
+    "size": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{64}$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "message", "value"],
+      "properties": {
+        "algorithm": {
+          "const": "Ed25519"
+        },
+        "key_id": {
+          "type": "string",
+          "pattern": "^poboll-[A-Za-z0-9._-]+$"
+        },
+        "message": {
+          "type": "string",
+          "pattern": "^penaup-firmware-v1:[a-fA-F0-9]{64}$"
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "release_status": {
+            "const": "published"
+          }
+        }
+      },
+      "then": {
+        "required": ["signature"]
+      }
+    }
+  ]
+}

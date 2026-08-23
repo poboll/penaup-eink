@@ -165,6 +165,14 @@ export async function buildApp(options = {}) {
   // The runtime upload endpoint consumes one film at a time, while the
   // recovered admin console still supports importing a photo batch.
   await app.register(multipart, { limits: { fileSize: config.originalUploadLimit, files: 20 } });
+  if (fs.existsSync(config.docsRoot)) {
+    await app.register(fastifyStatic, {
+      root: config.docsRoot,
+      prefix: '/docs/',
+      index: false,
+      decorateReply: false
+    });
+  }
   if (fs.existsSync(config.webRoot)) {
     await app.register(fastifyStatic, { root: config.webRoot, prefix: '/', index: ['index.html'] });
   }

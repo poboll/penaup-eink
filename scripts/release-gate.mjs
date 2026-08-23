@@ -107,6 +107,10 @@ function documentedOpenApiOperations(document) {
 
 const requiredPaths = [
   'apps/web/index.html',
+  'apps/web/device/index.html',
+  'apps/web/css/device-tool.css',
+  'apps/web/js/ble-protocol.js',
+  'apps/web/js/device-tool.js',
   'apps/wechat/project.config.json',
   'firmware/penaup/CMakeLists.txt',
   'firmware/penaup/components/film_service/inc/service_ble.h',
@@ -131,6 +135,10 @@ const requiredPaths = [
   'docs/api/ios-integration.md',
   'docs/api/transfer-state.md',
   'docs/legal/provenance.md'
+  , 'docs/device-tool/firmware-updates.md'
+  , 'firmware/penaup/releases/manifest.schema.json'
+  , 'firmware/penaup/releases/README.md'
+  , 'scripts/create-firmware-manifest.mjs'
 ];
 requirePaths(requiredPaths);
 
@@ -160,7 +168,8 @@ const filmCoreWechat = read('apps/wechat/miniprogram/utils/film-core.js');
 assertEqual('Web and WeChat film-core generated source', filmCoreWechat, filmCoreBrowser);
 const webStorySurface = read('apps/web/index.html');
 const webStudioSurface = read('apps/web/studio/index.html');
-const webProductSurface = `${webStorySurface}\n${webStudioSurface}`;
+const webDeviceSurface = read('apps/web/device/index.html');
+const webProductSurface = `${webStorySurface}\n${webStudioSurface}\n${webDeviceSurface}`;
 assertEqual('shared rendering mode count', COLOR_RENDERING_MODE_DEFINITIONS.length, 3);
 const wechatUploadSurface = [
   read('apps/wechat/miniprogram/pages/home/index.wxml'),
@@ -180,6 +189,14 @@ assertMatch('Web product copy explains 48 color feels', webProductSurface, /48[^
 assertMatch('Web product copy explains e-ink power behavior', webProductSurface, /不需要[^\n]{0,20}持续点亮/);
 assertMatch('Studio brand returns to story home', webStudioSurface, /class="app-brand" href="\.\.\/"/);
 assertMatch('Studio keeps browser zoom available', webStudioSurface, /name="viewport" content="width=device-width, initial-scale=1"/);
+assertMatch('Device tool exposes BLE maintenance path', webDeviceSurface, /0x3B[\s\S]*0x22[\s\S]*0x10/);
+assertMatch('Device tool preserves uncertain state copy', webDeviceSurface, /状态待确认/);
+assertMatch('Device tool does not claim a release binary', webDeviceSurface, /没有真实的正式发布包/);
+assertMatch('Device tool documents Web Serial boundary', webDeviceSurface, /Web Serial/);
+assertMatch('Device tool serves docs link', read('server/src/app.js'), /prefix: '\/docs\/'/);
+const firmwareManifest = json('firmware/penaup/releases/manifest.schema.json');
+assertEqual('firmware manifest schema id', firmwareManifest.$id, 'https://penaup.local/schemas/firmware-manifest-v1.json');
+assertEqual('firmware release directory contains no binary', fs.readdirSync(filePath('firmware/penaup/releases')).some((name) => name.endsWith('.bin')), false);
 const publicRouteSources = ['server/src/app.js', 'server/src/modules/auth.js', 'server/src/transports/http.js']
   .map((relativePath) => read(relativePath)).join('\n');
 const documentedPublicOperations = documentedOpenApiOperations(read('docs/api/openapi.yaml'));

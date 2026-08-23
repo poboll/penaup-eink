@@ -1508,30 +1508,28 @@ function updateWifiConnectStatus(connected) {
 
 function toggleNetworkSection() {
     const content = document.getElementById('network-content');
-    const arrow = document.querySelector('.network-arrow');
-    if (content && arrow) {
-        const hidden = content.style.display === 'none';
-        content.style.display = hidden ? 'block' : 'none';
-        arrow.textContent = hidden ? 'expand_less' : 'expand_more';
-    }
+    if (content) setNetworkSectionExpanded(content.style.display === 'none');
 }
 
 function expandNetworkSection() {
     const content = document.getElementById('network-content');
-    const arrow = document.querySelector('.network-arrow');
-    if (content && arrow) {
-        content.style.display = 'block';
-        arrow.textContent = 'expand_less';
-    }
+    if (content) setNetworkSectionExpanded(true);
 }
 
 function collapseNetworkSection() {
     const content = document.getElementById('network-content');
+    if (content) setNetworkSectionExpanded(false);
+}
+
+function setNetworkSectionExpanded(expanded) {
+    const content = document.getElementById('network-content');
+    const header = document.querySelector('.network-header');
     const arrow = document.querySelector('.network-arrow');
-    if (content && arrow) {
-        content.style.display = 'none';
-        arrow.textContent = 'expand_more';
-    }
+    if (!content) return;
+    content.style.display = expanded ? 'block' : 'none';
+    content.setAttribute('aria-hidden', String(!expanded));
+    if (header) header.setAttribute('aria-expanded', String(expanded));
+    if (arrow) arrow.textContent = expanded ? 'expand_less' : 'expand_more';
 }
 
 // 连接后初始化查询 WiFi 配置

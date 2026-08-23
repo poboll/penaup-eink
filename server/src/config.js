@@ -24,6 +24,7 @@ export function createConfig(overrides = {}) {
     databasePath: overrides.databasePath || path.join(dataDir, 'penaup.db'),
     mediaDir: overrides.mediaDir || path.join(dataDir, 'media'),
     webRoot: overrides.webRoot || path.join(projectRoot, 'apps', 'web'),
+    docsRoot: overrides.docsRoot || path.join(projectRoot, 'docs'),
     assetsRoot: overrides.assetsRoot || path.join(projectRoot, 'assets'),
     adminWebRoot: overrides.adminWebRoot || path.join(projectRoot, 'server', 'admin', 'dist'),
     adminToken: overrides.adminToken ?? process.env.PENAUP_ADMIN_TOKEN ?? '',
