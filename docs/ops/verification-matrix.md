@@ -9,7 +9,7 @@
 | 领域 | 本机状态 | 证据 |
 | --- | --- | --- |
 | Node 运行时 | PASS | `node --version` = `v24.19.0`；根包和 `server` 都限制 `24.x` |
-| JavaScript / 契约 | PASS | Node 24 环境下 `npm run check` 通过；本轮为 `214 passed / 1 pending / 0 failed`，pending 是未导出 ESP-IDF 的外部门禁 |
+| JavaScript / 契约 | PASS | Node 24 环境下 `npm run check` 通过；严格门禁本轮为 `215 passed / 0 pending / 0 failed` |
 | 自动化测试 | PASS | `npm test`：server 36、film-core 7、微信 16、Web/发布工具 6 全部通过 |
 | 依赖安全 | PASS | `npm run audit`：官方 registry 生产依赖 `0 vulnerabilities` |
 | 安装可重复性 | PASS | 根目录和 `server/` 的 `npm ci --dry-run` 均通过；原生 `better-sqlite3` 安装脚本仍需在部署机按 Node 24 审批 |
@@ -17,7 +17,7 @@
 | Caddy 配置 | PASS | `PENAUP_DOMAIN=penaup.example.com caddy validate --config deploy/Caddyfile --adapter caddyfile` |
 | Mosquitto 配置语法 | PASS | `mosquitto --test-config -c deploy/mqtt/mosquitto.conf.example` 报告配置文件有效；未启动公网 broker |
 | 微信开发者工具登录 | PARTIAL | CLI `islogin` 返回 `login: true`；打开当前项目被微信返回 code 10：登录用户不是该小程序开发者 |
-| ESP-IDF 三机型构建 | PASS（上次证据）/ 本轮待重跑 | 上次记录为 ESP-IDF v5.5.2：`build_gate_std` 应用余量 13%（0x30b30），`build_gate_pro` 余量 12%（0x2fe80），`build_gate_max` 余量 14%（0x33ef0）；本轮 shell 未导出 IDF，实体刷写仍 pending |
+| ESP-IDF 三机型构建 | PASS（本轮） | ESP-IDF v5.5.2 已在隔离的 `build_gate_std/pro/max` 中重建：STD 余量 13%（0x30b30）、Pro 12%（0x2fe80）、Max 14%（0x33ef0）；实体刷写仍 pending |
 | 旧 FastAPI 正式导入 | PENDING | 本机未找到旧 `filmhub.db`；不能用当前 Penaup 目标库冒充旧源库 |
 | 真实 BLE / OTA / 刷屏 | PENDING | 需要实体 STD、Pro、Max 和重新广播后的状态回读 |
 | 正式邮件、Caddy 公网 TLS、MQTT ACL | PENDING | 需要部署机、真实域名/证书、邮件 provider 和设备账号 |
@@ -27,8 +27,7 @@
 
 ```text
 npm run check
-Contract gate: 214 passed, 1 pending, 0 failed
-pending: ESP-IDF idf.py（本轮 shell 未导出 ESP-IDF 5.5.2）
+Contract gate: 215 passed, 0 pending, 0 failed
 
 npm test
 server 36 passed · film-core 7 passed · 微信 16 passed · Web/release 6 passed
@@ -37,7 +36,7 @@ npm run audit
 found 0 vulnerabilities
 ```
 
-因此普通本地门禁已经通过；`--strict-external` 仍应在导出 ESP-IDF 环境后重跑，不能把当前的 pending 当作三机型固件重新验收。
+因此本机严格门禁已经通过；这只覆盖工具链构建和静态契约，不替代实体设备刷新、BLE/OTA、功耗或公网部署验收。
 
 ## 可重复命令
 
@@ -53,9 +52,10 @@ mosquitto --test-config -c deploy/mqtt/mosquitto.conf.example
 node server/migrations/import-fastapi.mjs --help
 ```
 
-严格门禁应在装好 ESP-IDF 并导出环境后执行；本机已用同一环境完成三机型构建：
+严格门禁在本机使用 ESP-IDF 5.5.2 导出环境执行；三机型构建使用对应 `sdkconfig_std/pro/max`，并分别核对了应用分区余量：
 
 ```bash
+export IDF_PYTHON_ENV_PATH=/Users/Apple/.espressif/python_env/idf5.5_py3.13_env
 source /Users/Apple/.espressif/frameworks/esp-idf-v5.5.2/export.sh
 npm run release:gate -- --strict-external
 ```

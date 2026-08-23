@@ -4,7 +4,7 @@
 
 - Node.js `v24.19.0` 已确认；根包与服务端均限制在 `24.x`。
 - `npm test`：server 36、film-core 7、微信 16、Web/发布工具 6，全部通过。
-- `npm run check`：98 个 JavaScript 文件语法通过，契约门禁为 `214 passed / 1 pending / 0 failed`；pending 是本轮 shell 未导出 ESP-IDF 5.5.2 的外部门禁。最近一次 STD / Pro / Max 构建证据见 [`docs/ops/verification-matrix.md`](../ops/verification-matrix.md)。
+- `npm run check`：98 个 JavaScript 文件语法通过，严格契约门禁为 `215 passed / 0 pending / 0 failed`；ESP-IDF 5.5.2 下 STD / Pro / Max 构建均已重跑。最近一次证据见 [`docs/ops/verification-matrix.md`](../ops/verification-matrix.md)。
 - `npm run audit`：官方 registry 的生产依赖 `0 vulnerabilities`；`git diff --check` 通过。
 - 根目录和 `server/` 的 `npm ci --dry-run` 均通过；`better-sqlite3` 的原生安装脚本需在部署机按 Node 24 的脚本审批策略执行。
 - 8787 实例当前 `/`、`/studio/`、`/health`、`/readyz` 均返回 200；Caddy `validate` 通过；Mosquitto `--test-config` 报告模板配置有效，但没有在本机启动公网 broker。
