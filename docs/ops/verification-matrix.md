@@ -17,7 +17,7 @@
 | Caddy 配置 | PASS | `PENAUP_DOMAIN=penaup.example.com caddy validate --config deploy/Caddyfile --adapter caddyfile` |
 | Mosquitto 配置语法 | PASS（配置） | `mosquitto --test-config -c deploy/mqtt/mosquitto.conf.example` 退出码为 0 并报告配置有效；本机缺少 `/var/lib/mosquitto/` 时有非致命持久化目录提示，未启动公网 broker |
 | 微信开发者工具登录 | PARTIAL | CLI `islogin` 返回 `login: true`；打开当前项目被微信返回 code 10：登录用户不是该小程序开发者 |
-| ESP-IDF 三机型构建 | PASS（代码构建） | ESP-IDF 5.5.2 + Python 3.14.2 已导出；当前分支 `162380a` 的隔离干净构建中，STD/Pro/Max 均 `idf.py build` 通过，应用分区余量分别为 13%/12%/14%；实体刷写、刷新和功耗仍 pending |
+| ESP-IDF 三机型构建 | PASS（代码构建） | ESP-IDF 5.5.2 + Python 3.14.2 已导出；提交 `267920c` 的隔离干净构建中，STD/Pro/Max 均 `idf.py build` 通过，应用分区余量分别为 13%/12%/14%；实体刷写、刷新和功耗仍 pending |
 | 旧 FastAPI 正式导入 | PENDING | 本机未找到旧 `filmhub.db`；不能用当前 Penaup 目标库冒充旧源库 |
 | 真实 BLE / OTA / 刷屏 | PENDING | 需要实体 STD、Pro、Max 和重新广播后的状态回读 |
 | 正式邮件、Caddy 公网 TLS、MQTT ACL | PENDING | 需要部署机、真实域名/证书、邮件 provider 和设备账号 |
@@ -61,7 +61,7 @@ source /Users/Apple/.espressif/frameworks/esp-idf-v5.5.2/export.sh
 npm run release:gate -- --strict-external
 ```
 
-本轮构建证据（临时隔离源码副本，源码提交为当前 `162380a`）：
+本轮构建证据（临时隔离源码副本，源码提交为当前 `267920c`）：
 
 | 机型 | `penaup.bin` | 最小应用分区余量 | `idf.py size` 总镜像 | 结果 |
 | --- | ---: | ---: | ---: | --- |
