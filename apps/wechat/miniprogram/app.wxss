@@ -3,7 +3,7 @@
 @import "./styles/paper-surface.wxss";
 
 page {
-  background-color: #faf7ef;
+  background-color: #f0f0ec;
   color: #1a1b18;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", sans-serif;
   line-height: 1.55;
@@ -236,4 +236,103 @@ input::placeholder, textarea::placeholder { color: #a5a69e; }
 }
 @media (max-width: 620px) {
   .container { padding-left: 28rpx; padding-right: 28rpx; }
+}
+
+/* Shared paper-cut controls. Keep the action geometry stable across the
+ * home page, template pages, BLE flow, and transfer sheets. Selected actions
+ * use a quiet sage paper instead of a heavy dark pill. */
+.btn-primary,
+.btn-secondary,
+.btn-disconnect,
+.mini-action,
+.choice-button,
+.scene-button,
+.render-button {
+  min-width: 0;
+  min-height: 88rpx;
+  padding: 18rpx 24rpx;
+  color: #20211f;
+  border: 2rpx solid rgba(32, 33, 31, .52);
+  border-radius: 8rpx;
+  background: rgba(255, 254, 250, .88);
+  box-shadow: 4rpx 5rpx 0 rgba(42, 41, 36, .08), 0 9rpx 18rpx rgba(42, 41, 36, .045);
+  transition: color .22s ease, background-color .22s ease, border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+
+.btn-primary:active,
+.btn-secondary:active,
+.btn-disconnect:active,
+.mini-action:active,
+.choice-button:active,
+.scene-button:active,
+.render-button:active {
+  transform: translate(2rpx, 2rpx);
+  box-shadow: 1rpx 1rpx 0 rgba(42, 41, 36, .16);
+}
+
+.btn-primary:active,
+.btn-primary:focus,
+.btn-primary:focus-visible {
+  color: #20211f;
+  border-color: #4f775d;
+  background: #b7d6c0;
+}
+
+.btn-secondary:active,
+.btn-secondary:focus,
+.btn-secondary:focus-visible,
+.mini-action:active,
+.mini-action:focus,
+.mini-action:focus-visible {
+  background: #fffefa;
+  border-color: #20211f;
+}
+
+.choice-button.is-active,
+.scene-button.is-active,
+.render-button.is-active {
+  color: #20211f;
+  border-color: #4f775d;
+  background: rgba(183, 214, 192, .42);
+  box-shadow: inset 0 -5rpx #4f775d, 3rpx 4rpx 0 rgba(79, 119, 93, .08);
+}
+
+.paper-surface-card,
+.device-row,
+.status-card,
+.panel-c,
+.settings-section,
+.canvas-container,
+.set-card,
+.memo-list,
+.memo-empty {
+  border-radius: 8rpx 10rpx 7rpx 9rpx;
+  background: rgba(255, 255, 252, .76);
+}
+
+.canvas-wrap,
+.preview-paper,
+.weread-card {
+  background: rgba(255, 255, 252, .78);
+}
+
+.cta,
+.cta-half {
+  color: #20211f;
+  background: rgba(255, 254, 250, .88);
+  border: 2rpx solid rgba(32, 33, 31, .52);
+  border-radius: 8rpx;
+  box-shadow: 4rpx 5rpx 0 rgba(42, 41, 36, .08), 0 9rpx 18rpx rgba(42, 41, 36, .045);
+}
+
+.cta-teal {
+  color: #20211f;
+  background: #b7d6c0;
+  border-color: #4f775d;
+}
+
+.cta:active,
+.cta-half:active {
+  transform: translate(2rpx, 2rpx);
+  box-shadow: 1rpx 1rpx 0 rgba(42, 41, 36, .16);
 }

@@ -17,7 +17,7 @@
 .rail-item.is-done { color: #55765e; }
 .rail-item.is-done text:first-child { color: #fffefa; border-color: #55765e; background: #55765e; }
 
-.weread-card { margin-top: 20rpx; padding: 28rpx 26rpx; border: 2rpx solid #ded6c8; border-radius: 4rpx 16rpx 16rpx 16rpx; background: rgba(255, 254, 250, .8); box-shadow: 10rpx 12rpx 0 rgba(205, 193, 174, .2); }
+.weread-card { margin-top: 20rpx; padding: 28rpx 26rpx; border: 2rpx solid rgba(32, 33, 31, .2); border-radius: 8rpx 10rpx 7rpx 9rpx; background: rgba(255, 255, 252, .8); box-shadow: 4rpx 5rpx 0 rgba(42, 41, 36, .08); }
 .card-heading { display: flex; align-items: center; gap: 16rpx; min-height: 56rpx; padding-bottom: 20rpx; border-bottom: 2rpx solid #ded6c8; }
 .card-index { display: flex; width: 38rpx; height: 38rpx; align-items: center; justify-content: center; flex-shrink: 0; border: 2rpx solid #bdb1a1; border-radius: 50%; color: #416f99; font: 17rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
 .card-title { display: block; color: #292722; font: 400 32rpx/1.2 Georgia, "Songti SC", serif; }
@@ -74,7 +74,7 @@
 .preview-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16rpx; margin-top: 46rpx; }
 .preview-title { display: block; margin-top: 8rpx; color: #292722; font: 400 38rpx/1.1 Georgia, "Songti SC", serif; }
 .preview-size { flex-shrink: 0; padding: 9rpx 11rpx; color: #416f99; border: 2rpx solid #bdb1a1; border-radius: 999rpx; font: 18rpx ui-monospace, SFMono-Regular, Menlo, monospace; }
-.preview-paper { margin-top: 18rpx; padding: 20rpx 20rpx 30rpx; border: 2rpx solid #ded6c8; background: #fffefa; box-shadow: 12rpx 14rpx 0 rgba(205, 193, 174, .28), 0 18rpx 36rpx rgba(70, 57, 40, .08); transform: rotate(-.25deg); }
+.preview-paper { margin-top: 18rpx; padding: 20rpx 20rpx 30rpx; border: 2rpx solid rgba(32, 33, 31, .2); border-radius: 8rpx 10rpx 7rpx 9rpx; background: rgba(255, 255, 252, .84); box-shadow: 4rpx 5rpx 0 rgba(42, 41, 36, .08), 0 24rpx 50rpx rgba(42, 41, 36, .08); transform: rotate(-.25deg); }
 .canvas-wrap { width: 100%; height: calc((100vw - 72rpx) * 1.5); max-height: none; min-height: 0; overflow: hidden; background: #f1f1ed; border: 2rpx solid #d7d8d2; }
 .weread-canvas { display: block; width: 100%; height: 100%; }
 .preview-caption { display: block; margin-top: 18rpx; color: #6f6a60; font: 21rpx/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; }

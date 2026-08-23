@@ -15,5 +15,5 @@
 .color-item.active { box-shadow: 0 0 0 4rpx #4d75b6; }
 .color-custom { display: flex; align-items: center; justify-content: center; color: #74766d; background: #e9e9e1 !important; border-color: #bbbcb3; }
 .custom-plus { font-size: 28rpx; }
-.button-row .btn-primary:first-child { background: #1a1b18; border-color: #1a1b18; }
-.button-row .btn-send { background: #4d75b6; border-color: #4d75b6; }
+.button-row .btn-primary:first-child { color: #20211f; background: #fffefa; border-color: #20211f; }
+.button-row .btn-send { color: #20211f; background: #b7d6c0; border-color: #4f775d; }

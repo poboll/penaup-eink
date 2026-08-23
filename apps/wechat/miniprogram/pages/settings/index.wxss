@@ -21,7 +21,7 @@
 .set-panel:last-child { border-bottom: 0; }
 .mode-selector { display: flex; gap: 8rpx; }
 .mode-button { flex: 1; padding: 14rpx 6rpx; color: #74766d; border: 2rpx solid #bbbcb3; border-radius: 5rpx; font-size: 20rpx; text-align: center; }
-.mode-button.active { color: #f7f7f2; background: #1a1b18; border-color: #1a1b18; }
+.mode-button.active { color: #20211f; background: #b7d6c0; border-color: #4f775d; }
 .mode-button.hidden { display: none; }
 .switch-row, .network-input-group, .wake-slider-row, .action-controls, .wifi-status-row { display: flex; align-items: center; gap: 12rpx; min-height: 70rpx; border-bottom: 2rpx solid #d8d8cf; }
 .switch-row { justify-content: space-between; }

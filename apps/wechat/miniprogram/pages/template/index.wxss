@@ -4,7 +4,7 @@
 .title { display: block; color: #1a1b18; font: 600 46rpx/1.15 Georgia, "Songti SC", serif; }
 .subtitle { display: block; max-width: 600rpx; margin-top: 14rpx; color: #74766d; font-size: 23rpx; line-height: 1.7; }
 .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14rpx; }
-.tpl-card { position: relative; min-height: 230rpx; padding: 24rpx; overflow: hidden; background: #fbfaf6 !important; border: 2rpx solid #d8d8cf; border-radius: 8rpx; }
+.tpl-card { position: relative; min-height: 230rpx; padding: 24rpx; overflow: hidden; background: rgba(255, 255, 252, .8) !important; border: 2rpx solid rgba(32, 33, 31, .2); border-radius: 8rpx 10rpx 7rpx 9rpx; box-shadow: 4rpx 5rpx 0 rgba(42, 41, 36, .07); }
 .tpl-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 8rpx; background: #d4ad31; }
 .tpl-card:nth-child(2)::before { background: #c95849; }
 .tpl-card:nth-child(3)::before { background: #4d75b6; }

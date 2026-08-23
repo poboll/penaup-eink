@@ -50,8 +50,8 @@
 .rendering-mode-note { display: block; min-height: 38rpx; margin-top: 16rpx; color: rgba(247, 247, 242, .78); font-size: 21rpx; line-height: 1.55; }
 .rendering-study-copy { display: block; margin-top: 14rpx; color: rgba(247, 247, 242, .58); font: 21rpx/1.65 Georgia, "Songti SC", serif; }
 .button-row { margin-top: 18rpx; }
-.btn-send { background: #4d75b6; border-color: #4d75b6; }
-.btn-adjust-on { color: #f7f7f2; background: #1a1b18; border-color: #1a1b18; }
+.btn-send { color: #20211f; background: #b7d6c0; border-color: #4f775d; }
+.btn-adjust-on { color: #20211f; background: #fffefa; border-color: #20211f; }
 
 @media (max-width: 620px) {
   .rendering-mode-list { grid-template-columns: 1fr; }

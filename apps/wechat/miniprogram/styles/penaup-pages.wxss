@@ -184,7 +184,7 @@
 .transfer-exit { margin-top: 24rpx; color: #b65347; font-size: 24rpx; }
 .transfer-actions { display: flex; gap: 14rpx; margin-top: 24rpx; }
 .transfer-actions button { flex: 1; min-height: 76rpx; padding: 14rpx 12rpx; font-size: 23rpx; }
-.transfer-retry { background: #1a1b18; border-color: #1a1b18; }
+.transfer-retry { color: #20211f; background: #b7d6c0; border-color: #4f775d; box-shadow: 4rpx 5rpx 0 rgba(79, 119, 93, .12); }
 .transfer-close { color: #1a1b18; background: transparent; border-color: #bbbcb3; }
 .airplane-uncertain { border-color: #d4ad31; }
 .airplane-uncertain::before { background: linear-gradient(135deg, #d4ad31 0 30%, #f7f7f2 30% 55%, #d4ad31 55% 78%, #f7f7f2 78%); }

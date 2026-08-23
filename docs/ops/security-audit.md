@@ -1,6 +1,6 @@
 # Penaup-Eink 安全审计记录
 
-更新时间：2026-08-23
+更新时间：2026-08-24
 审计范围：server/ Node.js 运行时、旧 /api/v1/admin/* 兼容层、server/admin/dist/ 管理台、Web 设备工具、媒体上传与发布门禁。
 
 ## 审计方法

@@ -19,9 +19,9 @@
     "pages/bluetooth/index"
   ],
   "window": {
-    "backgroundColor": "#F5F5F1",
+    "backgroundColor": "#F0F0EC",
     "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#F5F5F1",
+    "navigationBarBackgroundColor": "#F0F0EC",
     "navigationBarTitleText": "花生片 Penaup",
     "navigationBarTextStyle": "black"
   },

@@ -14,20 +14,23 @@
 }
 
 :root {
-    --penaup-paper-white: #ffffff;
-    --penaup-paper-ivory: #f5f5f1;
-    --penaup-paper-rice: #eeeeea;
-    --penaup-paper-fiber: rgba(58, 59, 54, .035);
+    --penaup-paper-white: #fffefa;
+    --penaup-paper-ivory: #f0f0ec;
+    --penaup-paper-rice: #e8e8e3;
+    --penaup-paper-fiber: rgba(48, 49, 45, .052);
     --penaup-paper-ink: #20211f;
     --penaup-paper-blue: #4d73ad;
     --penaup-paper-yellow: #c49a24;
-    --penaup-paper-line: rgba(38, 40, 36, .18);
+    --penaup-paper-sage: #b7d6c0;
+    --penaup-paper-sage-ink: #4f775d;
+    --penaup-paper-tape: #e7dfbd;
+    --penaup-paper-line: rgba(38, 40, 36, .22);
 
     /* Alias the older studio tokens so every page shares one surface. */
     --paper: var(--penaup-paper-ivory);
-    --paper-bright: #fdfdfb;
-    --paper-raised: #fafaf7;
-    --paper-shadow: #e5e5df;
+    --paper-bright: #fffefa;
+    --paper-raised: #fbfbf7;
+    --paper-shadow: #e3e3de;
     --ink: var(--penaup-paper-ink);
     --ink-soft: #60625d;
     --ink-faint: #858780;
@@ -49,10 +52,10 @@ body {
     isolation: isolate;
     background-color: var(--penaup-paper-ivory);
     background-image:
-        radial-gradient(circle at 7% -12%, rgba(255, 255, 255, .98), transparent 33%),
-        radial-gradient(circle at 92% 3%, rgba(196, 154, 36, .035), transparent 26%),
-        repeating-linear-gradient(102deg, transparent 0 18px, var(--penaup-paper-fiber) 18px 19px, transparent 19px 39px),
-        repeating-linear-gradient(7deg, transparent 0 6px, rgba(38, 40, 36, .018) 6px 7px, transparent 7px 14px),
+        radial-gradient(circle at 7% -12%, rgba(255, 255, 252, .98), transparent 33%),
+        radial-gradient(circle at 92% 3%, rgba(196, 154, 36, .045), transparent 26%),
+        repeating-linear-gradient(112deg, transparent 0 17px, var(--penaup-paper-fiber) 17px 18px, transparent 18px 37px),
+        repeating-linear-gradient(7deg, transparent 0 7px, rgba(38, 40, 36, .022) 7px 8px, transparent 8px 16px),
         linear-gradient(180deg, var(--penaup-paper-white) 0%, var(--penaup-paper-ivory) 53%, var(--penaup-paper-rice) 100%);
 }
 
@@ -63,8 +66,8 @@ body::after {
     inset: 0;
     pointer-events: none;
     content: "";
-    opacity: .095;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='penaup-paper-grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.34' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23penaup-paper-grain)' opacity='.26'/%3E%3C/svg%3E");
+    opacity: .13;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='penaup-paper-grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23penaup-paper-grain)' opacity='.34'/%3E%3C/svg%3E");
     background-size: 240px 240px;
     mix-blend-mode: multiply;
 }
@@ -169,45 +172,216 @@ body::after {
     background-color: rgba(253, 253, 251, .82);
 }
 
-/* Printed cards: square corners, a hairline keyline, and a small physical
- * offset. The white surface stays quiet; six-color accents are reserved for
- * state, labels, and the preview itself. */
-:where(button.primary-button, button.secondary-button, a.primary-button, a.secondary-button) {
-    border-radius: 2px;
-    border-width: 1px;
-    box-shadow: 4px 4px 0 rgba(32, 33, 31, .12);
+/* Paper controls: a quiet white cut-out, a hairline keyline, and a small
+ * physical offset. The same geometry is used by the story CTA, the studio,
+ * and the device tool so controls never jump between surfaces. */
+body .button,
+body .primary-button,
+body .secondary-button,
+body .button-primary,
+body .button-quiet,
+body .button-danger,
+body .nav-cta {
+    min-width: 0;
+    min-height: 50px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding-inline: 18px;
+    border: 1px solid rgba(32, 33, 31, .54);
+    border-radius: 7px;
+    box-shadow: 4px 5px 0 rgba(42, 41, 36, .08), 0 7px 18px rgba(42, 41, 36, .055);
+    text-decoration: none;
+    transition: color .22s ease, background-color .22s ease, border-color .22s ease, box-shadow .22s ease, transform .22s cubic-bezier(.22, .75, .25, 1);
 }
 
-:where(button.primary-button, a.primary-button) {
+body .button-primary,
+body .primary-button,
+body .nav-cta {
+    color: var(--penaup-paper-ink);
+    background: rgba(255, 254, 250, .88);
+}
+
+body .story-nav .nav-cta {
+    color: var(--penaup-paper-ink) !important;
+}
+
+body .story-nav .nav-cta:hover,
+body .story-nav .nav-cta:focus-visible {
+    color: var(--penaup-paper-ink) !important;
+}
+
+body .button-primary:hover:not(:disabled),
+body .primary-button:hover:not(:disabled),
+body .nav-cta:hover,
+body .button-primary:focus-visible,
+body .primary-button:focus-visible,
+body .nav-cta:focus-visible {
+    color: var(--penaup-paper-ink);
+    border-color: var(--penaup-paper-sage-ink);
+    background: var(--penaup-paper-sage);
+    box-shadow: 2px 2px 0 rgba(79, 119, 93, .16), 0 7px 18px rgba(79, 119, 93, .08);
+}
+
+body .button-quiet,
+body .secondary-button {
+    color: var(--penaup-paper-ink);
+    border-color: rgba(38, 40, 36, .42);
+    background: rgba(255, 254, 250, .66);
+}
+
+body .button-quiet:hover:not(:disabled),
+body .secondary-button:hover:not(:disabled),
+body .button-quiet:focus-visible,
+body .secondary-button:focus-visible {
     color: var(--penaup-paper-ink);
     border-color: var(--penaup-paper-ink);
-    background: var(--paper-bright);
-}
-
-:where(button.primary-button:hover:not(:disabled), button.primary-button:focus-visible:not(:disabled), a.primary-button:hover, a.primary-button:focus-visible) {
-    color: var(--paper-bright);
-    border-color: var(--penaup-paper-ink);
-    background: var(--penaup-paper-ink);
-    box-shadow: 2px 2px 0 rgba(32, 33, 31, .18);
-}
-
-:where(button.secondary-button, a.secondary-button) {
-    color: var(--penaup-paper-ink);
-    border-color: rgba(38, 40, 36, .4);
-    background: rgba(253, 253, 251, .92);
-}
-
-:where(button.secondary-button:hover:not(:disabled), button.secondary-button:focus-visible:not(:disabled), a.secondary-button:hover, a.secondary-button:focus-visible) {
-    color: var(--penaup-paper-ink);
-    border-color: var(--penaup-paper-ink);
-    background: #ffffff;
+    background: rgba(255, 255, 252, .92);
     box-shadow: 2px 2px 0 rgba(32, 33, 31, .16);
 }
 
-:where(button.primary-button:disabled, button.secondary-button:disabled) {
-    background: #e7e7e2;
-    box-shadow: none;
+body .button-danger {
+    color: #9b483f;
+    border-color: rgba(155, 72, 63, .52);
+    background: rgba(255, 254, 250, .72);
 }
+
+body .button-danger:hover:not(:disabled),
+body .button-danger:focus-visible {
+    color: #8d4038;
+    border-color: #ad5145;
+    background: rgba(173, 81, 69, .1);
+    box-shadow: 2px 2px 0 rgba(173, 81, 69, .15);
+}
+
+body .button:active:not(:disabled),
+body .primary-button:active:not(:disabled),
+body .secondary-button:active:not(:disabled),
+body .button-primary:active:not(:disabled),
+body .button-quiet:active:not(:disabled),
+body .button-danger:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 rgba(42, 41, 36, .16);
+}
+
+body .button-primary:disabled,
+body .primary-button:disabled,
+body .secondary-button:disabled,
+body .button-quiet:disabled,
+body .button-danger:disabled {
+    color: #9a9b95;
+    background: #e7e7e2;
+    border-color: rgba(38, 40, 36, .14);
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: .78;
+}
+
+body .story-nav .nav-cta {
+    display: inline-flex;
+    font-weight: 700;
+}
+
+body .hero-actions,
+body .button-row,
+body .network-btn-row,
+body .action-controls {
+    align-items: stretch;
+}
+
+body .hero-actions > *,
+body .button-row > *,
+body .network-btn-row > *,
+body .action-controls > * {
+    min-width: 0;
+}
+
+body .frame-tabs {
+    border-radius: 7px;
+    background: rgba(226, 226, 220, .64);
+}
+
+body .frame-tab {
+    border-radius: 6px;
+}
+
+body .frame-tab.active,
+body .frame-tab:hover,
+body .frame-tab:focus-visible {
+    color: var(--penaup-paper-ink);
+    border-color: rgba(32, 33, 31, .22);
+    background: rgba(255, 255, 252, .9);
+    box-shadow: 4px 5px 0 rgba(42, 41, 36, .07);
+}
+
+body .frame-tab.active {
+    box-shadow: inset 0 -3px var(--penaup-paper-sage-ink), 4px 5px 0 rgba(42, 41, 36, .07);
+}
+
+body .paper-card,
+body .weread-controls,
+body .reading-ticket,
+body .frame-format-note {
+    border-radius: 7px 8px 6px 7px;
+}
+
+body .polaroid-frame,
+body .weread-polaroid {
+    border-radius: 7px 8px 6px 7px;
+    background: rgba(255, 255, 252, .82);
+    box-shadow: 4px 5px 0 rgba(42, 41, 36, .08), 0 24px 50px rgba(42, 41, 36, .1);
+}
+
+body .polaroid-inner {
+    background: var(--penaup-paper-rice);
+}
+
+body .story-shell .closing {
+    background:
+        radial-gradient(circle at 92% 12%, rgba(183, 214, 192, .2), transparent 27%),
+        rgba(255, 254, 250, .34);
+}
+
+body .color-mode,
+body .weread-period,
+body .weread-scene,
+body .weread-render,
+body .rendering-mode-button {
+    border-radius: 7px;
+}
+
+body .weread-period.is-active,
+body .weread-scene.is-active,
+body .weread-render.is-active,
+body .rendering-mode-button.is-active,
+body .weread-period[aria-pressed="true"],
+body .weread-scene[aria-pressed="true"],
+body .weread-render[aria-pressed="true"],
+body .rendering-mode-button[aria-pressed="true"] {
+    color: var(--penaup-paper-ink);
+    border-color: var(--penaup-paper-sage-ink);
+    background: rgba(183, 214, 192, .42);
+    box-shadow: inset 0 -3px var(--penaup-paper-sage-ink), 3px 4px 0 rgba(79, 119, 93, .08);
+}
+
+@media (max-width: 560px) {
+    .hero-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .hero-actions > .button {
+        width: 100%;
+    }
+}
+
+/* Keep a disabled control visually quiet without losing its 44px target. */
+body .button-primary:disabled,
+body .primary-button:disabled,
+body .secondary-button:disabled {
+    min-height: 50px;
+    background: #e7e7e2;
+    }
 
 .weread-phase-indicator[data-phase="failed"] .weread-phase-dot,
 .weread-status.is-error {

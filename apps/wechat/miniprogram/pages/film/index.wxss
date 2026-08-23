@@ -1,7 +1,7 @@
 @import "../../styles/penaup-pages.wxss";
 
 .container > .btn-primary:first-child { width: 100%; max-width: 668rpx; margin: 0 auto; }
-.btn-bluetooth { background: #4d75b6; border-color: #4d75b6; }
+.btn-bluetooth { color: #20211f; background: #b7d6c0; border-color: #4f775d; }
 .settings-section { margin-top: 22rpx; }
 .btn-group { margin-top: 18rpx; }
 .canvas-container { margin-top: 24rpx; }

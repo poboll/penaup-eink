@@ -1,6 +1,6 @@
 # Penaup-Eink 完成度与验证矩阵
 
-> 更新时间：2026-08-23。本文只记录本机实际执行过的证据；“可执行文件存在”不等于“公网部署、微信真机或硬件已经验收”。
+> 更新时间：2026-08-24。本文只记录本机实际执行过的证据；“可执行文件存在”不等于“公网部署、微信真机或硬件已经验收”。
 
 ## 结论先看
 
@@ -9,12 +9,12 @@
 | 领域 | 本机状态 | 证据 |
 | --- | --- | --- |
 | Node 运行时 | PASS | `node --version` = `v24.19.0`；根包和 `server` 都限制 `24.x` |
-| JavaScript / 契约 | PASS | Node 24 环境下 104 个 JavaScript 文件语法通过；严格契约门禁为 `232 passed / 0 pending / 0 failed` |
-| 自动化测试 | PASS | `npm test`：server 43、film-core 7、微信 16、Web/发布工具 18 全部通过 |
+| JavaScript / 契约 | PASS | Node 24 环境下 105 个 JavaScript 文件语法通过；严格契约门禁为 `235 passed / 0 pending / 0 failed` |
+| 自动化测试 | PASS | `npm test`：server 43、film-core 8、微信 18、Web/发布工具 20 全部通过 |
 | 依赖安全 | PASS | `npm run audit`：官方 registry 生产依赖 `0 vulnerabilities` |
 | 安装可重复性 | PASS | 根目录和 `server/` 的 `npm ci --dry-run` 均通过；原生 `better-sqlite3` 安装脚本仍需在部署机按 Node 24 审批 |
 | 运行时探针 | PASS | 8787 实例的 `/`、`/studio/`、`/health`、`/readyz` 均返回 200 |
-| Web 纸面工作台回归 | PASS | 8787 in-app browser 实测 `/studio/?mode=weread`：深链和创作标签切换都会把内部滚动恢复到 0；390/768/1440px 下读书实验室按钮无横向越界，`body.scrollWidth` 未超过视口 |
+| Web 纸面工作台回归 | PASS（当前桌面视口） | 8787 in-app browser 实测首页、`/studio/?mode=weread` 和 `/device/`：草纸背景、白纸片按钮、Pro 竖向预览和无障碍文案均已渲染；契约测试覆盖 420/560/720/820/1024px 响应式断点。当前 IAB 未提供可复现的移动模拟视口，因此不把 390/768px 截图写成硬件式验收证据 |
 | Caddy 配置 | PASS | `PENAUP_DOMAIN=penaup.example.com caddy validate --config deploy/Caddyfile --adapter caddyfile` |
 | Mosquitto 配置语法 | PASS（配置） | `mosquitto --test-config -c deploy/mqtt/mosquitto.conf.example` 退出码为 0 并报告配置有效；本机缺少 `/var/lib/mosquitto/` 时有非致命持久化目录提示，未启动公网 broker |
 | 备份/恢复演练 | PASS（本机 fixture） | `bash -n deploy/backup.sh deploy/restore.sh`；`node --test server/test/backup.test.js` 通过，验证 SQLite 一致性备份、媒体归档、恢复和 `--force` 回滚目录；生产 timer 尚未在 Linux systemd 主机启动 |
@@ -26,15 +26,15 @@
 | 正式邮件、Caddy 公网 TLS、MQTT ACL | PENDING | 需要部署机、真实域名/证书、邮件 provider 和设备账号 |
 | 合同/字体/图片/第三方资产权利 | PENDING | 需要逐文件来源和外包权利转让材料复核 |
 
-本轮可复现的代码与安全门禁（2026-08-23，本机）如下：
+本轮可复现的代码与安全门禁（2026-08-24，本机）如下：
 
 ```text
 npm run check
-JavaScript syntax OK: 104 files
-Contract gate: 232 passed, 0 pending, 0 failed
+JavaScript syntax OK: 105 files
+Contract gate: 235 passed, 0 pending, 0 failed
 
 npm test
-server 43 passed · film-core 7 passed · 微信 16 passed · Web/release 18 passed
+server 43 passed · film-core 8 passed · 微信 18 passed · Web/release 20 passed
 
 npm run audit
 found 0 vulnerabilities
