@@ -50,6 +50,11 @@
     </view>
     <text class="render-note">{{renderingModeNote}}</text>
     <text class="color-note">六种物理墨水是基础，不是颜色上限。叠色、网点和抖动把明暗与过渡织出来；画面停住后，电子纸不需要持续点亮。</text>
+    <view class="choice-label">屏保字体</view>
+    <view class="choice-grid font-grid">
+      <button wx:for="{{wallpaperFonts}}" wx:key="id" class="render-button {{item.id == wallpaperFontKey ? 'is-active' : ''}}" data-font="{{item.id}}" bindtap="chooseFont"><text>{{item.label}}</text><text>{{item.detail}}</text></button>
+    </view>
+    <text class="font-note">字体只影响这一张屏保的文字排版；首页和小程序操作界面始终使用普通系统字体。</text>
     <button class="btn-primary fetch-button" disabled="{{busy}}" bindtap="fetchSnapshot">{{busy ? '正在显影…' : '取回并显影'}}</button>
   </view>
 

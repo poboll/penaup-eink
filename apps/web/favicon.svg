@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>花生片 Penaup</title>
+  <rect width="64" height="64" rx="14" fill="#f1f1ed"/>
+  <rect x="16" y="10" width="33" height="44" rx="4" fill="#fffefa" stroke="#20211f" stroke-width="2" transform="rotate(-5 32.5 32)"/>
+  <ellipse cx="29" cy="30" rx="9" ry="14" fill="#c49a24" stroke="#20211f" stroke-width="2" transform="rotate(-28 29 30)"/>
+  <ellipse cx="39" cy="34" rx="9" ry="14" fill="#c49a24" stroke="#20211f" stroke-width="2" transform="rotate(28 39 34)"/>
+  <path d="M23 47h21" stroke="#4d73ad" stroke-width="2" stroke-linecap="round"/>
+</svg>

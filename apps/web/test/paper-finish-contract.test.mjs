@@ -21,7 +21,7 @@ test('all web surfaces load one final pale paper finish layer', async () => {
   assert.match(story, /href="css\/penaup-paper-finish\.css"/);
   assert.match(studio, /href="\.\.\/css\/penaup-paper-finish\.css"/);
   assert.match(device, /href="\.\.\/css\/penaup-paper-finish\.css"/);
-  assert.match(finish, /--penaup-paper-base:\s*#fafaf7/);
+  assert.match(finish, /--penaup-paper-base:\s*#f5f5f1/);
   assert.match(finish, /repeating-linear-gradient\(106deg/);
   assert.match(finish, /body \.story-shell \.color-mode\[aria-pressed="true"\]/);
   assert.match(finish, /body \.story-shell \.color-mode \{[\s\S]*?background:\s*transparent/);
@@ -33,6 +33,28 @@ test('all web surfaces load one final pale paper finish layer', async () => {
   assert.match(finish, /@media \(max-width: 720px\)[\s\S]*?body \.frame-tab[\s\S]*?font-size:\s*14px/);
   assert.match(finish, /@media \(max-width: 720px\)[\s\S]*?body \.weread-actions > \*/);
   assert.match(finish, /prefers-reduced-motion/);
+  assert.match(finish, /2026-08-25 final typography and paper-material pass/);
+  assert.match(finish, /--penaup-ui-font:\s*-apple-system/);
+  assert.match(finish, /body \.container \.frame-action-btn[\s\S]*?background: rgba\(255, 255, 252, \.90\)/);
+  assert.match(finish, /body \.container \.frame-send-btn:disabled[\s\S]*?background: #e9e9e4/);
+});
+
+test('browser UI keeps ordinary system typography while creation fonts stay opt-in', async () => {
+  const [story, style, studio, frame, wallpaper] = await Promise.all([
+    read('css/story.css'),
+    read('css/style.css'),
+    read('css/studio-paper.css'),
+    read('js/frame.js'),
+    read('js/weread-wallpaper.js')
+  ]);
+
+  assert.match(story, /--serif:\s*-apple-system/);
+  assert.match(style, /--serif:\s*-apple-system/);
+  assert.match(studio, /--font-display:\s*-apple-system/);
+  assert.match(frame, /var frameQuoteFontKey = 'system'/);
+  assert.match(frame, /system:\s*'-apple-system/);
+  assert.match(wallpaper, /fontKey:\s*'system'/);
+  assert.match(wallpaper, /label: '系统常用字'/);
 });
 
 test('homepage color study keeps six physical rows and eight visual levels', async () => {
@@ -63,10 +85,10 @@ test('mini program keeps the Pro visual paper and pale navigation surface', asyn
     read('../wechat/miniprogram/pages/home/index.wxss')
   ]);
 
-  assert.match(app, /"backgroundColor": "#FAFAF7"/);
-  assert.match(app, /"navigationBarBackgroundColor": "#FAFAF7"/);
-  assert.match(app, /"backgroundColor": "#FFFEFA"/);
-  assert.match(paper, /background-color: #fafaf7/);
+  assert.match(app, /"backgroundColor": "#F5F5F1"/);
+  assert.match(app, /"navigationBarBackgroundColor": "#F5F5F1"/);
+  assert.match(app, /"backgroundColor": "#FBFBF7"/);
+  assert.match(paper, /background-color: #f5f5f1/);
   assert.match(template, /3\.68″/);
   assert.match(template, /528 × 792/);
   assert.match(home, /background: rgba\(255, 255, 252, \.88\)/);

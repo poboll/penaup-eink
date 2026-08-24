@@ -11,7 +11,7 @@
 .weread-rail { position: relative; display: flex; justify-content: space-between; margin: 8rpx 0 26rpx; padding: 0 8rpx; }
 .weread-rail::before { position: absolute; left: 28rpx; right: 28rpx; top: 21rpx; height: 2rpx; content: ''; background: #d5d5d1; }
 .rail-item { position: relative; z-index: 1; display: flex; min-width: 82rpx; flex-direction: column; align-items: center; gap: 7rpx; color: #858780; font: 20rpx/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; }
-.rail-item text:first-child { display: flex; width: 44rpx; height: 44rpx; align-items: center; justify-content: center; border: 2rpx solid #b6b7b2; border-radius: 50%; background: #fafaf7; font-size: 17rpx; }
+.rail-item text:first-child { display: flex; width: 44rpx; height: 44rpx; align-items: center; justify-content: center; border: 2rpx solid #b6b7b2; border-radius: 50%; background: #f5f5f1; font-size: 17rpx; }
 .rail-item.is-current { color: #20211f; }
 .rail-item.is-current text:first-child { color: #fffefa; border-color: #20211f; background: #20211f; }
 .rail-item.is-done { color: #55765e; }
@@ -29,7 +29,7 @@
 .paper-input::placeholder { color: #858780; }
 .key-input { width: 100%; margin-top: 10rpx; }
 .address-actions { display: flex; gap: 10rpx; }
-.mini-action { min-width: 96rpx; min-height: 82rpx; padding: 0 14rpx; color: #20211f; border: 2rpx solid #b6b7b2; border-radius: 8rpx; background: #fafaf7; font-size: 23rpx; }
+.mini-action { min-width: 96rpx; min-height: 82rpx; padding: 0 14rpx; color: #20211f; border: 2rpx solid #b6b7b2; border-radius: 8rpx; background: #f5f5f1; font-size: 23rpx; }
 .clear-action { color: #656761; border-style: dashed; }
 .field-help { display: block; margin-top: 10rpx; color: #7a7c75; font-size: 23rpx; line-height: 1.6; }
 .connect-row, .output-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12rpx; margin-top: 22rpx; }
@@ -59,6 +59,8 @@
 .render-button text:last-child { color: inherit; font: 18rpx/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; opacity: .75; }
 .render-note { display: block; min-height: 44rpx; margin-top: 14rpx; color: #4d73ad; font-size: 22rpx; line-height: 1.55; }
 .color-note { display: block; margin-top: 12rpx; color: #7a7c75; font: 22rpx/1.65 Georgia, "Songti SC", serif; }
+.font-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.font-note { display: block; margin-top: 12rpx; color: #7a7c75; font-size: 21rpx; line-height: 1.55; }
 .fetch-button { width: 100%; margin-top: 22rpx; }
 
 .status-box { min-height: 78rpx; margin-top: 20rpx; padding: 16rpx 18rpx; color: #656761; border-left: 5rpx solid #b6b7b2; background: rgba(235, 235, 232, .72); font-size: 22rpx; line-height: 1.6; }

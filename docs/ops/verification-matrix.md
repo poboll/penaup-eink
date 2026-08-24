@@ -1,6 +1,6 @@
 # Penaup-Eink 完成度与验证矩阵
 
-> 更新时间：2026-08-24。本文只记录本机实际执行过的证据；“可执行文件存在”不等于“公网部署、微信真机或硬件已经验收”。
+> 更新时间：2026-08-25。本文只记录本机实际执行过的证据；“可执行文件存在”不等于“公网部署、微信真机或硬件已经验收”。
 
 ## 结论先看
 
@@ -14,7 +14,8 @@
 | 依赖安全 | PASS | `npm run audit`：官方 registry 生产依赖 `0 vulnerabilities` |
 | 安装可重复性 | PASS | 根目录和 `server/` 的 `npm ci --dry-run` 均通过；原生 `better-sqlite3` 安装脚本仍需在部署机按 Node 24 审批 |
 | 运行时探针 | PASS | 8787 实例的 `/`、`/studio/`、`/health`、`/readyz` 均返回 200 |
-| Web 纸面工作台回归 | PASS（当前桌面视口） | 8787 in-app browser 实测首页、`/studio/?mode=weread` 和 `/device/`：草纸背景、白纸片按钮、Pro 竖向预览和无障碍文案均已渲染；契约测试覆盖 420/560/720/820/1024px 响应式断点。当前 IAB 未提供可复现的移动模拟视口，因此不把 390/768px 截图写成硬件式验收证据 |
+| Web 纸面工作台回归 | PASS（静态/HTTP/契约） | 8787 的首页、`/studio/` 和 `/device/` 均返回 200；首页使用白色草纸颗粒、白纸片层叠、机械拆解 Hero 和 6×8 样本票；契约测试覆盖 420/560/720/820/1024px 响应式断点。本回合 IAB 的本地 URL 策略阻止了截图读取，因此不把截图写成视觉截图验收证据 |
+| 本地常驻服务 | PASS | `launchctl print gui/501/com.poboll.penaup-eink.dev` 显示 `state = running`、Node 24.19.0 绝对路径、`KeepAlive` 与 `RunAtLoad`；服务配置见 [`local-dev-service.md`](local-dev-service.md) |
 | Caddy 配置 | PASS | `PENAUP_DOMAIN=penaup.example.com caddy validate --config deploy/Caddyfile --adapter caddyfile` |
 | Mosquitto 配置语法 | PASS（配置） | `mosquitto --test-config -c deploy/mqtt/mosquitto.conf.example` 退出码为 0 并报告配置有效；本机缺少 `/var/lib/mosquitto/` 时有非致命持久化目录提示，未启动公网 broker |
 | 备份/恢复演练 | PASS（本机 fixture） | `bash -n deploy/backup.sh deploy/restore.sh`；`node --test server/test/backup.test.js` 通过，验证 SQLite 一致性备份、媒体归档、恢复和 `--force` 回滚目录；生产 timer 尚未在 Linux systemd 主机启动 |

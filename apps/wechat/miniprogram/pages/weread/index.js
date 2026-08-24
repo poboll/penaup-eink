@@ -20,6 +20,12 @@ var BLUE = '#4d73ad';
 var RED = '#ad5145';
 var YELLOW = '#c49a24';
 var GREEN = '#55765e';
+var SYSTEM_FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif';
+var HUIWEN_FONT = '"Huiwen Mincho", "Songti SC", "STSong", Georgia, serif';
+
+function fontFamily(key) {
+  return key === 'huiwen' ? HUIWEN_FONT : SYSTEM_FONT;
+}
 
 function clean(value, fallback) {
   var text = String(value == null ? '' : value).replace(/[\u0000-\u001f\u007f]/g, '').trim();
@@ -126,6 +132,11 @@ Page({
     renderingMode: 'layer',
     renderingModes: filmUtils.getRenderingModeOptions(),
     renderingModeNote: filmUtils.getRenderingModeDefinition('layer').description,
+    wallpaperFontKey: 'system',
+    wallpaperFonts: [
+      { id: 'system', label: '系统常用字', detail: '清晰、克制' },
+      { id: 'huiwen', label: '汇文明朝体', detail: '只影响这张屏保' }
+    ],
     phase: 'idle',
     phaseLabel: '纸面在等一段阅读',
     status: '可以先用示例数据看一眼，也可以连接你的微信读书书架。',
@@ -217,7 +228,7 @@ Page({
     }
     ctx.globalAlpha = 1;
     ctx.fillStyle = QUIET;
-    ctx.font = '400 28px "Huiwen Mincho", "Songti SC", serif';
+    ctx.font = '400 28px ' + fontFamily(this.data.wallpaperFontKey);
     ctx.fillText('纸面在等一段阅读', 42, 82);
     ctx.font = '14px ui-monospace, Menlo, monospace';
     ctx.fillStyle = BLUE;
@@ -229,7 +240,7 @@ Page({
     ctx.lineTo(196, 144);
     ctx.stroke();
     ctx.fillStyle = QUIET;
-    ctx.font = '16px "Huiwen Mincho", "Songti SC", serif';
+    ctx.font = '16px ' + fontFamily(this.data.wallpaperFontKey);
     ctx.fillText('先取回记录，再让它慢慢显影。', 44, 184);
   },
 
@@ -251,14 +262,15 @@ Page({
 
   _drawHeading: function (title, subtitle, label) {
     var ctx = this._ctx;
+    var displayFont = fontFamily(this.data.wallpaperFontKey);
     ctx.fillStyle = BLUE;
     ctx.font = '12px ui-monospace, Menlo, monospace';
     ctx.fillText(label, 36, 40);
     ctx.fillStyle = INK;
-    ctx.font = '400 38px "Huiwen Mincho", "Songti SC", serif';
+    ctx.font = '400 38px ' + displayFont;
     ctx.fillText(title, 36, 86);
     ctx.fillStyle = QUIET;
-    ctx.font = '16px "Huiwen Mincho", "Songti SC", serif';
+    ctx.font = '16px ' + displayFont;
     drawLines(ctx, subtitle, 36, 116, WIDTH - 72, 22, 2);
     ctx.strokeStyle = LINE;
     ctx.beginPath();
@@ -269,9 +281,10 @@ Page({
 
   _drawWeekly: function (snapshot) {
     var ctx = this._ctx;
+    var displayFont = fontFamily(this.data.wallpaperFontKey);
     this._drawHeading('本周读书', snapshot.periodLabel || '把一周阅读打印成一张小票。', 'PENAUP / WEEKLY RECEIPT');
     ctx.fillStyle = INK;
-    ctx.font = '400 32px "Huiwen Mincho", "Songti SC", serif';
+    ctx.font = '400 32px ' + displayFont;
     ctx.fillText(String(snapshot.readingMinutes || 0), 36, 190);
     ctx.fillStyle = QUIET;
     ctx.font = '11px ui-monospace, Menlo, monospace';
@@ -299,7 +312,7 @@ Page({
     books.forEach(function (book, index) {
       var y = 314 + index * 56;
       ctx.fillStyle = INK;
-      ctx.font = '400 18px "Huiwen Mincho", "Songti SC", serif';
+      ctx.font = '400 18px ' + displayFont;
       ctx.fillText(String(index + 1 < 10 ? '0' + (index + 1) : index + 1), 36, y);
       ctx.fillText(clean(book.title, '未命名书籍').slice(0, 18), 72, y);
       ctx.fillStyle = QUIET;
@@ -313,7 +326,7 @@ Page({
     ctx.fillStyle = RED;
     ctx.fillRect(36, 550, 3, 72);
     ctx.fillStyle = INK;
-    ctx.font = '400 21px "Huiwen Mincho", "Songti SC", serif';
+    ctx.font = '400 21px ' + displayFont;
     drawLines(ctx, '“' + (snapshot.quote || '把读过的每一页，留给今天。') + '”', 54, 574, WIDTH - 90, 28, 2);
     ctx.fillStyle = QUIET;
     ctx.font = '10px ui-monospace, Menlo, monospace';
@@ -326,6 +339,7 @@ Page({
 
   _drawMonthly: function (snapshot) {
     var ctx = this._ctx;
+    var displayFont = fontFamily(this.data.wallpaperFontKey);
     this._drawHeading('本月阅读', snapshot.periodLabel || '每天读过的书，在月历里留下小小的痕迹。', 'PENAUP / MONTHLY CALENDAR');
     var parts = String(snapshot.periodKey || '').split('-');
     var year = Number(parts[0]) || new Date().getFullYear();
@@ -355,7 +369,7 @@ Page({
       ctx.strokeStyle = 'rgba(41,39,34,.16)';
       ctx.strokeRect(x, y, cellWidth, cellHeight);
       ctx.fillStyle = INK;
-      ctx.font = '400 14px "Huiwen Mincho", "Songti SC", serif';
+      ctx.font = '400 14px ' + displayFont;
       ctx.fillText(String(day), x + 5, y + 17);
       if (dayMap[day]) {
         ctx.fillStyle = day % 3 === 0 ? GREEN : day % 2 === 0 ? BLUE : YELLOW;
@@ -370,13 +384,14 @@ Page({
     ctx.font = '11px ui-monospace, Menlo, monospace';
     ctx.fillText('READING THREADS', left, 492);
     ctx.fillStyle = INK;
-    ctx.font = '400 17px "Huiwen Mincho", "Songti SC", serif';
+    ctx.font = '400 17px ' + displayFont;
     drawLines(ctx, (snapshot.topBooks || []).join('  ·  ') || '等待书名落在日历边缘。', left, 520, WIDTH - 72, 26, 3);
     ctx.fillText(String(snapshot.bookCount || 0) + ' BOOKS  /  ' + String(snapshot.noteCount || 0) + ' NOTES', left, 744);
   },
 
   _drawBookshelf: function (snapshot) {
     var ctx = this._ctx;
+    var displayFont = fontFamily(this.data.wallpaperFontKey);
     this._drawHeading('书架标本', snapshot.periodLabel || '读过的书，排成一面安静的墙。', 'PENAUP / BOOKSHELF SPECIMEN');
     var books = (snapshot.topBookDetails || []).slice(0, 9);
     var colors = [INK, BLUE, RED, GREEN, YELLOW, '#8e8067'];
@@ -404,7 +419,7 @@ Page({
         ctx.translate(x + bookWidth / 2, shelfY - 10);
         ctx.rotate(-Math.PI / 2);
         ctx.fillStyle = PAPER;
-        ctx.font = '400 14px "Huiwen Mincho", "Songti SC", serif';
+        ctx.font = '400 14px ' + displayFont;
         ctx.textAlign = 'center';
         ctx.fillText(title, 0, 4);
         ctx.restore();
@@ -419,6 +434,7 @@ Page({
 
   _drawCard: function (snapshot, card) {
     var ctx = this._ctx;
+    var displayFont = fontFamily(this.data.wallpaperFontKey);
     var book = (snapshot.topBookDetails || [])[0] || {};
     var title = clean(card && card.title || book.title, '正在读的一本书');
     var author = clean(card && card.author || book.author, '作者未知');
@@ -427,7 +443,7 @@ Page({
     roundedRect(ctx, 36, 154, 184, 270, 4);
     ctx.fill();
     ctx.fillStyle = PAPER;
-    ctx.font = '400 25px "Huiwen Mincho", "Songti SC", serif';
+    ctx.font = '400 25px ' + displayFont;
     drawLines(ctx, title, 54, 224, 148, 34, 5);
     ctx.font = '12px ui-monospace, Menlo, monospace';
     ctx.fillText(author, 54, 394);
@@ -435,10 +451,10 @@ Page({
     ctx.font = '11px ui-monospace, Menlo, monospace';
     ctx.fillText('ONE BOOK / ONE PAGE', 244, 164);
     ctx.fillStyle = INK;
-    ctx.font = '400 31px "Huiwen Mincho", "Songti SC", serif';
+    ctx.font = '400 31px ' + displayFont;
     drawLines(ctx, title, 244, 212, WIDTH - 280, 38, 3);
     ctx.fillStyle = QUIET;
-    ctx.font = '14px "Huiwen Mincho", "Songti SC", serif';
+    ctx.font = '14px ' + displayFont;
     ctx.fillText(author + (card && card.category ? '  ·  ' + clean(card.category, 30) : ''), 244, 334);
     var cardProgress = card && Number(card.progress);
     var bookProgress = Number(book.progress);
@@ -455,7 +471,7 @@ Page({
     ctx.fillText(Math.round(progress) + '%', WIDTH - 36, 394);
     ctx.textAlign = 'left';
     ctx.fillStyle = INK;
-    ctx.font = '400 22px "Huiwen Mincho", "Songti SC", serif';
+    ctx.font = '400 22px ' + displayFont;
     ctx.fillStyle = RED;
     ctx.fillRect(36, 488, 3, 96);
     ctx.fillStyle = INK;
@@ -595,6 +611,17 @@ Page({
     var mode = filmUtils.normalizeRenderingMode(event.currentTarget.dataset.mode);
     this.setData({ renderingMode: mode, renderingModeNote: filmUtils.getRenderingModeDefinition(mode).description });
     if (this._snapshot) this._renderSnapshot().catch(function () {});
+  },
+
+  chooseFont: function (event) {
+    var key = event.currentTarget.dataset.font === 'huiwen' ? 'huiwen' : 'system';
+    this.setData({ wallpaperFontKey: key });
+    if (this._snapshot) {
+      this._renderSnapshot().catch(function () {});
+    } else {
+      this._drawEmpty();
+      this._setStatus(key === 'huiwen' ? '汇文明朝体已选好；只会影响这张屏保的内容排版。' : '系统常用字已选好；只会影响这张屏保的内容排版。');
+    }
   },
 
   choosePeriod: function (event) {

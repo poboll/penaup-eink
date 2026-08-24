@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>花生片 Penaup · 显影工具</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link id="style-sheet" rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/penaup-shared.css">
     <link rel="stylesheet" href="../css/studio-paper.css">
@@ -418,8 +419,8 @@
                         <fieldset class="creation-font-fieldset">
                             <legend>开始显影前，先选文字字体</legend>
                             <div class="creation-font-list" role="group" aria-label="选择一言字体">
-                                <button type="button" class="creation-font is-active" data-frame-font="huiwen" aria-pressed="true"><strong>汇文明朝体</strong><small>保留首页的纸上气质</small></button>
-                                <button type="button" class="creation-font" data-frame-font="system" aria-pressed="false"><strong>系统宋体</strong><small>更清楚、更克制</small></button>
+                                <button type="button" class="creation-font is-active" data-frame-font="system" aria-pressed="true"><strong>系统常用字</strong><small>首页与工作台的默认字体</small></button>
+                                <button type="button" class="creation-font" data-frame-font="huiwen" aria-pressed="false"><strong>汇文明朝体</strong><small>只用于这张内容卡</small></button>
                             </div>
                             <p class="creation-font-note">只影响这张一言卡的文字排版，不会把首页或照片预览改成电子纸字体。</p>
                         </fieldset>
@@ -529,10 +530,10 @@
                                 <fieldset class="weread-font-fieldset">
                                     <legend>选择纸面字体</legend>
                                     <div class="weread-font-list" role="group" aria-label="选择壁纸标题字体">
-                                        <button type="button" class="weread-font is-active" data-weread-font="huiwen" aria-pressed="true"><strong>汇文明朝体</strong><small>纸上编辑感</small></button>
-                                        <button type="button" class="weread-font" data-weread-font="system" aria-pressed="false"><strong>系统宋体</strong><small>清晰、克制</small></button>
+                                        <button type="button" class="weread-font is-active" data-weread-font="system" aria-pressed="true"><strong>系统常用字</strong><small>清晰、克制</small></button>
+                                        <button type="button" class="weread-font" data-weread-font="huiwen" aria-pressed="false"><strong>汇文明朝体</strong><small>只用于这张屏保</small></button>
                                     </div>
-                                    <p class="weread-font-note">字体只影响这张屏保的排版，不会改变六色 film 编码；首页标题仍保留原来的花生片展示字体。</p>
+                                <p class="weread-font-note">字体只影响这张屏保的排版，不会改变六色 film 编码；首页、导航和按钮始终使用普通系统字体。</p>
                                 </fieldset>
 
                                 <button type="button" class="primary-button weread-fetch-button" id="weread-fetch"><i class="material-icons">auto_awesome</i>取回并显影</button>

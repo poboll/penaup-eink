@@ -19,12 +19,14 @@ test('WeRead mini program page keeps the Pro wallpaper and key boundary', () => 
   const templatePage = read('pages/template/index.wxml');
 
   assert.ok(app.pages.includes('pages/weread/index'));
-  assert.equal(app.window.backgroundColor, '#FAFAF7');
-  assert.equal(app.window.navigationBarBackgroundColor, '#FAFAF7');
-  assert.equal(app.tabBar.backgroundColor, '#FFFEFA');
+  assert.equal(app.window.backgroundColor, '#F5F5F1');
+  assert.equal(app.window.navigationBarBackgroundColor, '#F5F5F1');
+  assert.equal(app.tabBar.backgroundColor, '#FBFBF7');
   assert.match(page, /PENAUP_PRO|528 × 792/);
   assert.match(page, /data-mode="weekly"/);
   assert.match(page, /data-mode="monthly"/);
+  assert.match(page, /data-font="\{\{item\.id\}\}"/);
+  assert.match(page, /wallpaperFontKey/);
   assert.match(page, /saveApiBase/);
   assert.match(page, /clearApiBase/);
   assert.match(page, /device_state_uncertain|发送到 Pro/);
@@ -32,6 +34,9 @@ test('WeRead mini program page keeps the Pro wallpaper and key boundary', () => 
   assert.match(script, /hasFilm/);
   assert.match(script, /_renderRevision/);
   assert.match(script, /_invalidatePreview/);
+  assert.match(script, /wallpaperFontKey: 'system'/);
+  assert.match(script, /chooseFont/);
+  assert.match(script, /function fontFamily/);
   assert.match(script, /nextMode === 'monthly' && nextScene === 'weekly_receipt'/);
   assert.match(script, /nextMode === 'weekly' && nextScene === 'monthly_calendar'/);
   assert.match(script, /var first = new Date\(year, month - 1, 1\)\.getDay\(\);/);
@@ -40,7 +45,7 @@ test('WeRead mini program page keeps the Pro wallpaper and key boundary', () => 
   assert.match(styles, /@media \(max-width: 380px\)/);
   assert.match(styles, /\.field-help[\s\S]*font-size: 23rpx/);
   assert.match(appStyles, /@import "\.\/styles\/paper-surface\.wxss"/);
-  assert.match(paperSurface, /#fafaf7/);
+  assert.match(paperSurface, /#f5f5f1/);
   assert.match(templatePage, /tpl-paper-mark/);
   assert.match(templatePage, /3\.68″/);
   assert.doesNotMatch(paperSurface, /repeating-linear-gradient\(112deg/);

@@ -28,7 +28,7 @@
         mode: 'weekly',
         scene: 'weekly_receipt',
         renderMode: 'layer',
-        fontKey: 'huiwen',
+        fontKey: 'system',
         snapshot: null,
         shelf: null,
         card: null,
@@ -43,8 +43,8 @@
             family: '"Huiwen Mincho", "Songti SC", "STSong", serif'
         },
         system: {
-            label: '系统宋体',
-            family: '"Songti SC", "STSong", "Noto Serif SC", Georgia, serif'
+            label: '系统常用字',
+            family: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif'
         }
     };
     var wallpaperFontPromise = null;
@@ -52,6 +52,7 @@
     function byId(id) { return document.getElementById(id); }
 
     function ensureWallpaperFonts() {
+        if (state.fontKey !== 'huiwen') return Promise.resolve();
         if (wallpaperFontPromise) return wallpaperFontPromise;
         if (!document.fonts || typeof document.fonts.load !== 'function') return Promise.resolve();
         wallpaperFontPromise = Promise.all([
@@ -63,11 +64,11 @@
     }
 
     function displayFontFamily() {
-        return (FONT_OPTIONS[state.fontKey] || FONT_OPTIONS.huiwen).family;
+        return (FONT_OPTIONS[state.fontKey] || FONT_OPTIONS.system).family;
     }
 
     function displayFontLabel() {
-        return (FONT_OPTIONS[state.fontKey] || FONT_OPTIONS.huiwen).label;
+        return (FONT_OPTIONS[state.fontKey] || FONT_OPTIONS.system).label;
     }
 
     function syncFontUi() {
@@ -79,7 +80,7 @@
     }
 
     function setFontKey(key) {
-        state.fontKey = Object.prototype.hasOwnProperty.call(FONT_OPTIONS, key) ? key : 'huiwen';
+        state.fontKey = Object.prototype.hasOwnProperty.call(FONT_OPTIONS, key) ? key : 'system';
         syncFontUi();
     }
 
@@ -1068,7 +1069,7 @@
         });
         document.querySelectorAll('[data-weread-font]').forEach(function (button) {
             button.addEventListener('click', function () {
-                var nextFont = button.dataset.wereadFont || 'huiwen';
+                var nextFont = button.dataset.wereadFont || 'system';
                 var changed = state.fontKey !== nextFont;
                 setFontKey(nextFont);
                 if (!changed) return;

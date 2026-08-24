@@ -37,7 +37,7 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.match(script, /function syncPeriodUi\(\)/);
   assert.match(script, /function syncSceneForPeriod\(mode\)/);
   assert.match(script, /syncSceneForPeriod\(state\.mode\)/);
-  assert.match(script, /fontKey:\s*'huiwen'/);
+  assert.match(script, /fontKey:\s*'system'/);
   assert.match(script, /var FONT_OPTIONS = \{/);
   assert.match(script, /function displayFontFamily\(\)/);
   assert.match(script, /function displayFontLabel\(\)/);
@@ -80,7 +80,9 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.match(styles, /\.weread-polaroid-inner canvas\s*\{[\s\S]*?top:\s*0;[\s\S]*?left:\s*0;/);
   assert.equal((html.match(/data-weread-font=/g) || []).length, 2);
   assert.match(html, /汇文明朝体/);
-  assert.match(html, /系统宋体/);
+  assert.match(html, /系统常用字/);
+  assert.match(html, /data-weread-font="system" aria-pressed="true"/);
+  assert.match(html, /data-weread-font="huiwen" aria-pressed="false"/);
 });
 
 test('BLE transfer exposes an uncertain-device result instead of false success', async () => {

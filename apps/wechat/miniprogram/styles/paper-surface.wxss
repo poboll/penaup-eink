@@ -6,21 +6,21 @@
  */
 page {
   color: #20211f;
-  background-color: #fafaf7;
+  background-color: #f5f5f1;
   background-image:
     radial-gradient(circle at 8% -12%, rgba(255, 255, 252, .99), transparent 34%),
     radial-gradient(circle at 94% 4%, rgba(196, 154, 36, .028), transparent 24%),
     repeating-linear-gradient(104deg, rgba(70, 70, 65, .011) 0 1px, transparent 1px 18px),
     repeating-linear-gradient(16deg, rgba(70, 70, 65, .008) 0 1px, transparent 1px 13px),
-    linear-gradient(180deg, #fffefa 0%, #fafaf7 58%, #f4f4f0 100%);
+    linear-gradient(180deg, #fbfbf7 0%, #f5f5f1 58%, #ededE8 100%);
 }
 
-/* The Web app owns the bundled Huiwen Mincho subset; mini program canvas
- * safely falls back to Songti when a device does not expose the face. */
+/* UI copy stays in the ordinary system face. The wallpaper Canvas chooses its
+ * own system/Huiwen family at render time from the page control. */
 .paper-title,
 .paper-display,
 .paper-canvas-text {
-  font-family: "Huiwen Mincho", "Songti SC", "STSong", Georgia, serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   font-weight: 400;
 }
 
@@ -73,6 +73,6 @@ page {
 
 @media (prefers-reduced-motion: reduce) {
   page {
-    background-image: linear-gradient(180deg, #fffefa 0%, #fafaf7 58%, #f4f4f0 100%);
+    background-image: linear-gradient(180deg, #fbfbf7 0%, #f5f5f1 58%, #ededE8 100%);
   }
 }

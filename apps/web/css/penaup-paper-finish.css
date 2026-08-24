@@ -1282,17 +1282,19 @@ body::after {
     background-size: 300px 300px;
 }
 
-/* Preserve the homepage's existing editorial type. These selectors are
- * intentionally scoped to the story page and do not affect Canvas output. */
+/* Preserve the homepage's regular system UI type. Creation fonts are scoped
+ * to text-card and reading-wallpaper output below and do not affect the page. */
 body .story-shell .hero h1,
 body .story-shell .section h2,
 body .story-shell .section h3,
 body .story-shell .color-story-copy h3,
 body .story-shell .reading-ticket-title {
-    font-family: var(--serif);
+    font-family: var(--sans);
+    font-weight: 500;
+    letter-spacing: -.025em;
 }
 
-/* Hero object: paper board + registration marks + product card. There is no
+/* Hero object: paper board + registration marks + mechanical exploded view. There is no
  * circular halo, so the device remains the first object the eye reads. */
 body .hero-object::before {
     width: min(41vw, 468px);
@@ -1686,6 +1688,652 @@ body .creation-font-note {
     body .story-shell .color-matrix-row > span:hover,
     body .creation-font:hover,
     body .creation-font:focus-visible {
+        transform: none;
+    }
+}
+
+/* 2026-08-24 white paper v3: the page is a light grey grass-paper desk with
+ * lifted white sheets on top. v2 was technically pale, but its values were too
+ * close together in a real browser; this pass gives every sheet a readable
+ * edge, a short physical offset and its own quiet fibre direction. */
+:root {
+    --penaup-paper-base: #f1f1ed;
+    --penaup-paper-white: #fffefa;
+    --penaup-paper-rice: #f8f8f3;
+    --penaup-paper-shadow: #deded7;
+    --penaup-paper-edge: rgba(35, 36, 33, .20);
+    --penaup-paper-fibre: rgba(75, 76, 70, .021);
+    --penaup-paper-fibre-fine: rgba(75, 76, 70, .012);
+}
+
+html {
+    background: var(--penaup-paper-base);
+}
+
+body {
+    background-color: var(--penaup-paper-base);
+    background-image:
+        radial-gradient(circle at 8% -15%, rgba(255, 255, 252, .94), transparent 32%),
+        radial-gradient(circle at 96% 4%, rgba(196, 154, 36, .035), transparent 24%),
+        repeating-linear-gradient(104deg, var(--penaup-paper-fibre) 0 1px, transparent 1px 21px),
+        repeating-linear-gradient(17deg, var(--penaup-paper-fibre-fine) 0 1px, transparent 1px 14px),
+        repeating-linear-gradient(178deg, rgba(255, 255, 255, .25) 0 1px, transparent 1px 29px),
+        linear-gradient(180deg, #f8f8f4 0%, var(--penaup-paper-base) 58%, #ebebe5 100%);
+    background-attachment: fixed;
+}
+
+body::before {
+    opacity: .055;
+    background-size: 220px 220px;
+}
+
+body::after {
+    opacity: .06;
+    background-size: 280px 280px;
+}
+
+body .story-nav,
+body .app-topbar,
+body .story-progress,
+body .device-topbar {
+    background: rgba(255, 255, 252, .90);
+    border-color: rgba(35, 36, 33, .16);
+    box-shadow: 0 1px 0 rgba(255, 255, 252, .86), 0 8px 20px rgba(55, 55, 49, .035);
+}
+
+body .feature-section,
+body .reading-section {
+    color: var(--penaup-paper-ink);
+    background:
+        linear-gradient(180deg, rgba(248, 248, 243, .45), rgba(235, 235, 229, .28)),
+        repeating-linear-gradient(104deg, rgba(75, 76, 70, .012) 0 1px, transparent 1px 24px);
+}
+
+/* Hero: two distinct white sheets, then the mechanical exploded view. The two
+ * sheets are deliberately opaque enough to read against the grass-paper desk. */
+body .hero-object {
+    isolation: isolate;
+    min-height: 540px;
+}
+
+body .hero-object::before {
+    z-index: 0;
+    width: min(39vw, 452px);
+    height: min(51vw, 574px);
+    border: 1px solid var(--penaup-paper-edge);
+    border-radius: 3px 8px 5px 7px;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 252, .99), rgba(249, 249, 244, .97)),
+        repeating-linear-gradient(104deg, var(--penaup-paper-fibre) 0 1px, transparent 1px 22px);
+    box-shadow: 13px 15px 0 var(--penaup-paper-shadow), 0 24px 46px rgba(50, 51, 46, .12);
+    transform: rotate(-6deg) translate(-18px, 15px);
+}
+
+body .hero-object::after {
+    z-index: 0;
+    width: min(35vw, 408px);
+    height: min(46vw, 512px);
+    border: 1px solid rgba(35, 36, 33, .14);
+    border-radius: 4px 6px 3px 7px;
+    background:
+        linear-gradient(var(--penaup-paper-blue), var(--penaup-paper-blue)) 23px 31px / 27px 1px no-repeat,
+        linear-gradient(var(--penaup-paper-blue), var(--penaup-paper-blue)) 23px 31px / 1px 27px no-repeat,
+        linear-gradient(var(--penaup-paper-red, #ad5145), var(--penaup-paper-red, #ad5145)) calc(100% - 50px) 31px / 27px 1px no-repeat,
+        linear-gradient(var(--penaup-paper-red, #ad5145), var(--penaup-paper-red, #ad5145)) calc(100% - 23px) 31px / 1px 27px no-repeat,
+        linear-gradient(var(--penaup-paper-yellow, #c49a24), var(--penaup-paper-yellow, #c49a24)) 27px calc(100% - 35px) / 54px 1px no-repeat,
+        linear-gradient(135deg, rgba(255, 255, 252, .96), rgba(246, 246, 241, .93)),
+        repeating-linear-gradient(166deg, transparent 0 27px, rgba(35, 36, 33, .026) 27px 28px, transparent 28px 55px);
+    box-shadow: 7px 9px 0 rgba(50, 51, 46, .075);
+    opacity: .92;
+    transform: rotate(4deg) translate(33px, -14px);
+}
+
+body .hero-object .device-shadow {
+    z-index: 1;
+    bottom: 4%;
+    width: 58%;
+    height: 6%;
+    background: rgba(45, 46, 42, .17);
+    filter: blur(18px);
+}
+
+body .hero-object .device-card {
+    z-index: 2;
+    width: min(72%, 420px);
+    padding: 11px 11px 25px;
+    border: 1px solid rgba(35, 36, 33, .23);
+    border-radius: 3px 7px 4px 6px;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 252, .995), rgba(250, 250, 246, .98)),
+        repeating-linear-gradient(104deg, rgba(75, 76, 70, .012) 0 1px, transparent 1px 23px);
+    box-shadow: 10px 12px 0 rgba(50, 51, 46, .11), 0 28px 58px rgba(50, 51, 46, .16);
+    transform: rotate(2.4deg);
+}
+
+body .hero-object .device-card::before {
+    top: -15px;
+    height: 21px;
+    border-color: rgba(196, 154, 36, .25);
+    background: rgba(235, 227, 194, .86);
+}
+
+body .hero-object .device-card::after {
+    position: absolute;
+    z-index: 3;
+    inset: 11px 11px 25px;
+    border-radius: 1px 3px 2px 3px;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='penaup-card-fibre'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23penaup-card-fibre)' opacity='.16'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    content: "";
+    opacity: .14;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+}
+
+body .hero-object .device-card img {
+    position: relative;
+    z-index: 1;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background:
+        linear-gradient(135deg, rgba(248, 248, 243, .92), rgba(239, 239, 233, .84)),
+        repeating-linear-gradient(104deg, rgba(75, 76, 70, .018) 0 1px, transparent 1px 21px);
+    filter: saturate(.94) contrast(1.02);
+}
+
+body .hero-object .color-strip {
+    position: relative;
+    z-index: 4;
+    height: 9px;
+    margin-top: 10px;
+    border: 1px solid rgba(35, 36, 33, .16);
+}
+
+body .hero-object .hero-badge {
+    z-index: 5;
+    top: 6%;
+    right: 1%;
+    border: 1px solid rgba(35, 36, 33, .14);
+    border-radius: 3px 6px 4px 5px;
+    box-shadow: 6px 7px 0 rgba(50, 51, 46, .15);
+    transform: rotate(-3.5deg);
+}
+
+/* The 48-color study is a white sample ticket on the same grey desk. Every
+ * swatch remains a presentation level of one of six physical base pigments. */
+body .story-shell .color-lab {
+    border: 1px solid var(--penaup-paper-edge);
+    border-radius: 4px 8px 5px 7px;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 252, .995), rgba(248, 248, 243, .97)),
+        repeating-linear-gradient(104deg, var(--penaup-paper-fibre) 0 1px, transparent 1px 23px);
+    box-shadow: 10px 12px 0 var(--penaup-paper-shadow), 0 22px 42px rgba(50, 51, 46, .10);
+}
+
+body .story-shell .color-lab::before {
+    left: 28px;
+    width: 74px;
+    height: 4px;
+    background: var(--penaup-paper-yellow, #c49a24);
+}
+
+body .story-shell .color-lab-head {
+    color: rgba(32, 33, 31, .66);
+}
+
+body .story-shell .color-lab-head strong,
+body .story-shell .color-lab-foot span:last-child {
+    color: var(--penaup-paper-blue, #4d73ad);
+}
+
+body .story-shell .color-mode-list {
+    border: 1px solid rgba(35, 36, 33, .19);
+    background: #e9e9e3;
+}
+
+body .story-shell .color-mode {
+    min-width: 64px;
+    min-height: 44px;
+    color: rgba(32, 33, 31, .72);
+}
+
+body .story-shell .color-mode[aria-pressed="true"] {
+    color: var(--penaup-paper-white);
+    border-color: var(--penaup-paper-ink);
+    background: var(--penaup-paper-ink);
+    box-shadow: 3px 3px 0 rgba(47, 48, 44, .16);
+}
+
+body .story-shell .color-lab-caption {
+    color: rgba(32, 33, 31, .76);
+    border-left-color: var(--penaup-paper-blue, #4d73ad);
+    background: rgba(77, 115, 173, .07);
+}
+
+body .story-shell .color-lab-grid {
+    padding: 14px;
+    border-color: rgba(35, 36, 33, .18);
+    background:
+        linear-gradient(180deg, #f0f0eb, #e7e7e1),
+        repeating-linear-gradient(0deg, rgba(32, 33, 31, .03) 0 1px, transparent 1px 32px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 252, .78);
+}
+
+body .story-shell .color-matrix-header,
+body .story-shell .color-matrix-row {
+    grid-template-columns: 70px repeat(8, minmax(0, 1fr));
+    gap: 6px;
+}
+
+body .story-shell .color-matrix-row {
+    padding-block: 2px;
+}
+
+body .story-shell .color-matrix-row > strong {
+    color: rgba(32, 33, 31, .82);
+    font-size: 13px;
+}
+
+body .story-shell .color-matrix-row > span {
+    min-height: clamp(34px, 3.3vw, 48px);
+    border: 1px solid rgba(35, 36, 33, .22);
+    border-radius: 2px 4px 2px 3px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 252, .38), 3px 3px 0 rgba(50, 51, 46, .075);
+}
+
+body .story-shell .color-matrix-row > span:nth-child(3n) {
+    transform: translateY(1px) rotate(.25deg);
+}
+
+body .story-shell .color-matrix-row > span:nth-child(4n) {
+    transform: translateY(-1px) rotate(-.25deg);
+}
+
+body .story-shell .color-matrix-row > span:hover {
+    z-index: 2;
+    transform: translateY(-3px) rotate(0deg);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 252, .52), 4px 5px 0 rgba(50, 51, 46, .14);
+}
+
+body .story-shell .color-matrix-row > span::after {
+    opacity: .34;
+    background-size: 8px 8px;
+}
+
+body .story-shell .color-lab-foot {
+    padding-top: 14px;
+    border-top: 1px solid rgba(35, 36, 33, .16);
+}
+
+/* Workbench: four equal tabs and one paper board keep actions aligned across
+ * desktop and phone. The visual preview remains a 2:3 Pro paper. */
+body:has(.frame-container) .frame-container {
+    width: min(1080px, 100%);
+    margin-inline: auto;
+}
+
+body:has(.frame-container) .frame-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: stretch;
+}
+
+body:has(.frame-container) .frame-tab {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+}
+
+body .frame-tab-content:not(.weread-tab-content) {
+    border: 1px solid var(--penaup-paper-edge);
+    border-radius: 4px 8px 5px 7px;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 252, .995), rgba(248, 248, 243, .96)),
+        repeating-linear-gradient(104deg, var(--penaup-paper-fibre-fine) 0 1px, transparent 1px 23px);
+    box-shadow: 9px 11px 0 var(--penaup-paper-shadow), 0 20px 36px rgba(50, 51, 46, .08);
+}
+
+body .frame-action-btn,
+body .frame-send-btn {
+    width: 100%;
+    justify-content: center;
+}
+
+body .quote-btn-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+body .polaroid-frame,
+body .weread-polaroid {
+    border: 1px solid var(--penaup-paper-edge);
+    background: var(--penaup-paper-white);
+    box-shadow: 8px 10px 0 var(--penaup-paper-shadow), 0 22px 40px rgba(50, 51, 46, .10);
+}
+
+body .polaroid-inner:not(.weread-polaroid-inner),
+body .weread-polaroid-inner {
+    aspect-ratio: 2 / 3;
+    border: 1px solid rgba(35, 36, 33, .16);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 252, .54), transparent 53%),
+        #efefe9;
+}
+
+body .frame-hint-row {
+    min-width: 0;
+    align-items: center;
+}
+
+body .frame-reset-btn {
+    width: 44px;
+    min-width: 44px;
+    min-height: 44px;
+}
+
+@media (max-width: 720px) {
+    body .hero-object {
+        min-height: 390px;
+    }
+
+    body .hero-object::before {
+        width: 78vw;
+        height: 96vw;
+        transform: rotate(-5deg) translate(-9px, 11px);
+    }
+
+    body .hero-object::after {
+        width: 71vw;
+        height: 86vw;
+        transform: rotate(3deg) translate(16px, -7px);
+    }
+
+    body .hero-object .device-card {
+        width: min(78%, 360px);
+    }
+
+    body .story-shell .color-lab {
+        padding: 16px;
+    }
+
+    body .story-shell .color-matrix-header,
+    body .story-shell .color-matrix-row {
+        grid-template-columns: 38px repeat(8, minmax(0, 1fr));
+        gap: 3px;
+    }
+
+    body .story-shell .color-matrix-row > span {
+        min-height: 27px;
+    }
+
+    body:has(.frame-container) .frame-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    body .quote-btn-group {
+        grid-template-columns: 1fr;
+    }
+
+    body .frame-tab-content:not(.weread-tab-content) {
+        padding: 17px 14px;
+    }
+}
+
+@media (max-width: 420px) {
+    body .story-shell .color-lab {
+        padding: 13px;
+    }
+
+    body .story-shell .color-lab-grid {
+        padding: 9px;
+    }
+
+    body .story-shell .color-matrix-row > strong {
+        font-size: 11px;
+    }
+
+    body .story-shell .color-matrix-row > span {
+        min-height: 24px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body .story-shell .color-matrix-row > span,
+    body .story-shell .color-matrix-row > span:hover {
+        transform: none;
+    }
+}
+
+/* 2026-08-25 final typography and paper-material pass.
+ *
+ * The ordinary system face is the product UI language. Huiwen is intentionally
+ * not inherited by any page, card, button or device tool; Canvas renderers may
+ * opt into it for a generated quote or reading wallpaper only. The grain is
+ * local CSS noise plus two low-contrast fibre directions, so it stays visible
+ * on a white screen without adding an image request. */
+:root {
+    --penaup-paper-base: #f5f5f1;
+    --penaup-paper-white: #fffefa;
+    --penaup-paper-rice: #fbfbf7;
+    --penaup-paper-shadow: #deded6;
+    --penaup-ui-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
+}
+
+html {
+    background: var(--penaup-paper-base);
+}
+
+body {
+    background-color: var(--penaup-paper-base);
+    background-image:
+        radial-gradient(circle at 7% -12%, rgba(255, 255, 253, .98), transparent 36%),
+        radial-gradient(circle at 93% 5%, rgba(196, 154, 36, .025), transparent 25%),
+        repeating-linear-gradient(107deg, rgba(78, 79, 73, .017) 0 1px, transparent 1px 24px),
+        repeating-linear-gradient(17deg, rgba(78, 79, 73, .012) 0 1px, transparent 1px 15px),
+        repeating-linear-gradient(178deg, rgba(255, 255, 255, .42) 0 1px, transparent 1px 31px),
+        linear-gradient(180deg, #fbfbf8 0%, var(--penaup-paper-base) 58%, #ededE8 100%);
+    background-attachment: fixed;
+    font-family: var(--penaup-ui-font);
+}
+
+body::before {
+    opacity: .075;
+}
+
+body::after {
+    opacity: .105;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 192 192' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='penaup-final-grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23penaup-final-grain)' opacity='.24'/%3E%3C/svg%3E");
+    background-size: 192px 192px;
+    mix-blend-mode: multiply;
+}
+
+/* System UI typography across all three browser surfaces. Technical labels
+ * keep their existing mono declarations because they describe protocol data. */
+body .story-shell,
+body .container,
+body .device-app {
+    font-family: var(--penaup-ui-font);
+}
+
+body .story-shell h1,
+body .story-shell h2,
+body .story-shell h3,
+body .story-shell .hero-lede,
+body .story-shell .section-intro,
+body .story-shell .step p,
+body .story-shell .feature p,
+body .story-shell .color-story-copy p,
+body .story-shell .color-lab-caption,
+body .story-shell .reading-ticket-title,
+body .story-shell .button,
+body .story-shell .nav-links a {
+    font-family: var(--penaup-ui-font);
+}
+
+body .container h1,
+body .container h2,
+body .container h3,
+body .container .app-motto,
+body .container .page-lede,
+body .container .button,
+body .container button,
+body .container input,
+body .container select,
+body .container textarea,
+body .device-app h1,
+body .device-app h2,
+body .device-app h3,
+body .device-app .button,
+body .device-app button,
+body .device-app input {
+    font-family: var(--penaup-ui-font);
+}
+
+/* A slightly irregular keyline and short paper offset make actions belong to
+ * the same material as the sheets. Rounded pills are reserved for status tags. */
+body .story-shell .button,
+body .container .primary-button,
+body .container .secondary-button,
+body .container .frame-action-btn,
+body .container .frame-send-btn,
+body .device-app .button,
+body .device-tool-link {
+    min-height: 50px;
+    border-radius: 5px 8px 6px 7px;
+    font-weight: 550;
+    letter-spacing: -.005em;
+    box-shadow: 4px 5px 0 rgba(48, 49, 45, .085);
+}
+
+body .story-shell .button-primary,
+body .container .primary-button,
+body .device-app .button-primary {
+    border-color: var(--penaup-paper-ink, #20211f);
+    background: var(--penaup-paper-ink, #20211f);
+}
+
+body .story-shell .button-primary:hover,
+body .story-shell .button-primary:focus-visible,
+body .container .primary-button:hover:not(:disabled),
+body .container .primary-button:focus-visible:not(:disabled),
+body .device-app .button-primary:hover:not(:disabled),
+body .device-app .button-primary:focus-visible:not(:disabled) {
+    transform: translate(-1px, -2px);
+    box-shadow: 5px 7px 0 rgba(48, 49, 45, .12);
+}
+
+/* Workbench actions such as “选择照片” and “打开相机” are paper actions,
+ * not dark send actions. They share the same HTML primary-button class for
+ * legacy behaviour, so this more specific final rule prevents the old dark
+ * background from swallowing their ordinary ink label. */
+body .container .frame-action-btn {
+    color: var(--penaup-paper-ink, #20211f);
+    border-color: rgba(35, 36, 33, .48);
+    background: rgba(255, 255, 252, .90);
+    box-shadow: 4px 5px 0 rgba(48, 49, 45, .085);
+}
+
+body .container .frame-action-btn:hover:not(:disabled),
+body .container .frame-action-btn:focus-visible:not(:disabled) {
+    color: var(--penaup-paper-ink, #20211f);
+    border-color: var(--penaup-paper-sage-ink, #4f775d);
+    background: var(--penaup-paper-sage, #b7d6c0);
+    box-shadow: 5px 7px 0 rgba(79, 119, 93, .12);
+}
+
+body .container .frame-action-btn:disabled,
+body .container .frame-send-btn:disabled {
+    color: #94968f;
+    border-color: rgba(32, 33, 31, .15);
+    background: #e9e9e4;
+    box-shadow: none;
+}
+
+body .story-shell .button-quiet,
+body .container .secondary-button,
+body .device-app .button-quiet {
+    border-color: rgba(35, 36, 33, .24);
+    background: rgba(255, 255, 252, .84);
+}
+
+/* Explicitly replace the legacy circular halo with paper geometry at the
+ * final cascade layer. This protects the mechanical Hero if older CSS files
+ * are reordered later. */
+body .hero-object::before {
+    width: min(39vw, 452px);
+    height: min(51vw, 574px);
+    aspect-ratio: auto;
+    border: 1px solid rgba(35, 36, 33, .20);
+    border-radius: 3px 8px 5px 7px;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 252, .995), rgba(249, 249, 244, .97)),
+        repeating-linear-gradient(104deg, rgba(75, 76, 70, .024) 0 1px, transparent 1px 22px);
+    box-shadow: 13px 15px 0 var(--penaup-paper-shadow), 0 24px 46px rgba(50, 51, 46, .12);
+    transform: rotate(-6deg) translate(-18px, 15px);
+}
+
+body .hero-object::after {
+    width: min(35vw, 408px);
+    height: min(46vw, 512px);
+    aspect-ratio: auto;
+    border: 1px solid rgba(35, 36, 33, .14);
+    border-radius: 4px 6px 3px 7px;
+    background:
+        linear-gradient(var(--penaup-paper-blue, #4d73ad), var(--penaup-paper-blue, #4d73ad)) 23px 31px / 27px 1px no-repeat,
+        linear-gradient(var(--penaup-paper-blue, #4d73ad), var(--penaup-paper-blue, #4d73ad)) 23px 31px / 1px 27px no-repeat,
+        linear-gradient(var(--penaup-paper-red, #ad5145), var(--penaup-paper-red, #ad5145)) calc(100% - 50px) 31px / 27px 1px no-repeat,
+        linear-gradient(var(--penaup-paper-red, #ad5145), var(--penaup-paper-red, #ad5145)) calc(100% - 23px) 31px / 1px 27px no-repeat,
+        linear-gradient(var(--penaup-paper-yellow, #c49a24), var(--penaup-paper-yellow, #c49a24)) 27px calc(100% - 35px) / 54px 1px no-repeat,
+        linear-gradient(135deg, rgba(255, 255, 252, .96), rgba(246, 246, 241, .93)),
+        repeating-linear-gradient(166deg, transparent 0 27px, rgba(35, 36, 33, .026) 27px 28px, transparent 28px 55px);
+    box-shadow: 7px 9px 0 rgba(50, 51, 46, .075);
+    transform: rotate(4deg) translate(33px, -14px);
+}
+
+body .hero-object .device-card {
+    background: var(--penaup-paper-white);
+    box-shadow: 10px 12px 0 rgba(50, 51, 46, .11), 0 28px 58px rgba(50, 51, 46, .16);
+}
+
+body .hero-object .device-card img {
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    filter: grayscale(.06) saturate(.92) contrast(1.05);
+}
+
+@media (max-width: 720px) {
+    body {
+        background-attachment: scroll;
+    }
+
+    body .story-shell .button,
+    body .container .primary-button,
+    body .container .secondary-button,
+    body .device-app .button {
+        min-height: 52px;
+    }
+
+    body .hero-object::before {
+        width: 78vw;
+        height: 96vw;
+        transform: rotate(-5deg) translate(-9px, 11px);
+    }
+
+    body .hero-object::after {
+        width: 71vw;
+        height: 86vw;
+        transform: rotate(3deg) translate(16px, -7px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body .story-shell .button:hover,
+    body .story-shell .button:focus-visible,
+    body .container .primary-button:hover,
+    body .container .primary-button:focus-visible,
+    body .device-app .button:hover,
+    body .device-app .button:focus-visible {
         transform: none;
     }
 }

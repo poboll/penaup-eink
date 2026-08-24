@@ -17,7 +17,9 @@
   --yellow: #dfb52e;
   --blue: #4d73ad;
   --green: #55785b;
-  --serif: "Huiwen Mincho", "Iowan Old Style", "Songti SC", "STSong", "Noto Serif SC", Georgia, serif;
+  /* The story UI uses the same ordinary system face as the workbench. Huiwen
+     remains a content-only Canvas option, never a page-wide display face. */
+  --serif: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
   --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Segoe UI", sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --ease: cubic-bezier(.22, .75, .25, 1);
@@ -193,7 +195,7 @@ a { color: inherit; }
 @keyframes scroll-cue { 0%, 100% { transform: translateY(-2px); opacity: .58; } 50% { transform: translateY(3px); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } .js [data-reveal] { opacity: 1; transform: none; } .color-lab-grid span { transform: none; opacity: .88; } .color-lab-grid::after { display: none; } }
 
-/* 2026-08 Penaup paper pass: lighter rice paper, Huiwen display type and stable touch targets. */
+/* 2026-08 Penaup paper pass: lighter rice paper, ordinary system UI type and stable touch targets. */
 @font-face {
   font-family: "Huiwen Mincho";
   src: url("../fonts/huiwen-mincho.woff2") format("woff2");
@@ -207,7 +209,7 @@ a { color: inherit; }
   --paper-bright: #fffefa;
   --line: #e1dbd1;
   --quiet: #717269;
-  --serif: "Huiwen Mincho", "Songti SC", "STSong", "Noto Serif SC", Georgia, serif;
+  --serif: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
 }
 
 body {

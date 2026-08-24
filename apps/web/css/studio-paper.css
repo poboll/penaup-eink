@@ -22,7 +22,9 @@
     --yellow: #d4a92f;
     --red: #ad5145;
     --green: #55765e;
-    --font-display: "Huiwen Mincho", "Songti SC", "STSong", "Noto Serif SC", Georgia, serif;
+    /* UI headings and controls stay in the ordinary system face. The optional
+       Huiwen face is selected by Canvas renderers, not inherited by the app. */
+    --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
     --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     --paper-radius: 14px;

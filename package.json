@@ -10,6 +10,9 @@
   "scripts": {
     "start": "npm --prefix server start",
     "dev": "npm --prefix server run dev",
+    "service:install": "node scripts/install-dev-service.mjs",
+    "service:status": "node scripts/status-dev-service.mjs",
+    "service:uninstall": "node scripts/uninstall-dev-service.mjs",
     "check": "node scripts/check-js.mjs && npm --prefix packages/film-core run check && npm --prefix server run check && npm run check:contracts",
     "check:contracts": "node scripts/release-gate.mjs",
     "test": "npm run test:server && npm run test:film-core && npm run test:wechat && npm run test:release-tools",

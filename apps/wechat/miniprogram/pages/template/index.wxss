@@ -8,7 +8,7 @@
 .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14rpx; }
 .tpl-card { position: relative; min-height: 230rpx; padding: 24rpx; overflow: hidden; background: rgba(255, 255, 252, .8) !important; border: 2rpx solid rgba(32, 33, 31, .2); border-radius: 8rpx 10rpx 7rpx 9rpx; box-shadow: 4rpx 5rpx 0 rgba(42, 41, 36, .07); }
 .tpl-paper-mark { position: absolute; top: 22rpx; right: 24rpx; width: 72rpx; height: 108rpx; padding: 5rpx; border: 2rpx solid rgba(32, 33, 31, .24); background: #fffefa; box-shadow: 3rpx 4rpx 0 rgba(42, 41, 36, .08); transform: rotate(2deg); }
-.tpl-paper-screen { display: flex; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: flex-end; gap: 5rpx; padding-bottom: 6rpx; color: rgba(32, 33, 31, .58); background: linear-gradient(180deg, #f4f4f0, #fafaf7); font: 13rpx/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.tpl-paper-screen { display: flex; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: flex-end; gap: 5rpx; padding-bottom: 6rpx; color: rgba(32, 33, 31, .58); background: linear-gradient(180deg, #f4f4f0, #f5f5f1); font: 13rpx/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .tpl-paper-screen text:last-child { color: #4d73ad; font-size: 10rpx; }
 .tpl-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 8rpx; background: #c49a24; }
 .tpl-card:nth-child(2)::before { background: #c95849; }

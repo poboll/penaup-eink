@@ -28,8 +28,8 @@ test('studio creation tabs keep keyboard focus and panel state synchronized', as
   assert.match(frame, /setAttribute\('tabindex', active \? '0' : '-1'\)/);
   assert.match(frame, /setAttribute\('aria-hidden', active \? 'false' : 'true'\)/);
   assert.match(main, /page\.setAttribute\('aria-hidden', active \? 'false' : 'true'\)/);
-  assert.match(html, /data-frame-font="huiwen"[^>]*aria-pressed="true"/);
-  assert.match(html, /data-frame-font="system"[^>]*aria-pressed="false"/);
+  assert.match(html, /data-frame-font="system"[^>]*aria-pressed="true"/);
+  assert.match(html, /data-frame-font="huiwen"[^>]*aria-pressed="false"/);
   assert.match(frame, /frameQuoteFontFamily\(\)/);
   assert.match(frame, /document\.querySelectorAll\('\[data-frame-font\]'\)/);
 });

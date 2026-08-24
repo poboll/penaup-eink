@@ -552,14 +552,14 @@ function initFrameCanvasInteraction(canvasId, btnId) {
 
 var frameCurrentQuote = { text: '', author: '' };
 
-var frameQuoteFontKey = 'huiwen';
+var frameQuoteFontKey = 'system';
 var frameQuoteFonts = {
     huiwen: '"Huiwen Mincho", "Songti SC", "STSong", Georgia, serif',
-    system: '"Songti SC", "STSong", "Noto Serif SC", Georgia, serif'
+    system: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif'
 };
 
 function frameQuoteFontFamily() {
-    return frameQuoteFonts[frameQuoteFontKey] || frameQuoteFonts.huiwen;
+    return frameQuoteFonts[frameQuoteFontKey] || frameQuoteFonts.system;
 }
 
 function frameQuoteSyncFontUi() {
@@ -601,7 +601,14 @@ function initFrameQuote() {
             if (!frameQuoteFonts[nextFont]) return;
             frameQuoteFontKey = nextFont;
             frameQuoteSyncFontUi();
-            if (frameCurrentQuote.text) frameRenderQuote(frameCurrentQuote.text, frameCurrentQuote.author);
+            if (frameCurrentQuote.text) {
+                var redraw = function() { frameRenderQuote(frameCurrentQuote.text, frameCurrentQuote.author); };
+                if (nextFont === 'huiwen' && document.fonts && typeof document.fonts.load === 'function') {
+                    document.fonts.load('400 30px "Huiwen Mincho"').then(redraw).catch(redraw);
+                } else {
+                    redraw();
+                }
+            }
         });
     });
 
@@ -640,11 +647,6 @@ function initFrameQuote() {
     });
 
     frameFetchQuote();
-    if (document.fonts && typeof document.fonts.load === 'function') {
-        document.fonts.load('400 30px "Huiwen Mincho"').then(function() {
-            if (frameCurrentQuote.text) frameRenderQuote(frameCurrentQuote.text, frameCurrentQuote.author);
-        }).catch(function() {});
-    }
 }
 
 function frameFetchQuote() {

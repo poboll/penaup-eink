@@ -25,6 +25,7 @@
     --penaup-paper-sage-ink: #4f775d;
     --penaup-paper-tape: #e7dfbd;
     --penaup-paper-line: rgba(38, 40, 36, .18);
+    --penaup-ui-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
 
     /* Alias the older studio tokens so every page shares one surface. */
     --paper: var(--penaup-paper-ivory);
@@ -109,7 +110,7 @@ body::before {
 .device-app h1,
 .device-app h2,
 .device-app h3 {
-    font-family: "Huiwen Mincho", "Songti SC", "STSong", Georgia, serif;
+    font-family: var(--penaup-ui-font);
     font-weight: 400;
 }
 

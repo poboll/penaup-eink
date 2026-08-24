@@ -14,7 +14,7 @@
     --shadow: rgba(23, 24, 22, .12);
     --radius: 16px;
     --ease: cubic-bezier(.22, .75, .25, 1);
-    --serif: "Iowan Old Style", "Songti SC", "STSong", "Noto Serif SC", Georgia, serif;
+    --serif: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
     --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Segoe UI", sans-serif;
     --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
