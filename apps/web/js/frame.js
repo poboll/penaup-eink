@@ -552,6 +552,24 @@ function initFrameCanvasInteraction(canvasId, btnId) {
 
 var frameCurrentQuote = { text: '', author: '' };
 
+var frameQuoteFontKey = 'huiwen';
+var frameQuoteFonts = {
+    huiwen: '"Huiwen Mincho", "Songti SC", "STSong", Georgia, serif',
+    system: '"Songti SC", "STSong", "Noto Serif SC", Georgia, serif'
+};
+
+function frameQuoteFontFamily() {
+    return frameQuoteFonts[frameQuoteFontKey] || frameQuoteFonts.huiwen;
+}
+
+function frameQuoteSyncFontUi() {
+    document.querySelectorAll('[data-frame-font]').forEach(function(button) {
+        var active = button.dataset.frameFont === frameQuoteFontKey;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+}
+
 var frameLocalQuotes = [
     { text: '把今天留给明天看。', author: '花生片' },
     { text: '慢一点，画面会自己找到位置。', author: 'Penaup' },
@@ -575,6 +593,17 @@ function initFrameQuote() {
     var customBtn = document.getElementById('frameCustomQuoteBtn');
     var customText = document.getElementById('frameCustomText');
     var customAuthor = document.getElementById('frameCustomAuthor');
+
+    frameQuoteSyncFontUi();
+    document.querySelectorAll('[data-frame-font]').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var nextFont = button.dataset.frameFont;
+            if (!frameQuoteFonts[nextFont]) return;
+            frameQuoteFontKey = nextFont;
+            frameQuoteSyncFontUi();
+            if (frameCurrentQuote.text) frameRenderQuote(frameCurrentQuote.text, frameCurrentQuote.author);
+        });
+    });
 
     quoteBtn.addEventListener('click', function() {
         frameFetchQuote();
@@ -611,6 +640,11 @@ function initFrameQuote() {
     });
 
     frameFetchQuote();
+    if (document.fonts && typeof document.fonts.load === 'function') {
+        document.fonts.load('400 30px "Huiwen Mincho"').then(function() {
+            if (frameCurrentQuote.text) frameRenderQuote(frameCurrentQuote.text, frameCurrentQuote.author);
+        }).catch(function() {});
+    }
 }
 
 function frameFetchQuote() {
@@ -667,7 +701,7 @@ function frameRenderQuote(text, author) {
     ctx.stroke();
 
     // 文字
-    ctx.font = 'bold ' + Math.round(30 * s) + 'px "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", serif';
+    ctx.font = '600 ' + Math.round(30 * s) + 'px ' + frameQuoteFontFamily();
     ctx.fillStyle = scheme.text;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -686,7 +720,7 @@ function frameRenderQuote(text, author) {
 
     // 作者
     if (author) {
-        ctx.font = 'bold ' + Math.round(18 * s) + 'px "Noto Serif SC", "Songti SC", "SimSun", "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", serif';
+        ctx.font = '600 ' + Math.round(18 * s) + 'px ' + frameQuoteFontFamily();
         ctx.fillStyle = scheme.author;
         ctx.fillText('\u2014\u2014 ' + author, w / 2, h - 130 * s);
     }

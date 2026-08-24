@@ -25,6 +25,10 @@ test('all web surfaces load one final pale paper finish layer', async () => {
   assert.match(finish, /repeating-linear-gradient\(106deg/);
   assert.match(finish, /body \.story-shell \.color-mode\[aria-pressed="true"\]/);
   assert.match(finish, /body \.story-shell \.color-mode \{[\s\S]*?background:\s*transparent/);
+  assert.match(finish, /white grass-paper finish v2/);
+  assert.match(finish, /Hero object: paper board \+ registration marks/);
+  assert.match(finish, /color-matrix-row\[data-pigment="green"\] > span:nth-child\(9\)/);
+  assert.match(finish, /body \.creation-font-fieldset/);
   assert.match(finish, /body \.weread-polaroid-inner[\s\S]*?aspect-ratio:\s*2 \/ 3/);
   assert.match(finish, /@media \(max-width: 720px\)[\s\S]*?body \.frame-tab[\s\S]*?font-size:\s*14px/);
   assert.match(finish, /@media \(max-width: 720px\)[\s\S]*?body \.weread-actions > \*/);
@@ -48,6 +52,7 @@ test('homepage color study keeps six physical rows and eight visual levels', asy
   assert.match(story, /data-mode="dither"/);
   assert.match(finish, /grid-template-columns:\s*54px repeat\(8, minmax\(0, 1fr\)\)/);
   assert.match(finish, /\.color-matrix-row > span::after/);
+  assert.match(story, /class="color-lab-grid" role="img" aria-label="六行八列/);
 });
 
 test('mini program keeps the Pro visual paper and pale navigation surface', async () => {
