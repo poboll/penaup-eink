@@ -31,6 +31,25 @@ test('all web surfaces load one final pale paper finish layer', async () => {
   assert.match(finish, /prefers-reduced-motion/);
 });
 
+test('homepage color study keeps six physical rows and eight visual levels', async () => {
+  const [story, finish] = await Promise.all([
+    read('index.html'),
+    read('css/penaup-paper-finish.css')
+  ]);
+  const rows = story.split('\n').filter((line) => line.includes('class="color-matrix-row"'));
+
+  assert.equal(rows.length, 6);
+  assert.deepEqual(rows.map((line) => (line.match(/<span><\/span>/g) || []).length), [8, 8, 8, 8, 8, 8]);
+  assert.deepEqual(rows.map((line) => line.match(/data-pigment="([^"]+)"/)?.[1]), [
+    'ink', 'paper', 'red', 'yellow', 'blue', 'green'
+  ]);
+  assert.match(story, /data-mode="layer"/);
+  assert.match(story, /data-mode="dots"/);
+  assert.match(story, /data-mode="dither"/);
+  assert.match(finish, /grid-template-columns:\s*54px repeat\(8, minmax\(0, 1fr\)\)/);
+  assert.match(finish, /\.color-matrix-row > span::after/);
+});
+
 test('mini program keeps the Pro visual paper and pale navigation surface', async () => {
   const [app, paper, template, home] = await Promise.all([
     read('../wechat/miniprogram/app.json'),

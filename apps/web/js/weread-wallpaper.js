@@ -28,6 +28,7 @@
         mode: 'weekly',
         scene: 'weekly_receipt',
         renderMode: 'layer',
+        fontKey: 'huiwen',
         snapshot: null,
         shelf: null,
         card: null,
@@ -35,6 +36,16 @@
         renderRevision: 0,
         source: 'live',
         phaseIndex: 0
+    };
+    var FONT_OPTIONS = {
+        huiwen: {
+            label: '汇文明朝体',
+            family: '"Huiwen Mincho", "Songti SC", "STSong", serif'
+        },
+        system: {
+            label: '系统宋体',
+            family: '"Songti SC", "STSong", "Noto Serif SC", Georgia, serif'
+        }
     };
     var wallpaperFontPromise = null;
 
@@ -49,6 +60,27 @@
             document.fonts.load('400 18px "Huiwen Mincho"')
         ]).then(function () {}).catch(function () {});
         return wallpaperFontPromise;
+    }
+
+    function displayFontFamily() {
+        return (FONT_OPTIONS[state.fontKey] || FONT_OPTIONS.huiwen).family;
+    }
+
+    function displayFontLabel() {
+        return (FONT_OPTIONS[state.fontKey] || FONT_OPTIONS.huiwen).label;
+    }
+
+    function syncFontUi() {
+        document.querySelectorAll('[data-weread-font]').forEach(function (button) {
+            var active = button.dataset.wereadFont === state.fontKey;
+            button.classList.toggle('is-active', active);
+            button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+    }
+
+    function setFontKey(key) {
+        state.fontKey = Object.prototype.hasOwnProperty.call(FONT_OPTIONS, key) ? key : 'huiwen';
+        syncFontUi();
     }
 
     function safeText(value, fallback) {
@@ -175,7 +207,7 @@
         ctx.font = '600 11px ui-monospace, Menlo, monospace';
         ctx.fillText(label || 'PENAUP / READING TRACE', 36, 33);
         ctx.fillStyle = COLORS.ink;
-        ctx.font = '400 34px "Huiwen Mincho", "Songti SC", serif';
+        ctx.font = '400 34px ' + displayFontFamily();
         ctx.fillText(safeText(title, '一页阅读记录'), 36, 78);
         ctx.fillStyle = COLORS.quiet;
         ctx.font = '13px "SF Pro Text", sans-serif';
@@ -228,13 +260,13 @@
         drawHeading(ctx, '本周读书', snapshot.periodLabel, 'PENAUP / WEEKLY RECEIPT');
         var statX = 36;
         ctx.fillStyle = COLORS.ink;
-        ctx.font = '400 34px "Huiwen Mincho", "Songti SC", serif';
+        ctx.font = '400 34px ' + displayFontFamily();
         ctx.fillText(String(snapshot.readingMinutes || 0), statX, 171);
         ctx.fillStyle = COLORS.quiet;
         ctx.font = '11px ui-monospace, Menlo, monospace';
         ctx.fillText('MINUTES', statX + 1, 190);
         ctx.fillStyle = COLORS.ink;
-        ctx.font = '400 26px "Huiwen Mincho", "Songti SC", serif';
+        ctx.font = '400 26px ' + displayFontFamily();
         ctx.fillText(String(snapshot.readingDays || 0), statX + 142, 171);
         ctx.fillStyle = COLORS.quiet;
         ctx.font = '11px ui-monospace, Menlo, monospace';
@@ -248,13 +280,13 @@
         var books = (snapshot.topBookDetails || []).slice(0, 4);
         if (!books.length) {
             ctx.fillStyle = COLORS.quiet;
-            ctx.font = '400 18px "Huiwen Mincho", "Songti SC", serif';
+            ctx.font = '400 18px ' + displayFontFamily();
             ctx.fillText('这一页还在等你的阅读记录。', 36, 302);
         } else {
             books.forEach(function (book, index) {
                 var y = 294 + index * 56;
                 ctx.fillStyle = COLORS.ink;
-                ctx.font = '400 18px "Huiwen Mincho", "Songti SC", serif';
+                ctx.font = '400 18px ' + displayFontFamily();
                 ctx.fillText(String(index + 1).padStart(2, '0'), 36, y);
                 ctx.fillText(safeText(book.title, '未命名书籍').slice(0, 19), 72, y);
                 ctx.fillStyle = COLORS.quiet;
@@ -275,7 +307,7 @@
         ctx.fillStyle = COLORS.red;
         ctx.fillRect(36, 548, 3, 72);
         ctx.fillStyle = COLORS.ink;
-        ctx.font = '400 22px "Huiwen Mincho", "Songti SC", serif';
+        ctx.font = '400 22px ' + displayFontFamily();
         var excerptLines = drawTextLines(ctx, excerpt ? excerpt.summary : safeText(snapshot.quote, '读过的每一页，都会在某天回来。'), 54, 570, WIDTH - 90, 29, 2);
         ctx.fillStyle = COLORS.quiet;
         ctx.font = '12px "SF Pro Text", sans-serif';
@@ -320,7 +352,7 @@
             ctx.strokeStyle = 'rgba(38,37,33,.12)';
             ctx.strokeRect(x, y, cellWidth, cellHeight);
             ctx.fillStyle = COLORS.ink;
-            ctx.font = '400 14px "Huiwen Mincho", "Songti SC", serif';
+            ctx.font = '400 14px ' + displayFontFamily();
             ctx.fillText(String(day), x + 5, y + 17);
             if (dayMap[day]) {
                 var barWidth = clamp(cellWidth * (dayMap[day] / 90), 7, cellWidth - 16);
@@ -337,7 +369,7 @@
         ctx.font = '11px ui-monospace, Menlo, monospace';
         ctx.fillText('READING THREADS', left, 492);
         ctx.fillStyle = COLORS.ink;
-        ctx.font = '400 17px "Huiwen Mincho", "Songti SC", serif';
+        ctx.font = '400 17px ' + displayFontFamily();
         drawTextLines(ctx, books.length ? books.join('  ·  ') : '等待书名落在日历边缘。', left, 520, WIDTH - 72, 26, 3);
         drawFooter(ctx, snapshot, '6 BASE INKS · MONTHLY TRACE · E6 PRO');
     }
@@ -374,7 +406,7 @@
                 ctx.translate(x + bookWidth / 2, shelfY - 10);
                 ctx.rotate(-Math.PI / 2);
                 ctx.fillStyle = COLORS.paperBright;
-                ctx.font = '400 14px "Huiwen Mincho", "Songti SC", serif';
+                ctx.font = '400 14px ' + displayFontFamily();
                 ctx.textAlign = 'center';
                 ctx.fillText(safeText(book.title, '无题'), 0, 4);
                 ctx.restore();
@@ -401,7 +433,7 @@
         roundedRect(ctx, 36, 154, 184, 270, 4);
         ctx.fill();
         ctx.fillStyle = COLORS.paperBright;
-        ctx.font = '400 26px "Huiwen Mincho", "Songti SC", serif';
+        ctx.font = '400 26px ' + displayFontFamily();
         drawTextLines(ctx, title, 54, 224, 148, 34, 5);
         ctx.fillStyle = 'rgba(255,253,247,.72)';
         ctx.font = '12px "SF Pro Text", sans-serif';
@@ -410,7 +442,7 @@
         ctx.font = '11px ui-monospace, Menlo, monospace';
         ctx.fillText('ONE BOOK / ONE PAGE', 244, 164);
         ctx.fillStyle = COLORS.ink;
-        ctx.font = '400 31px "Huiwen Mincho", "Songti SC", serif';
+        ctx.font = '400 31px ' + displayFontFamily();
         drawTextLines(ctx, title, 244, 212, WIDTH - 280, 38, 3);
         ctx.fillStyle = COLORS.quiet;
         ctx.font = '14px "SF Pro Text", sans-serif';
@@ -431,7 +463,7 @@
         ctx.textAlign = 'left';
         var quote = safeText(card && (card.excerpt || card.summary) || book.summary || snapshot.quote, '读过的每一页，都会在某天回来。');
         ctx.fillStyle = COLORS.ink;
-        ctx.font = '400 22px "Huiwen Mincho", "Songti SC", serif';
+        ctx.font = '400 22px ' + displayFontFamily();
         ctx.fillStyle = COLORS.red;
         ctx.fillRect(36, 488, 3, 96);
         ctx.fillStyle = COLORS.ink;
@@ -575,7 +607,7 @@
         var canvas = byId('weread-canvas');
         if (!canvas || !snapshot) return false;
         var revision = ++state.renderRevision;
-        setDevelopmentPhase('typesetting', '汇文明朝体正在落版');
+        setDevelopmentPhase('typesetting', displayFontLabel() + '正在落版');
         await ensureWallpaperFonts();
         if (revision !== state.renderRevision) return false;
         canvas.width = WIDTH;
@@ -619,7 +651,7 @@
             ctx.putImageData(new ImageData(new Uint8ClampedArray(result.preview), WIDTH, HEIGHT), 0, 0);
             state.film = new Uint8Array(result.film);
             var meta = byId('weread-preview-meta');
-            if (meta) meta.textContent = snapshot.periodLabel + ' · ' + sceneTitle() + ' · ' + (state.renderMode === 'layer' ? '叠色层次' : state.renderMode === 'dots' ? '有序网点' : '误差抖动') + ' · 汇文明朝体本地显影。';
+            if (meta) meta.textContent = snapshot.periodLabel + ' · ' + sceneTitle() + ' · ' + (state.renderMode === 'layer' ? '叠色层次' : state.renderMode === 'dots' ? '有序网点' : '误差抖动') + ' · ' + displayFontLabel() + '本地显影。';
             setOutputButtons({ preview: true, film: true });
             updateStage('keep');
             setDevelopmentPhase('done', '六色显影已完成');
@@ -988,6 +1020,7 @@
         setDevelopmentPhase('idle', '纸面在等一段阅读');
         syncSceneUi();
         syncPeriodUi();
+        syncFontUi();
         document.querySelectorAll('[data-weread-scene]').forEach(function (button) {
             button.addEventListener('click', function () {
                 state.scene = button.dataset.wereadScene || 'weekly_receipt';
@@ -1031,6 +1064,22 @@
                     setStatus('显影方式已改变，正在重新扫描纸面。');
                     renderWallpaper(state.snapshot).then(function (ready) { if (ready) setStatus('新的显影方式已经准备好。', 'success'); });
                 }
+            });
+        });
+        document.querySelectorAll('[data-weread-font]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var nextFont = button.dataset.wereadFont || 'huiwen';
+                var changed = state.fontKey !== nextFont;
+                setFontKey(nextFont);
+                if (!changed) return;
+                if (!state.snapshot) {
+                    setStatus(displayFontLabel() + '已选好；取回阅读记录后会用它排版。');
+                    return;
+                }
+                setStatus(displayFontLabel() + '已换好，正在重新落版。');
+                renderWallpaper(state.snapshot).then(function (ready) {
+                    if (ready) setStatus('新的字体已经显影完成。', 'success');
+                });
             });
         });
         byId('weread-connect').addEventListener('click', connectSource);

@@ -37,6 +37,13 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   assert.match(script, /function syncPeriodUi\(\)/);
   assert.match(script, /function syncSceneForPeriod\(mode\)/);
   assert.match(script, /syncSceneForPeriod\(state\.mode\)/);
+  assert.match(script, /fontKey:\s*'huiwen'/);
+  assert.match(script, /var FONT_OPTIONS = \{/);
+  assert.match(script, /function displayFontFamily\(\)/);
+  assert.match(script, /function displayFontLabel\(\)/);
+  assert.match(script, /function syncFontUi\(\)/);
+  assert.match(script, /data-weread-font/);
+  assert.match(script, /setStatus\(displayFontLabel\(\) \+ '已换好/);
   assert.match(script, /function localReadingCard\(bookId\)/);
   assert.match(script, /function clearWallpaperPreview\(message\)/);
   assert.match(script, /Math\.ceil\(\(firstDay \+ totalDays\) \/ 7\)/);
@@ -71,6 +78,9 @@ test('WeRead wallpaper lab keeps the Pro screen and local-font contract', async 
   const convert = await read('js/convert.js');
   assert.match(convert, /\.polaroid-inner:not\(\.weread-polaroid-inner\)/);
   assert.match(styles, /\.weread-polaroid-inner canvas\s*\{[\s\S]*?top:\s*0;[\s\S]*?left:\s*0;/);
+  assert.equal((html.match(/data-weread-font=/g) || []).length, 2);
+  assert.match(html, /汇文明朝体/);
+  assert.match(html, /系统宋体/);
 });
 
 test('BLE transfer exposes an uncertain-device result instead of false success', async () => {
