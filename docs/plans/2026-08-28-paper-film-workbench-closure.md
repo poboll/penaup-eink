@@ -8,6 +8,24 @@
 
 **Tech Stack:** HTML5, CSS3, 原生 ES6, Node.js 24, Playwright in-app browser, npm test/check/audit.
 
+## 2026-08-29 执行收口记录
+
+本轮在 `codex/penaup-eink-rebuild` 完成最终视觉覆盖与回归：
+
+- 新增 `apps/web/css/penaup-final-polish.css`，以近白纸面、低对比长纤维线稿和轻微纸片投影替代高频像素噪声；不使用 `feTurbulence`、远程纹理或图片请求。
+- 首页保留三层 CSS 机械拆解：显影面、控制层、背板分别错位排列，保留 528 × 792 的 Pro 竖向视觉比例，不恢复实物图或圆形光环。
+- 首页、工作台和设备工具统一普通系统 UI 字体；汇文明朝体仍只作为生成内容的可选字体，不改变导航和按钮字体。
+- 工作台四项页签在窄屏保持等宽单行，桌面端由单一内容区滚动；`html`、`body` 和页面容器隐藏滚动条但保留触控板、触摸和键盘滚动。
+- 关键入口加载同一最终视觉层，底部导航改为不透底纸面，避免工作台内容穿透造成错位感。
+
+验证结果：
+
+- 纸面契约测试：5/5 通过。
+- `npm test`：服务器 43/43、film-core 8/8、微信小程序 19/19、发布工具与 Web 契约 28/28 通过。
+- `npm run check`：JavaScript 语法检查 110 个文件通过，契约门禁 234 passed / 1 pending / 0 failed；pending 为本机未安装 ESP-IDF 5.5.2。
+- `npm run audit`：生产依赖 0 vulnerabilities。
+- 浏览器回归：1280 × 720 首页、390 × 844 工作台四页均无横向溢出；转换、设置页可切换，底部导航与纸面背景可读。
+
 ---
 
 ### Task 1: 固化增量设计与参考边界

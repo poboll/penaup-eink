@@ -11,16 +11,20 @@ async function read(relativePath) {
 }
 
 test('all web surfaces load one final pale paper finish layer', async () => {
-  const [story, studio, device, finish] = await Promise.all([
+  const [story, studio, device, finish, polish] = await Promise.all([
     read('index.html'),
     read('studio/index.html'),
     read('device/index.html'),
-    read('css/penaup-paper-finish.css')
+    read('css/penaup-paper-finish.css'),
+    read('css/penaup-final-polish.css')
   ]);
 
   assert.match(story, /href="css\/penaup-paper-finish\.css"/);
   assert.match(studio, /href="\.\.\/css\/penaup-paper-finish\.css"/);
   assert.match(device, /href="\.\.\/css\/penaup-paper-finish\.css"/);
+  assert.match(story, /href="css\/penaup-final-polish\.css"/);
+  assert.match(studio, /href="\.\.\/css\/penaup-final-polish\.css"/);
+  assert.match(device, /href="\.\.\/css\/penaup-final-polish\.css"/);
   assert.match(finish, /--penaup-paper-base:\s*#f5f5f1/);
   assert.match(finish, /repeating-linear-gradient\(106deg/);
   assert.match(finish, /body \.story-shell \.color-mode\[aria-pressed="true"\]/);
@@ -44,6 +48,12 @@ test('all web surfaces load one final pale paper finish layer', async () => {
   assert.match(finish, /background-blend-mode:\s*multiply, multiply, normal, normal, normal/);
   assert.match(finish, /body \.hero-exploded::before/);
   assert.match(finish, /body \.hero-title-mobile-break/);
+  assert.match(polish, /--penaup-paper-fibre:\s*url\("data:image\/svg\+xml/);
+  assert.doesNotMatch(polish, /feTurbulence|fractalNoise/);
+  assert.match(polish, /body \.story-nav \.nav-links > a:not\(\.nav-cta\)[\s\S]*?display: none/);
+  assert.match(polish, /border-radius: 7px 9px 6px 8px/);
+  assert.match(polish, /body \.bottom-nav[\s\S]*?background-color: var\(--penaup-paper-white\)/);
+  assert.match(polish, /@media \(min-width: 721px\)[\s\S]*?body #page-content[\s\S]*?padding-bottom: 70px/);
 });
 
 test('browser UI keeps ordinary system typography while creation fonts stay opt-in', async () => {
