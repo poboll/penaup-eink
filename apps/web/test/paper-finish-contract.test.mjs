@@ -37,6 +37,13 @@ test('all web surfaces load one final pale paper finish layer', async () => {
   assert.match(finish, /--penaup-ui-font:\s*-apple-system/);
   assert.match(finish, /body \.container \.frame-action-btn[\s\S]*?background: rgba\(255, 255, 252, \.90\)/);
   assert.match(finish, /body \.container \.frame-send-btn:disabled[\s\S]*?background: #e9e9e4/);
+  assert.match(finish, /2026-08-28 final visual tune/);
+  assert.match(finish, /--penaup-paper-base:\s*#fbfbf8/);
+  assert.match(finish, /--penaup-paper-film-grain/);
+  assert.match(finish, /body::after[\s\S]*?z-index:\s*70/);
+  assert.match(finish, /background-blend-mode:\s*multiply, multiply, normal, normal, normal/);
+  assert.match(finish, /body \.hero-exploded::before/);
+  assert.match(finish, /body \.hero-title-mobile-break/);
 });
 
 test('browser UI keeps ordinary system typography while creation fonts stay opt-in', async () => {
@@ -69,6 +76,9 @@ test('homepage color study keeps six physical rows and eight visual levels', asy
   assert.deepEqual(rows.map((line) => line.match(/data-pigment="([^"]+)"/)?.[1]), [
     'ink', 'paper', 'red', 'yellow', 'blue', 'green'
   ]);
+  assert.equal((story.match(/class="hero-layer /g) || []).length, 3);
+  assert.doesNotMatch(story, /class="device-card"/);
+  assert.match(story, /aria-label="把喜欢的画面，留在纸上。"/);
   assert.match(story, /data-mode="layer"/);
   assert.match(story, /data-mode="dots"/);
   assert.match(story, /data-mode="dither"/);

@@ -2337,3 +2337,1246 @@ body .hero-object .device-card img {
         transform: none;
     }
 }
+
+/* 2026-08-28 paper-film / mechanical Hero pass.
+ *
+ * The homepage is a sheet of near-white paper with a visible, quiet fibre
+ * field. Its Hero object is deliberately drawn from three CSS layers instead
+ * of a product photograph: paper face, control layer and back plate. This
+ * keeps the visual language honest to the 3.68-inch portrait display and
+ * makes the exploded view stable at every viewport size.
+ */
+:root {
+    --penaup-paper-base: #f7f7f4;
+    --penaup-paper-white: #fffefa;
+    --penaup-paper-rice: #fbfbf7;
+    --penaup-paper-shadow: #deded7;
+    --penaup-paper-edge: rgba(35, 36, 33, .19);
+    --penaup-paper-fibre: rgba(75, 76, 70, .014);
+    --penaup-paper-fibre-fine: rgba(75, 76, 70, .009);
+    --penaup-ui-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Segoe UI", sans-serif;
+}
+
+html {
+    background: var(--penaup-paper-base);
+}
+
+body {
+    background-color: var(--penaup-paper-base);
+    background-image:
+        radial-gradient(ellipse at 9% -10%, rgba(255, 255, 253, .98), transparent 37%),
+        radial-gradient(ellipse at 96% 3%, rgba(196, 154, 36, .018), transparent 25%),
+        repeating-linear-gradient(107deg, var(--penaup-paper-fibre) 0 1px, transparent 1px 36px),
+        repeating-linear-gradient(17deg, var(--penaup-paper-fibre-fine) 0 1px, transparent 1px 48px),
+        radial-gradient(circle, rgba(75, 76, 70, .018) 0 .55px, transparent .7px 4px),
+        linear-gradient(180deg, #fffefa 0%, var(--penaup-paper-base) 58%, #f0f0eb 100%);
+    background-attachment: fixed;
+    font-family: var(--penaup-ui-font);
+}
+
+/* The first pass of this file intentionally keeps the original selector for
+ * compatibility. The final material pass makes the grain more legible on a
+ * white display while remaining softer than a screen texture. */
+body::before {
+    opacity: .052;
+    background-size: 224px 224px;
+}
+
+body::after {
+    opacity: .145;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 192 192' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='penaup-paper-film-grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23penaup-paper-film-grain)' opacity='.42'/%3E%3C/svg%3E");
+    background-size: 192px 192px;
+    mix-blend-mode: multiply;
+}
+
+/* Ordinary system typography is the page language. Huiwen remains an opt-in
+ * Canvas/output choice and is never inherited by the homepage. */
+body .story-shell,
+body .story-shell h1,
+body .story-shell h2,
+body .story-shell h3,
+body .story-shell p,
+body .story-shell .button,
+body .story-shell .nav-links a {
+    font-family: var(--penaup-ui-font);
+}
+
+body .story-shell .hero h1,
+body .story-shell .section h2,
+body .story-shell .section h3,
+body .story-shell .color-story-copy h3,
+body .story-shell .reading-ticket-title {
+    font-weight: 400;
+    letter-spacing: -.02em;
+}
+
+/* The new child composition owns the Hero object. Neutralise the historical
+ * pseudo-sheet rules so they cannot become extra grid rows or revive the old
+ * circular/photo treatment. */
+body .story-shell .hero-object {
+    display: block;
+    position: relative;
+    min-width: 0;
+    min-height: 590px;
+    align-self: center;
+    isolation: isolate;
+    overflow: visible;
+}
+
+body .story-shell .hero-object::before,
+body .story-shell .hero-object::after {
+    display: none;
+    content: none !important;
+}
+
+body .story-shell .hero-object .device-shadow,
+body .story-shell .hero-object > .device-card {
+    display: none;
+}
+
+body .hero-object-kicker,
+body .hero-object-foot {
+    position: absolute;
+    z-index: 8;
+    display: flex;
+    min-width: 0;
+    justify-content: space-between;
+    gap: 12px;
+    color: rgba(32, 33, 31, .54);
+    font: 600 10px/1.25 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+body .hero-object-kicker {
+    top: 4px;
+    right: 7%;
+    left: 6%;
+}
+
+body .hero-object-kicker b {
+    color: var(--penaup-paper-blue, #4d73ad);
+    font-weight: 600;
+}
+
+body .hero-object-foot {
+    right: 8%;
+    bottom: 2px;
+    left: 7%;
+    padding-top: 12px;
+    border-top: 1px solid rgba(35, 36, 33, .15);
+}
+
+body .hero-object-foot span:last-child {
+    color: rgba(32, 33, 31, .38);
+}
+
+body .story-shell .hero-badge {
+    z-index: 12;
+    top: 36px;
+    right: 2%;
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 12px;
+    border: 1px solid rgba(35, 36, 33, .17);
+    border-radius: 4px 7px 5px 6px;
+    color: var(--penaup-paper-white);
+    background: var(--penaup-paper-ink, #20211f);
+    box-shadow: 5px 6px 0 rgba(50, 51, 46, .13);
+    transform: rotate(-3deg);
+}
+
+body .story-shell .hero-badge strong {
+    color: var(--penaup-paper-yellow, #c49a24);
+    font: 600 24px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+body .story-shell .hero-badge span {
+    color: rgba(255, 255, 252, .68);
+    font: 8px/1.15 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: .06em;
+}
+
+body .story-shell .hero-badge b {
+    color: var(--penaup-paper-red, #ad5145);
+    font: 400 17px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Three portrait layers. Each layer is a deliberately quiet material study,
+ * not a misleading photograph of a production enclosure. */
+body .hero-exploded {
+    position: absolute;
+    top: 43px;
+    right: 0;
+    bottom: 38px;
+    left: 0;
+    width: min(100%, 500px);
+    height: 500px;
+    margin: auto;
+}
+
+body .hero-axis {
+    position: absolute;
+    z-index: 0;
+    top: 3%;
+    bottom: 3%;
+    left: 50%;
+    width: 1px;
+    border-left: 1px dashed rgba(35, 36, 33, .18);
+    transform: translateX(-50%);
+}
+
+body .hero-axis i {
+    position: absolute;
+    left: 50%;
+    width: 7px;
+    height: 7px;
+    border: 1px solid rgba(35, 36, 33, .30);
+    border-radius: 50%;
+    background: var(--penaup-paper-base);
+    transform: translateX(-50%);
+}
+
+body .hero-axis i:first-child { top: 18%; }
+body .hero-axis i:nth-child(2) { top: 49%; }
+body .hero-axis i:last-child { top: 80%; }
+
+body .hero-layer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(62%, 302px);
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    border: 1px solid var(--penaup-paper-edge);
+    border-radius: 4px 8px 5px 7px;
+    box-sizing: border-box;
+}
+
+body .hero-layer::before {
+    position: absolute;
+    z-index: 1;
+    inset: 15px;
+    border: 1px solid rgba(35, 36, 33, .13);
+    border-radius: 2px 4px 3px 2px;
+    content: "";
+    pointer-events: none;
+}
+
+body .hero-layer::after {
+    position: absolute;
+    z-index: 5;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    height: 1px;
+    background: rgba(35, 36, 33, .15);
+    content: "";
+    pointer-events: none;
+}
+
+body .hero-layer-back {
+    z-index: 1;
+    background:
+        linear-gradient(90deg, transparent 0 15%, rgba(77, 118, 88, .20) 15% 16%, transparent 16% 84%, rgba(77, 118, 88, .16) 84% 85%, transparent 85%),
+        repeating-linear-gradient(0deg, transparent 0 27px, rgba(35, 36, 33, .038) 27px 28px, transparent 28px 54px),
+        linear-gradient(145deg, #e6e7e1, #f5f5ef 55%, #dedfd8);
+    box-shadow: 12px 14px 0 rgba(50, 51, 46, .12), 0 24px 38px rgba(50, 51, 46, .08);
+    transform: translate(-50%, -50%) translate(30px, 50px) rotate(6deg);
+}
+
+body .hero-layer-back .hero-layer-edge {
+    position: absolute;
+    inset: 28px 22px 44px;
+    border: 1px solid rgba(35, 36, 33, .17);
+    border-radius: 2px;
+}
+
+body .hero-layer-back .hero-layer-battery {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    width: 52%;
+    height: 18%;
+    border: 1px solid rgba(35, 36, 33, .24);
+    background:
+        linear-gradient(90deg, transparent 0 18%, rgba(35, 36, 33, .15) 18% 19%, transparent 19% 81%, rgba(35, 36, 33, .15) 81% 82%, transparent 82%),
+        #d7d8d1;
+    box-shadow: 4px 5px 0 rgba(50, 51, 46, .08);
+    transform: translate(-50%, -50%) rotate(-2deg);
+}
+
+body .hero-layer-back .hero-layer-port {
+    position: absolute;
+    right: 31px;
+    bottom: 30px;
+    width: 22px;
+    height: 7px;
+    border: 1px solid rgba(35, 36, 33, .38);
+    border-radius: 1px;
+    background: #373a35;
+}
+
+body .hero-screw {
+    position: absolute;
+    z-index: 4;
+    width: 8px;
+    height: 8px;
+    border: 1px solid rgba(35, 36, 33, .42);
+    border-radius: 50%;
+    background: #f3f3ee;
+    box-shadow: inset 0 0 0 2px rgba(35, 36, 33, .08);
+}
+
+body .hero-screw::after {
+    position: absolute;
+    top: 50%;
+    left: 2px;
+    width: 4px;
+    height: 1px;
+    background: rgba(35, 36, 33, .45);
+    content: "";
+    transform: rotate(35deg);
+}
+
+body .hero-screw-a { top: 22px; left: 24px; }
+body .hero-screw-b { top: 22px; right: 24px; }
+body .hero-screw-c { bottom: 31px; left: 24px; }
+body .hero-screw-d { right: 24px; bottom: 31px; }
+
+body .hero-layer-board {
+    z-index: 2;
+    background:
+        linear-gradient(90deg, transparent 0 17%, rgba(49, 103, 73, .72) 17% 19%, transparent 19% 78%, rgba(49, 103, 73, .58) 78% 80%, transparent 80%),
+        repeating-linear-gradient(28deg, transparent 0 25px, rgba(42, 83, 58, .30) 25px 27px, transparent 27px 46px),
+        linear-gradient(135deg, #d9e1d5, #f1f3eb 52%, #cbd8ca);
+    box-shadow: 10px 12px 0 rgba(50, 51, 46, .13), 0 25px 42px rgba(50, 51, 46, .10);
+    transform: translate(-50%, -50%) translate(11px, 22px) rotate(2deg);
+}
+
+body .hero-layer-board::before {
+    inset: 21px 17px 35px;
+    border-color: rgba(42, 83, 58, .28);
+}
+
+body .hero-board-trace {
+    position: absolute;
+    z-index: 2;
+    height: 2px;
+    border-radius: 2px;
+    background: rgba(56, 113, 78, .70);
+    transform-origin: left center;
+}
+
+body .hero-trace-a { top: 26%; left: 22%; width: 56%; transform: rotate(18deg); }
+body .hero-trace-b { top: 38%; left: 37%; width: 44%; transform: rotate(-30deg); }
+body .hero-trace-c { top: 57%; left: 21%; width: 63%; transform: rotate(9deg); }
+body .hero-trace-d { top: 71%; left: 38%; width: 39%; transform: rotate(-14deg); }
+
+body .hero-board-chip {
+    position: absolute;
+    z-index: 3;
+    border: 1px solid rgba(35, 36, 33, .34);
+    border-radius: 2px;
+    background: #303530;
+    box-shadow: 2px 3px 0 rgba(50, 51, 46, .12);
+}
+
+body .hero-chip-a { top: 30%; left: 28%; width: 25%; height: 13%; }
+body .hero-chip-b { top: 52%; right: 22%; width: 17%; height: 20%; background: #59715d; }
+body .hero-chip-c { bottom: 23%; left: 21%; width: 14%; height: 7%; background: #c49a24; }
+
+body .hero-board-led {
+    position: absolute;
+    z-index: 4;
+    top: 23%;
+    right: 27%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ad5145;
+    box-shadow: 0 0 0 4px rgba(173, 81, 69, .10);
+}
+
+body .hero-board-led.led-b { top: 66%; right: 31%; background: #4d73ad; box-shadow: 0 0 0 4px rgba(77, 115, 173, .10); }
+body .hero-board-led.led-c { top: 47%; right: 18%; background: #c49a24; box-shadow: 0 0 0 4px rgba(196, 154, 36, .10); }
+
+body .hero-layer-screen {
+    z-index: 3;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 252, .98), rgba(249, 249, 244, .96)),
+        repeating-linear-gradient(104deg, rgba(75, 76, 70, .018) 0 1px, transparent 1px 24px);
+    box-shadow: 10px 12px 0 rgba(50, 51, 46, .12), 0 28px 54px rgba(50, 51, 46, .15);
+    transform: translate(-50%, -50%) translate(-19px, -25px) rotate(-4deg);
+}
+
+body .hero-layer-screen::before {
+    inset: 13px 13px 46px;
+    border-color: rgba(35, 36, 33, .18);
+}
+
+body .hero-screen-window {
+    position: absolute;
+    z-index: 2;
+    top: 25px;
+    right: 25px;
+    left: 25px;
+    height: calc(100% - 84px);
+    overflow: hidden;
+    border: 1px solid rgba(35, 36, 33, .18);
+    background:
+        radial-gradient(circle at 22% 33%, rgba(77, 115, 173, .12) 0 1px, transparent 2px),
+        radial-gradient(circle at 73% 68%, rgba(173, 81, 69, .12) 0 1px, transparent 2px),
+        repeating-linear-gradient(104deg, rgba(75, 76, 70, .018) 0 1px, transparent 1px 18px),
+        #f4f4ee;
+}
+
+body .hero-screen-window::after {
+    position: absolute;
+    right: 16%;
+    bottom: 19%;
+    left: 16%;
+    height: 1px;
+    background: rgba(35, 36, 33, .16);
+    content: "";
+    box-shadow: 0 -42px 0 rgba(35, 36, 33, .08), 0 -84px 0 rgba(35, 36, 33, .06);
+}
+
+body .hero-screen-copy {
+    position: absolute;
+    top: 20%;
+    left: 16%;
+    color: rgba(32, 33, 31, .82);
+    font: 600 30px/.9 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: -.05em;
+}
+
+body .hero-screen-copy b {
+    display: block;
+    margin-top: 7px;
+    color: var(--penaup-paper-blue, #4d73ad);
+    font-size: 8px;
+    letter-spacing: .12em;
+}
+
+body .hero-screen-dots {
+    position: absolute;
+    right: 17%;
+    bottom: 26%;
+    width: 29%;
+    height: 17%;
+    background:
+        radial-gradient(circle, rgba(173, 81, 69, .78) 0 3px, transparent 3.5px) 0 0 / 16px 16px,
+        radial-gradient(circle, rgba(196, 154, 36, .75) 0 3px, transparent 3.5px) 8px 8px / 16px 16px;
+    opacity: .72;
+}
+
+body .hero-screen-mark {
+    position: absolute;
+    z-index: 2;
+    width: 19px;
+    height: 19px;
+    border-color: var(--penaup-paper-blue, #4d73ad);
+    border-style: solid;
+}
+
+body .hero-screen-mark.mark-tl { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
+body .hero-screen-mark.mark-br { right: 12px; bottom: 12px; border-width: 0 1px 1px 0; border-color: var(--penaup-paper-red, #ad5145); }
+
+body .hero-screen-strip {
+    position: absolute;
+    z-index: 3;
+    right: 25px;
+    bottom: 24px;
+    left: 25px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    height: 8px;
+    border: 1px solid rgba(35, 36, 33, .18);
+}
+
+body .hero-screen-strip i:nth-child(1) { background: #20211f; }
+body .hero-screen-strip i:nth-child(2) { background: #fffefa; }
+body .hero-screen-strip i:nth-child(3) { background: #ad5145; }
+body .hero-screen-strip i:nth-child(4) { background: #c49a24; }
+body .hero-screen-strip i:nth-child(5) { background: #4d73ad; }
+body .hero-screen-strip i:nth-child(6) { background: #55765e; }
+
+body .hero-layer-stamp {
+    position: absolute;
+    z-index: 6;
+    right: 22px;
+    bottom: 11px;
+    color: rgba(32, 33, 31, .58);
+    font: 600 8px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: .06em;
+}
+
+/* Leader notes restore the “mechanical drawing” reading order without adding
+ * another card or a decorative halo. */
+body .hero-callout {
+    position: absolute;
+    z-index: 10;
+    display: grid;
+    gap: 2px;
+    width: 126px;
+    color: rgba(32, 33, 31, .72);
+    font-family: var(--penaup-ui-font);
+    line-height: 1.25;
+}
+
+body .hero-callout::after {
+    position: absolute;
+    top: 50%;
+    width: 49px;
+    height: 1px;
+    background: rgba(35, 36, 33, .26);
+    content: "";
+}
+
+body .hero-callout b {
+    color: var(--penaup-paper-blue, #4d73ad);
+    font: 600 10px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+body .hero-callout span {
+    color: rgba(32, 33, 31, .86);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+body .hero-callout small {
+    color: rgba(32, 33, 31, .45);
+    font: 9px/1.35 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: .03em;
+}
+
+body .hero-callout-screen {
+    top: 28%;
+    left: 1%;
+}
+
+body .hero-callout-screen::after {
+    right: -42px;
+}
+
+body .hero-callout-board {
+    top: 53%;
+    right: 0;
+    text-align: right;
+}
+
+body .hero-callout-board::after {
+    left: -42px;
+}
+
+body .hero-callout-back {
+    bottom: 10%;
+    left: 7%;
+}
+
+body .hero-callout-back::after {
+    right: -42px;
+}
+
+@media (max-width: 1020px) {
+    body .story-shell .hero-object {
+        min-height: 550px;
+    }
+
+    body .hero-exploded {
+        width: min(100%, 470px);
+        height: 470px;
+    }
+
+    body .hero-layer {
+        width: min(62%, 286px);
+    }
+}
+
+@media (max-width: 860px) {
+    body .story-shell .hero-object {
+        min-height: 540px;
+        margin-top: 8px;
+    }
+
+    body .hero-exploded {
+        width: min(100%, 500px);
+        height: 455px;
+    }
+
+    body .hero-layer {
+        width: min(62vw, 278px);
+    }
+
+    body .hero-callout-screen { top: 25%; left: 3%; }
+    body .hero-callout-board { top: 52%; right: 3%; }
+    body .hero-callout-back { bottom: 7%; left: 8%; }
+}
+
+@media (max-width: 560px) {
+    body {
+        background-attachment: scroll;
+    }
+
+    body .story-shell .hero-object {
+        min-height: 500px;
+    }
+
+    body .hero-object-kicker {
+        right: 4%;
+        left: 4%;
+        font-size: 9px;
+    }
+
+    body .hero-object-foot {
+        right: 4%;
+        left: 4%;
+        font-size: 9px;
+    }
+
+    body .story-shell .hero-badge {
+        top: 25px;
+        right: 0;
+        padding: 8px 9px;
+        transform: scale(.82) rotate(-3deg);
+        transform-origin: top right;
+    }
+
+    body .hero-exploded {
+        top: 47px;
+        right: -2px;
+        bottom: 31px;
+        left: -2px;
+        width: 100%;
+        height: 420px;
+    }
+
+    body .hero-layer {
+        width: min(63vw, 246px);
+    }
+
+    body .hero-layer-back {
+        transform: translate(-50%, -50%) translate(24px, 39px) rotate(6deg);
+    }
+
+    body .hero-layer-board {
+        transform: translate(-50%, -50%) translate(8px, 16px) rotate(2deg);
+    }
+
+    body .hero-layer-screen {
+        transform: translate(-50%, -50%) translate(-15px, -21px) rotate(-4deg);
+    }
+
+    body .hero-callout {
+        width: 106px;
+    }
+
+    body .hero-callout::after {
+        width: 35px;
+    }
+
+    body .hero-callout-screen {
+        top: 24%;
+        left: 0;
+    }
+
+    body .hero-callout-screen::after,
+    body .hero-callout-back::after {
+        right: -29px;
+    }
+
+    body .hero-callout-board {
+        top: 53%;
+        right: 0;
+    }
+
+    body .hero-callout-board::after {
+        left: -29px;
+    }
+
+    body .hero-callout-back {
+        bottom: 5%;
+        left: 2%;
+    }
+
+    body .hero-callout span {
+        font-size: 13px;
+    }
+
+    body .hero-callout small {
+        font-size: 8px;
+    }
+
+    body .hero-screen-copy {
+        font-size: 25px;
+    }
+}
+
+@media (max-width: 380px) {
+    body .story-shell .hero-object {
+        min-height: 465px;
+    }
+
+    body .hero-exploded {
+        height: 390px;
+    }
+
+    body .hero-layer {
+        width: min(63vw, 228px);
+    }
+
+    body .hero-callout {
+        width: 94px;
+    }
+
+    body .hero-callout small {
+        letter-spacing: -.03em;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body .story-shell .hero-badge,
+    body .hero-layer,
+    body .hero-callout {
+        transition: none;
+    }
+}
+
+/* 2026-08-28 final visual tune.
+ *
+ * The first mechanical pass had the right idea but its three sheets sat too
+ * close together and read like a stack of product renders. This last cascade
+ * treats the Hero as an editorial technical plate: a quiet white paper field,
+ * a construction datum, three separately legible 528:792 layers and small
+ * leader notes. It intentionally contains no product photograph or halo.
+ */
+:root {
+    --penaup-paper-base: #fbfbf8;
+    --penaup-paper-white: #fffefa;
+    --penaup-paper-rice: #f7f7f1;
+    --penaup-paper-shadow: #d7d8d1;
+    --penaup-paper-edge: rgba(35, 36, 33, .27);
+    --penaup-paper-grain: rgba(75, 76, 70, .035);
+    --penaup-paper-film-grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='penaup-fibre-grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23penaup-fibre-grain)' opacity='.28'/%3E%3C/svg%3E");
+}
+
+html {
+    background: var(--penaup-paper-base);
+}
+
+body {
+    overflow-x: hidden;
+    background-color: var(--penaup-paper-base);
+    background-image:
+        var(--penaup-paper-film-grain),
+        radial-gradient(circle, rgba(75, 76, 70, .028) 0 .52px, transparent .78px),
+        radial-gradient(circle at 7% -14%, rgba(255, 255, 253, .98), transparent 36%),
+        radial-gradient(circle at 94% 6%, rgba(196, 154, 36, .022), transparent 26%),
+        linear-gradient(180deg, #fffefa 0%, var(--penaup-paper-base) 58%, #f1f1eb 100%);
+    background-size: 180px 180px, 7px 7px, auto, auto, auto;
+    background-blend-mode: multiply, multiply, normal, normal, normal;
+    background-attachment: fixed;
+}
+
+body::before {
+    position: fixed;
+    z-index: 69;
+    inset: 0;
+    pointer-events: none;
+    content: "";
+    opacity: .13;
+    background-size: 184px 184px;
+}
+
+body::after {
+    position: fixed;
+    z-index: 70;
+    inset: 0;
+    pointer-events: none;
+    opacity: .52;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 360 360' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='penaup-handmade-fibre'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23penaup-handmade-fibre)' opacity='.20'/%3E%3Cg fill='none' stroke='%237f8179' stroke-width='.65' stroke-linecap='round' opacity='.15'%3E%3Cpath d='M-24 37 C52 17 103 57 180 35 S309 55 384 26'/%3E%3Cpath d='M-35 115 C42 93 101 133 174 111 S305 132 392 103'/%3E%3Cpath d='M-18 195 C61 174 111 214 188 190 S307 213 380 181'/%3E%3Cpath d='M-30 278 C41 257 108 297 184 273 S312 299 392 267'/%3E%3Cpath d='M-22 339 C53 319 112 357 196 335 S312 358 383 328'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 360px 360px;
+}
+
+/* The page UI remains a normal system face. Only protocol labels stay mono,
+ * and the creation canvases still opt into their selected output font. */
+body .story-shell,
+body .story-shell h1,
+body .story-shell h2,
+body .story-shell h3,
+body .story-shell .hero-lede,
+body .story-shell .section-intro,
+body .story-shell .step p,
+body .story-shell .feature p,
+body .story-shell .color-story-copy p,
+body .story-shell .color-lab-caption,
+body .story-shell .reading-ticket-title,
+body .story-shell .button,
+body .story-shell .nav-links a {
+    font-family: var(--penaup-ui-font);
+}
+
+body .story-shell .hero h1,
+body .story-shell .section h2,
+body .story-shell .section h3,
+body .story-shell .color-story-copy h3,
+body .story-shell .reading-ticket-title {
+    font-weight: 500;
+    letter-spacing: -.038em;
+}
+
+body .hero-title-mobile-break {
+    display: none;
+}
+
+/* Mechanical drawing board. The two datum lines make the stack readable even
+ * when the pale sheets are seen on a low-contrast display. */
+body .story-shell .hero-object {
+    min-height: 600px;
+    isolation: isolate;
+}
+
+body .hero-exploded {
+    top: 31px;
+    right: 0;
+    bottom: 31px;
+    left: 0;
+    width: min(100%, 540px);
+    height: 540px;
+}
+
+body .hero-exploded::before {
+    position: absolute;
+    z-index: 0;
+    top: 8%;
+    right: 8%;
+    bottom: 8%;
+    left: 8%;
+    border-top: 1px dashed rgba(35, 36, 33, .14);
+    border-bottom: 1px dashed rgba(35, 36, 33, .14);
+    content: "";
+    pointer-events: none;
+}
+
+body .hero-exploded::after {
+    position: absolute;
+    z-index: 0;
+    top: 50%;
+    right: 3%;
+    left: 3%;
+    height: 1px;
+    background: rgba(35, 36, 33, .10);
+    box-shadow: 0 -126px 0 rgba(35, 36, 33, .055), 0 126px 0 rgba(35, 36, 33, .055);
+    content: "";
+    pointer-events: none;
+}
+
+body .hero-axis {
+    top: 6%;
+    bottom: 6%;
+    border-left-color: rgba(35, 36, 33, .22);
+}
+
+body .hero-axis i {
+    width: 8px;
+    height: 8px;
+    border-color: rgba(35, 36, 33, .34);
+    background: var(--penaup-paper-base);
+}
+
+body .hero-layer {
+    width: min(60%, 318px);
+    border-color: var(--penaup-paper-edge);
+    border-radius: 3px 6px 4px 5px;
+    transition: transform .42s var(--penaup-paper-ease), box-shadow .42s var(--penaup-paper-ease), opacity .42s ease;
+}
+
+body .hero-layer::before {
+    inset: 15px;
+    border-color: rgba(35, 36, 33, .18);
+}
+
+body .hero-layer::after {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(35, 36, 33, .16);
+}
+
+body .hero-layer-back {
+    background-image:
+        var(--penaup-paper-film-grain),
+        linear-gradient(90deg, transparent 0 13%, rgba(79, 119, 93, .24) 13% 14%, transparent 14% 86%, rgba(79, 119, 93, .20) 86% 87%, transparent 87%),
+        repeating-linear-gradient(0deg, transparent 0 27px, rgba(35, 36, 33, .045) 27px 28px, transparent 28px 54px),
+        linear-gradient(145deg, #e9ebe5, #f5f5ef 54%, #dfe2db);
+    background-blend-mode: multiply, normal, normal, normal;
+    background-size: 180px 180px, auto, auto, auto;
+    box-shadow: 10px 12px 0 rgba(50, 51, 46, .14), 0 25px 40px rgba(50, 51, 46, .09);
+    transform: translate(-50%, -50%) translate(61px, 68px) rotate(4.5deg);
+}
+
+body .hero-layer-board {
+    background-image:
+        var(--penaup-paper-film-grain),
+        linear-gradient(90deg, transparent 0 17%, rgba(49, 103, 73, .70) 17% 18%, transparent 18% 81%, rgba(49, 103, 73, .58) 81% 82%, transparent 82%),
+        repeating-linear-gradient(28deg, transparent 0 25px, rgba(42, 83, 58, .22) 25px 26px, transparent 26px 47px),
+        linear-gradient(135deg, #d4e1d4, #edf2e9 52%, #c3d4c5);
+    background-blend-mode: multiply, normal, normal, normal;
+    background-size: 180px 180px, auto, auto, auto;
+    box-shadow: 8px 10px 0 rgba(50, 51, 46, .14), 0 26px 42px rgba(50, 51, 46, .11);
+    transform: translate(-50%, -50%) translate(18px, 35px) rotate(1.7deg);
+}
+
+body .hero-layer-screen {
+    background-image:
+        var(--penaup-paper-film-grain),
+        linear-gradient(135deg, rgba(255, 255, 252, .995), rgba(249, 249, 244, .97)),
+        repeating-linear-gradient(104deg, rgba(75, 76, 70, .023) 0 1px, transparent 1px 22px);
+    background-blend-mode: multiply, normal, normal;
+    background-size: 180px 180px, auto, auto;
+    box-shadow: 7px 9px 0 rgba(50, 51, 46, .15), 0 28px 52px rgba(50, 51, 46, .16);
+    transform: translate(-50%, -50%) translate(-31px, -43px) rotate(-2.8deg);
+}
+
+body .hero-layer-back .hero-layer-edge {
+    inset: 27px 20px 43px;
+    border-color: rgba(35, 36, 33, .20);
+}
+
+body .hero-layer-back .hero-layer-battery {
+    top: 44%;
+    width: 50%;
+    height: 17%;
+    border-color: rgba(35, 36, 33, .28);
+    background:
+        linear-gradient(90deg, transparent 0 17%, rgba(35, 36, 33, .15) 17% 18%, transparent 18% 82%, rgba(35, 36, 33, .15) 82% 83%, transparent 83%),
+        #d7d9d2;
+}
+
+body .hero-layer-back .hero-layer-port {
+    right: 30px;
+    bottom: 29px;
+}
+
+body .hero-layer-board .hero-board-trace {
+    height: 1px;
+    background: rgba(49, 103, 73, .74);
+}
+
+body .hero-board-chip::before,
+body .hero-board-chip::after {
+    position: absolute;
+    content: "";
+    pointer-events: none;
+}
+
+body .hero-board-chip::before {
+    top: 3px;
+    right: -6px;
+    bottom: 3px;
+    width: 4px;
+    border-top: 1px solid rgba(35, 36, 33, .34);
+    border-bottom: 1px solid rgba(35, 36, 33, .34);
+}
+
+body .hero-board-chip::after {
+    top: 3px;
+    bottom: 3px;
+    left: -6px;
+    width: 4px;
+    border-top: 1px solid rgba(35, 36, 33, .34);
+    border-bottom: 1px solid rgba(35, 36, 33, .34);
+}
+
+body .hero-layer-screen .hero-screen-window {
+    top: 25px;
+    right: 24px;
+    bottom: 59px;
+    left: 24px;
+    height: auto;
+    border-color: rgba(35, 36, 33, .20);
+    background:
+        radial-gradient(circle at 23% 32%, rgba(77, 115, 173, .13) 0 1px, transparent 2px),
+        radial-gradient(circle at 70% 66%, rgba(173, 81, 69, .12) 0 1px, transparent 2px),
+        repeating-linear-gradient(104deg, rgba(75, 76, 70, .021) 0 1px, transparent 1px 18px),
+        #f4f4ee;
+}
+
+body .hero-screen-copy {
+    color: rgba(32, 33, 31, .85);
+}
+
+body .hero-screen-dots {
+    right: 15%;
+    bottom: 25%;
+    width: 32%;
+    height: 18%;
+    background:
+        radial-gradient(circle, rgba(173, 81, 69, .76) 0 3px, transparent 3.5px) 0 0 / 15px 15px,
+        radial-gradient(circle, rgba(196, 154, 36, .74) 0 3px, transparent 3.5px) 7px 7px / 15px 15px,
+        radial-gradient(circle, rgba(77, 115, 173, .64) 0 2px, transparent 2.5px) 3px 10px / 15px 15px,
+        radial-gradient(circle, rgba(85, 120, 91, .64) 0 2px, transparent 2.5px) 10px 3px / 15px 15px;
+    opacity: .74;
+}
+
+body .hero-layer-stamp {
+    right: 21px;
+    bottom: 10px;
+    padding: 2px 4px;
+    border-top: 1px solid rgba(35, 36, 33, .18);
+    color: rgba(32, 33, 31, .58);
+    font-size: 9px;
+    background: rgba(255, 255, 252, .36);
+}
+
+/* The 6 → 48 label is a paper specimen ticket, not a floating dark UI chip. */
+body .story-shell .hero-badge {
+    top: 32px;
+    right: 2%;
+    grid-template-columns: auto auto auto auto auto;
+    gap: 6px;
+    padding: 16px 11px 9px;
+    border: 1px solid rgba(35, 36, 33, .25);
+    border-radius: 3px 6px 4px 5px;
+    color: var(--penaup-paper-ink);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 252, .98), rgba(247, 247, 242, .94)),
+        repeating-linear-gradient(104deg, rgba(75, 76, 70, .025) 0 1px, transparent 1px 20px);
+    box-shadow: 5px 6px 0 rgba(50, 51, 46, .12);
+    transform: rotate(-3deg);
+}
+
+body .story-shell .hero-badge::before {
+    position: absolute;
+    top: 4px;
+    right: 11px;
+    left: 11px;
+    color: var(--penaup-paper-blue, #4d73ad);
+    content: "COLOUR SPEC / E6";
+    font: 600 7px/1 var(--penaup-ui-font);
+    letter-spacing: .08em;
+}
+
+body .story-shell .hero-badge strong {
+    color: var(--penaup-paper-ink);
+    font-size: 22px;
+}
+
+body .story-shell .hero-badge strong:nth-of-type(2) {
+    color: var(--penaup-paper-blue, #4d73ad);
+}
+
+body .story-shell .hero-badge span {
+    color: rgba(32, 33, 31, .56);
+}
+
+body .story-shell .hero-badge b {
+    color: var(--penaup-paper-red, #ad5145);
+}
+
+/* Callouts are labels on the drawing, with one clear line toward each sheet. */
+body .hero-callout {
+    width: 118px;
+    padding: 5px 7px;
+    border-left: 2px solid var(--penaup-paper-blue, #4d73ad);
+    background: rgba(255, 255, 252, .68);
+}
+
+body .hero-callout::after {
+    width: 51px;
+    background: rgba(35, 36, 33, .30);
+}
+
+body .hero-callout span {
+    font-size: 15px;
+}
+
+body .hero-callout small {
+    font-size: 9px;
+}
+
+body .hero-callout-screen {
+    top: 28%;
+    left: -1%;
+}
+
+body .hero-callout-board {
+    top: 52%;
+    right: -1%;
+    border-right: 2px solid var(--penaup-paper-red, #ad5145);
+    border-left: 0;
+}
+
+body .hero-callout-back {
+    bottom: 8%;
+    left: 5%;
+    border-left-color: var(--penaup-paper-yellow, #c49a24);
+}
+
+body .hero-object-foot {
+    right: 8%;
+    bottom: 1px;
+    left: 7%;
+    padding-top: 11px;
+}
+
+/* A fade keeps the exploded view calm on entry; the sheets remain stable
+ * rather than floating continuously like a marketing mock-up. */
+body .hero-layer,
+body .hero-callout {
+    animation: penaup-technical-fade .56s ease both;
+    animation-play-state: paused;
+}
+
+body .hero-layer-back { animation-delay: .20s; }
+body .hero-layer-board { animation-delay: .12s; }
+body .hero-layer-screen { animation-delay: .04s; }
+body .hero-callout-screen { animation-delay: .26s; }
+body .hero-callout-board { animation-delay: .32s; }
+body .hero-callout-back { animation-delay: .38s; }
+
+body .hero-object.is-visible .hero-layer,
+body .hero-object.is-visible .hero-callout {
+    animation-play-state: running;
+}
+
+@keyframes penaup-technical-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@media (max-width: 860px) {
+    body .story-shell .hero-object {
+        min-height: 560px;
+    }
+
+    body .hero-exploded {
+        width: min(100%, 500px);
+        height: 470px;
+    }
+
+    body .hero-layer {
+        width: min(61%, 286px);
+    }
+}
+
+@media (max-width: 560px) {
+    body {
+        background-attachment: scroll;
+    }
+
+    body .hero-title-mobile-break {
+        display: inline;
+    }
+
+    body .story-shell .hero-object {
+        min-height: 500px;
+    }
+
+    body .hero-exploded {
+        top: 46px;
+        right: -2px;
+        bottom: 30px;
+        left: -2px;
+        width: 100%;
+        height: 420px;
+    }
+
+    body .hero-exploded::before {
+        right: 6%;
+        left: 6%;
+    }
+
+    body .hero-exploded::after {
+        right: 2%;
+        left: 2%;
+        box-shadow: 0 -105px 0 rgba(35, 36, 33, .05), 0 105px 0 rgba(35, 36, 33, .05);
+    }
+
+    body .hero-layer {
+        width: min(61vw, 238px);
+    }
+
+    body .hero-layer-back {
+        transform: translate(-50%, -50%) translate(31px, 48px) rotate(4.5deg);
+    }
+
+    body .hero-layer-board {
+        transform: translate(-50%, -50%) translate(11px, 24px) rotate(1.7deg);
+    }
+
+    body .hero-layer-screen {
+        transform: translate(-50%, -50%) translate(-18px, -26px) rotate(-2.8deg);
+    }
+
+    body .story-shell .hero-badge {
+        top: 24px;
+        right: 0;
+        transform: scale(.84) rotate(-3deg);
+        transform-origin: top right;
+    }
+
+    body .hero-callout {
+        width: 104px;
+        padding: 4px 6px;
+    }
+
+    body .hero-callout::after {
+        width: 34px;
+    }
+
+    body .hero-callout span {
+        font-size: 13px;
+    }
+
+    body .hero-callout small {
+        font-size: 8px;
+        letter-spacing: -.02em;
+    }
+
+    body .hero-callout-screen {
+        top: 24%;
+        left: 0;
+    }
+
+    body .hero-callout-board {
+        top: 53%;
+        right: 0;
+    }
+
+    body .hero-callout-back {
+        bottom: 5%;
+        left: 2%;
+    }
+
+    body .hero-object-foot {
+        right: 4%;
+        left: 4%;
+        font-size: 8px;
+    }
+}
+
+@media (max-width: 380px) {
+    body .story-shell .hero h1 {
+        font-size: 54px;
+    }
+
+    body .hero-exploded {
+        height: 390px;
+    }
+
+    body .hero-layer {
+        width: min(61vw, 224px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body .hero-layer,
+    body .hero-callout {
+        animation: none;
+        animation-play-state: running;
+    }
+}
